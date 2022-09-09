@@ -29,5 +29,46 @@ what business they think they are in. A bank is just an IT company with a bankin
 este o companie ce se axează pe tehnologie, indiferent de mediul de afaceri în care se află. O bancă este doar o companie
 IT cu licență de a funcționa ca o bancă.)
 
-% evaluarea companiilor bazata pe livare
-% faptul ca toate companiile vor sa fie performante fata de competitori
+Desigur nu toate companiile sunt la fel și nu toate concurează cu toate companiile, însă chiar dacă 
+nu ești o companie ce activează în tehnologie, probabil folosești componente tehnologice pentru a-ți
+îmbunătății randamentul sau să oferi clienților un avantaj față de competiție, care probabil gândește în
+același mod.
+
+Însă pentru fiecare companie obiectivul este identic, să livreze clienților produse de calitate și cât mai 
+rapid. Pentru aceasta trebuie să ne asigurăm că avem inginerii necesari pentru implementarea cererilor noi,
+însă momentul în care aceasta este terminată este doar începutul procesului de integrare și ulterior lansare,
+și uneori acesta este cel care reprezintă un blocaj din mai multe puncte de vedere ce limiteaza numarul de câte
+ori putem aduce o îmbunătățire produsului nostru.
+
+În încercarea de a livra mai rapid sau pentru a ușura modul în care manevrăm un influx sau o lipsă de trafic,
+s-a încercat folosirea unei arhitecturi paralele asupra aplicațiilor creând arhitecturi orientate pe servicii, 
+iar în momentul în care aceste servicii sunt concentrare pe un număr redus de funcționalități și pot fi lansate
+independent și să își păstreze funcționalitate putem vorba de o arhitectură bazata pe microservicii.
+
+Însă schimbând arhitectura sau practiciile din modul de desfășurare al livrarii produsului nu este suficient
+pentru a asigura performanța, întrucât ambele dintre ele aduc dezavantaje ce trebuie tratate iar uneori 
+acestea sunt mai mari decât avantajele pe care schimbarea le-ar aduce, însă implementarea corectă în locurile
+ce ar beneficia de o astfel de abordare poate să aducă performanțe ce nu ar fi posibile cu procesele vechi.
+
+Afinitatea mea pentru microservicii provine de la lipsa de cunoștiințelor pentru a putea alege dintre mai
+multe limbaje de programare, framework-uri sau platforme. De exemplu, ce avantaje mi-ar face să aleg ca 
+pentru server-ul meu să folosesc o aplicație în Node.JS sau una in Go? Chiar dacă putem să cunoaștem 
+niște lucruri informative la început, cei mai buni indicatori sunt monitorizările proprii în producție. De 
+asemenea pot fi cazuri în care îmbunătățirile aduse unei platforme pe parcurs o fac mai bună față de ce era
+inițial (dezvoltarea TypeScript poate să influențeze alegerea inițială a unei platforme SpringBoot ce este type-safe).
+Astfel, pe o arhitectură bazată pe microservicii putem să folosim limbajul potrivit pentru serviciul căruia
+îi aduce cele mai multe beneficii. Acest lucru se extinde și pentru baze de date. Poate în timpul evoluției 
+serviciului apar tehnologii noi, însă având un singur lucru central ar face migrarea mult mai grea, de asemenea
+uneori ar trebui să facem compromisuri pe care alegerea unui alt tip de baze de date ar face să o dispară.
+
+Dezvoltarea tematiciilor DevOps pornește de la ușurința cu care ne putem crea o bază de date folosind containere,
+întrucât instalarea unei baze de date pe calculatorul personal în timp ce lucram la proiectele de facultate a făcut
+să am experiențe în care la finalul fiecărui an îmi reinstalam sistemul de operare doar pentru că o dată ce instalam
+o bază de date crea suficiente servicii, foldere care dupa o dezinstalare încă rămâneau. Folosind Docker,
+pot crea o bază de date cu o singură linie de cod, care în același timp să fie preconfigurată și să o pot
+împărtășii cu colegii de proiect ca să nu pierdem timp în configurarea mediului de lucru. 
+
+Lucrarea mea va urma o structură în care prezint noțiuniile teoretice la început iar la final încerc să
+aplic aspectele prezentate în crearea unei aplicații. Înițial pornesc cu prezentarea microserviciilor 
+continuând cu diferitele moduri în care acestea pot fi lansate, imediat după cu dezvoltarea noțiuniilor de DevOps
+ce au ca scop accelerarea dezvoltării, iar la final o prezentare generală a modului în care îmi construiesc aplicația.
