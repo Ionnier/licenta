@@ -1,0 +1,107 @@
+Microserviciile sunt o arhitectură de sisteme distribuite ce a devenit populară în ultimele decenii datorită
+necesității scalării. Ceea ce o separă de o arhitectură orientate pe servicii este faptul că microserviciile
+sunt mult mai specifice, acoperind o singură parte din afacere și faptul că pot fi lansate în execuție independent,
+astfel microserviciile ar trebui să depindă cât mai puțin de altele. Comunicarea se face direct către interfețele
+expuse de fiecare, iar informațiile reținute de fiecare (de exemplu baza de date de date sau diferite fișiere)
+pot să fie modificate doar prin metodele de comunicare oferite ci nu direct.
+
+Un concept important în microservicii este ascunderea de informații, astfel din exterior fiecare ar trebui să 
+fie tratat ca o cutie neagră ce face anumite lucruri și expune anumite date, nu contează detaliile de implementare
+și nici tehnologiile folosite în implementare, ci doar capabilitățile fiecăruia. Acest lucru permite să modificăm
+microserviciul în funcție de cerințe, chiar și refactorizarea metodelor inițiale cât timp se respectă 
+capabilitățile pe care microserviciul ar trebui să le îndeplinească.
+
+Cel mai important aspect al microserviciilor este capacitatea de a lucra independent de celelalte. Acestea
+trebuie să funcționeze independent de celelalte iar dacă aducem schimbări într-unul atunci nu suntem obligați să
+facem schimbări în alt microserviciu, în caz contrat ar apărea dificultăți în lansare. Obținerea independenței poate
+să aducă contribuții majore în timpul de deployment însă implementarea este mult mai complicată datorită necesității
+comunicării cu alte servicii.
+
+Un alt aspect de bază este acoperirea unui singur segment din afacere prin intermediul unui microserviciu. Alături 
+de caracteristica precedentă, dacă afacerea și-ar dezvolta necesitățile ar fi mult mai dificil să modificăm
+mai multe microservicii și ulterior să coordonăm lansarea lor.
+
+Independența microserviciilor este importantă, în acest scop, ele ar trebui să fie singurele care ar putea să își modifice starea.
+Întrucât starea se referă la elementele componente, de exemplu o bază de dată, acestea nu ar trebui să fie împărtășite
+și nici accesate de alte microservicii. De asemenea ar trebui evitate modificarea interfețelor declarate pentru
+a evita necesitatea modificării altor microservicii.
+„
+Dimensiunea microserviciile ar trebui să fie redusă prin oferirea unui număr restrâns de funcționalități declarate pentru a
+a fi ușor de înțeles și întreținut. Însă important este cât de multe microservicii
+pot fi administrate întrucât un număr mai mare de microservicii, deși mici ca funcționalități, aduc dificultăți
+în comunicare, scalare și depanare.
+
+Microserviciile sunt agnostice din punct de vedere al tehnologiilor care ar putea fi folosite. Din acest motiv, acestea
+oferă flexibilitate însă prețul plătit este crearea a mai multor puncte vulnerabile.
+
+Orice prezentare al acestui tip de arhitectură nu ar fi completă fără prezentarea conceptului de „monolith” (monolit), întrucât
+este considerată o arhitectură veche reprezentând modul de funcționare din trecut. În cel mai simplist mod de funcționare, 
+sistemul monolitic este reprezentat de un singur proces „gigantic” ce acoperă toată funcționalitatea sistemului, în general conectat
+la o singură bază de date ce și ea este reprezentată de un singur proces. Putem intui problemele cu această organizare,
+dacă conexiunea către procesul monolitic cade sau baza de date are probleme, întreg sistemul este afectat. Microserviciile incearcă 
+să acopere aceste probleme prin independență, astfel dacă un microserviciu este căzut, celelalte nu sunt afectate.
+Procesul poate fi însă separat pe module dezvoltate separat însă care la final se cuplează formând un singur proces.
+Există conceptul de sistem monolitic distribuit în care acesta este la fel separat în module independente însă care nu ar funcționa
+dacă nu sunt toate active, acest tip de sistem oferă toate dezavantajele sistemelor distribuite dar și a monolitului ceea 
+ce îl face destul de rar întâlnit.
+                  
+Chiar dacă o arhitectură monolitică prezintă dezavantaje evidente ce sunt ușor de văzut, acestea nu sunt la fel de mari
+pentru companiile mici. Numărul redus de aplicații ce trebuie lansate și monitorizate,
+posibilitatea de reutilizare a codului mult mai ușoară, obținerea infrastructurii pentru
+proces și uneori chiar și scalarea, deși este limitată poate să facă o arhitectură monolitică
+mult mai atractivă. Nu ar trebui să asociem arhitectura monolitică ca un lucru antic, ci să 
+o considerăm ca o opțiune. Însă pentru o organizație mică, acesta ar trebui să fie doar un
+punct de plecare, eventual după ce serviciul oferit devine mai popular s-ar putea să ajungem
+să cunoaștem limitările arhitecturii și să ne orientăm tot către microservicii, însă dacă 
+nu avem succes, eliminăm multe complexități apărute în urma introducerii microserviciilor.
+
+Principalele avantaje ale microserviciilor provin de la baza acestora, o arhitectură distribuită,
+însă cuplat cu conceptul de ascundere a informației și domain-driven design (design orientat domeniu)
+aduc multe alte avantaje asupra altor arhitecturi distribuite. În cadrul unui sistem format din microservicii
+putem folosi orice tip de tehnologie pentru program și orice tip de bază de date, întrucât
+ascundem implementarea de exterior. Astfel putem alege tehnologii ce aduc avantaje în 
+dezvoltarea microserviciului. Acest avantaj duce la capabilitatea de a folosi tehnologii noi
+fară a afecta tot sistemul, însă limitează capacitatea de a împărtășii cod (de exemplu prin
+librării interne, întrucât acestea ar trebui să fie rescrice pentru fiecare limbaj). 
+Un sistem distribuit rezistă mult mai ușor la căderi, întrucât acestea pot fi tratate ca să
+se prevină un lanț, însă cu un număr mare de puncte slabe devine greu de aproximat cât de
+mult este afectat un sistem. Scalarea unui sistem monolitic este ușoară, doar replicăm procesul,
+însă la microservicii scalarea poate fi mult mai concentrată pe punctele care chiar au nevoie să fie
+scalate. Lansarea unei schimbări într-un microserviciu este mult mai ușoară întrucât nu necesită
+crearea de timp mort în aplicație, întrucât nu tot sistemul este înlocuit ci doar o mică parte din acesta,
+ce poate fi chiar și mai controlată prin diferite aplicații de orchestrare.
+
+Adaptarea microserviciilor vine cu un cost, pe lângă dificultățile de implementare a design-ului apar
+și alte probleme, de exemplu dezvoltarea locală. Atunci când dezvoltăm un microserviciu acesta, posibil,
+este nevoit să comunice cu alte microservicii care la rândul lor comunică cu alte microservicii și putem continua,
+toate acestea microservicii trebuie să funcționeze în același timp pe laptop-ul dezvoltatorului,
+întrucât nu putem folosi microserviciile din producție, însă nu e posibil să rulăm foarte multe
+microservicii pe un singur computer depinzând de configurație. Adoptarea microserviciilor,
+în general nu poate avea succes decât dacă este combinată cu elemente de DevOps, ceea ce înseamnă
+ca dezvoltatorii și operatorii să învețe tehnologii noi, ceea ce este un împediment în momentul
+în care vrem să lansăm un produs rapid în piață și nu avem experiența necesară. Microserviciile necesită
+mult mai multă infrastructură pentru a fi rulată, mai multă tehnologie ce trebuie să fie folosită
+pentru ca dezvoltarea și livrarea să decurgă eficient, însă pe termen lung acesta poate să
+fie prevăzută dacă arhitectura este folosită cum trebuie prin livrare mai rapidă și mai eficientă
+deci profitul ar putea să crească. Monitorizarea sistemelui devine mai complicată, într-un proces monolitic
+toate fișierele de jurnalizare (logging) sunt în același loc. Într-un sistem distribuit, acestea 
+trebuie să fie colectate, și ulterior ansamblate pentru a avea sens, acest lucru devine mai dificil când
+intră în discuție fenomenul de replicare al unei instanțe. Securizarea unui sistem distribuit este
+mai grea, traficul de date se face mult mai mult prin rețele sau prin diferite căi alternative ceea 
+ce necesită un grad ridicat de atenție. Testarea unui sistem format din microservicii este mult mai
+dificilă, mai ales când trebuie testate mai multe microservicii în același timp, acesta duce la creșterea
+timpului necesar pentru a primi răspuns. Sistemele distribuite cresc timpul de răspuns întrucât acestea nu
+se mai face în cadrul unui singur proces, deci datele trebuie codificate și decodificate atunci când trec
+dintr-un mediu în altul. În cadrul unui sistem distribuit o altă problemă care apare este consistența 
+datelor, dată de faptul că în timpul unei cereri, datele dintr-un microserviciu se pot schimba, astfel
+tranzacțiile devin dificile mai ales când înainte ne bazam pe atomicitatea și consistența oferită de 
+baza de date.
+
+Astfel, microserviciile funcționează cel mai bine pentru organizațiile mari ce vor ca dezvoltatorii
+lor să livreze facilități noi foarte repede care să nu fie întârziate de compatibilitatea cu 
+caracteristici deja existente. Prin natura variată a acestei arhitecturi se pot folosi tehnologii noi
+dar și folosirea platformelor cloud, astfel se oferă multă flexibilitate cu prețul creșterii 
+complexității. Pentru companiile mici, al căror rată de succes este greu de calculat, overhead-ul 
+produs de adaptarea unei arhitecturi în acest stil nu ar aduce suficient de multe avantaje și ar
+trebui să opteze pentru o arhitectură tradițională ce este stabilă și oferă colaborare mult mai ușoară
+în cadrul aceluiași proiect la scale mici. 
