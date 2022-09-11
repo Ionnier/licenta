@@ -1,0 +1,207 @@
+Partea de creare a schemei arhitecturale a unui sistem este una dintre
+cele mai importante faze ale dezvoltării. Acesta este momentul în care putem descoperii
+că microserviciile nu ar fi chiar o alegere potrivită pentru cerințele noastre. Din acest
+motiv este important să nu ignorăm potențiale probleme ci să se formuleze toate problemele
+pe care le putem aștepta în implementare
+
+\subsection{Interconectare}
+Deși microserviciile pot fi lansate și pot funcționa independent, acestea trebuie să funcționeze
+în cadrul unui sistem complex. Astfel trebuie definite modul de comunicare și interfețele expuse.
+În definirea interconectării întâlnim câteva concepte de bază prezentate anterior ce provin
+din descompunerea în module.
+
+Ascunderea de informații este procesul de separare al detaliilor de implementare pentru a evita
+modificarea în alte locuri în cazul în care acestea se schimbă. Acest concept ofer varii beneficii
+precum îmbunătățirea timpului de dezvoltare datorită posibilități de dezvoltare în paralel,
+creșterea întelegerii sistemului mult mai ușor întrucât fiecare modul poate să fie înțeles
+independent și flexibilitate oferit de faptul că putem schimba funcționalitate fără a fi necesar
+ca alte părți ale sistemului să fie modificate. David Parnas spune că „The connections between modules are the assumptions which the modules make about
+each other.” (Conexiunile create între module sunt ipotezele create de module față de celelalte) \cite{DBLP:conf/ifip/Parnas71}.
+Astfel, cu cât alte microservicii folosesc un anumit microserviciu mai mult se crează mai multe
+locuri în care devine mai dificil de modificat, astfel cu cât întâmpinăm problema aceasta mai puțin
+cu atât putem lansa acel microserviciu fără a lua în considerare modificări care să pastreze compatibilitatea
+cu elementele existente.
+
+Un alt concept important este coeziunea, scopul microserviciilor este de a funcționa independent,
+astfel vrem ca lucrurile care înteracționează să fie grupate iar atunci când se schimbă ceva 
+să nu trebuiască să modificăm multe locuri. Elementele care nu interacționează ar trebui să fie separate
+pentru a nu crea probleme de regresie.
+
+În sisteme distribuite apare cuplarea, atunci când un microserviciu depinde mai mult sau mai puțin de
+altul pentru a avea funcționalitate completă. Un sistem cu cuplare mică poate să fie lansat fără să trebuiască
+modificări în locuri multiple.
+
+Cele două concepte definesc lucruri asemănătoare, astfel ele se pot rezuma ușor ca „A structure is stable if cohesion is strong and coupling is low.” \cite{endres_rombach_2003} 
+(O structură este stabilă dacă coeziunea este ridicată și cuplarea este scăzută). Coeziunea se referă la lucrurile
+din interior iar cuplarea se referă la exterior iar acest lucru este greu de balansat.
+
+Cuplarea poate apărea sub diferite forme, cuplare de domeniu în care un microserviciu interacționează
+cu alt microserviciu pentru că are nevoie de funcționalitate ce depăsește atribuțiile lui. Astfel de 
+cuplare, în general, nu poate fi evitată într-un sistem distribuit. Acesta este cel mai scăzut nivel
+de cuplare însă trebuie să evităm cazul în care un microserviciu depinde un centru pentru alte microservicii
+întrucât ar însemna ca acesta are prea multe responsabilități. Există conceptul de cuplare temporară, adică
+atunci când un microserviciu așteaptă ca alt microserviciu să execute ceva, astfel cuplarea se întâmplă pentru că cele
+două operațiuni se întâmplă în același timp. Cuplarea Pass-Through apare atunci când un microserviciu este nevoit
+să trimită date unui alt microserviciu întrucât acesta trebuie să trimite datele 
+unui microserviciu la un nivel mai mic, astfel un microserviciu are rolul doar de a transmite date. Acest lucru
+este problematic întrucât dacă formatul acestor date ar trebui să se schimbe, ar trebui să
+modificăm mai multe microservicii. Evitarea acestui tip de cuplare se face prin schimbarea modului
+prin care comunicăm de exemplu microserviciul ce emite date ar putea să trimită direct datele către microserviciul ce are
+nevoie de ele sau ca microserviciul interpediar să trimită datele in format pur, fără să îl intereseze o formă anume.
+Cuplarea comună apare atunci când mai multe microservicii încearcă să acceseze o resursă 
+comună, de exemplu o bază de date sau locația unui fișier. Problema în acest caz este că dacă modul în care
+această resursă interacționează se schimbă, mai multe microservicii trebuie modificate. Sau dacă
+unul din microservicii are nevoie de un comportament special, alte microservicii ar trebui să 
+se adapteaze ceea ce crează probleme în dezvoltare. Soluții posibile de evitare pot fi crearea unui alt 
+microserviciu ce funcționează ca o interfață pentru resursa comună ce va funcționa dupa principiile unui
+microserviciu. Cuplarea de conținut apare atunci când un microserviciu modifică starea internă a altui 
+microserviciu, de exemplu prin modificarea bazei de date a acesteia. Acest lucru este periculos întrucât pot
+apărea modficări nedorite prin utilizare incorectă, astfel se încalcă procesul de ascundere de informații.
+
+\subsection{Domain Driven Design}
+Domain Driven Design este un concept introdus de Eric Evans în cartea sa \cite{ddd}. Acesta se bazează
+pe crearea codului în jurul afacerilor pentru ca acesta să fie mai ușor de înțeles prin creșterea
+interacțiunii cu analiștii de afaceri, acest lucru este benefic pentru microservicii întrucât acestea se 
+pot orienta către mediul de afaceri pentru a se dezvolta alături de acesta fiind mult mai eficient.
+
+Unul din concepte este limbajul universal ce cuprinde ca codul din interiorul unui microserviciu să 
+folosească termeni folosiți de către utilizatori și de către analiști, acest lucru este benefic întrucât
+face comunicarea mult mai eficientă, o persoană nou venită poate să înțeleagă afacerea și codul în același timp.
+Dacă cele două sunt diferite, atunci pot exista probleme în comunicarea problemelor.
+
+În DDD, un agregat este o unitate ce are o anumită stare ce se poate modifică în timp și are ca scop
+modelarea unui concept din domeniul real. În general un agregat este cuprins în întregime de către
+un microserviciu chiar dacă acesta poate conține mai multe microservicii. Un agregat poate fi schimbat
+din exterior însă poate să își controleze singur starea pentru a preveni stările ilegale
+
+Mărginirea contextului se referă la ascunderea mai multor activități ce țin de implementare
+cu scopul de a defini anumite responsabilități sigure pe care le îndeplinește. Acest lucru se
+poate îndeplini prin ascunderea modelului, atunci când vrem să expunem o entitate nu trebuie să
+oferim toate informațiile despre acesta ci doar cele necesare. Distribuirea unui model, adică a
+unei entități între mai multe microservicii se face prin traducerea acestei entități în domeniu propriu.
+
+DDD în microservicii este un concept fundamental întrucât ambele pun la centru afacerea și
+dezvoltarea în jurul ei. Astfel conceptele prezentate în DDD pot fi aplicate microserviciilor
+mărginirea contextului are ca bază ascunderea de informații și duce la crearea de formate standard.
+
+\subsection{Concepte de programare orientată obiect în microservicii}
+
+Multe din problemele cu care ne confruntăm în microservicii pot fi tratate folosind concepte
+ce au ca scop ușurarea modului în care creăm sisteme prin intermediul claselor în programarea 
+orientată obiect. Deși diferite în natură, ambele au ca rol definirea unor interacțiuni între
+elemente ce sunt făcute să funcționeze separat sau prin intermediul unuor interfețe.
+
+Începând cu conceptele de bază, abstractizarea se referă la ascunderea implementărilor interne
+și afișarea doar facilitățile oferite de clasă ce pot fi accesate din exterior. Acest lucru face 
+referire la conceptul de ascundere al informațiilor descris anterior.
+
+Encapsularea se referă la agregarea de date și atribute, adică funcționalități pentru a crea un tot
+unitar, acest principiu este compatibil cu microserviciile și nevoia acestora de a funcționa
+independent folosind datele proprii și permite o securizare mai bună a stării interne.
+
+Moștenirea se referă la capacitatea unei clase de a prelua atributele și funcționalitățile unei clase
+deja existente, deși mult mai greu de imaginat în microservicii, moștenirea în microservicii ne permite
+să creăm microservicii ce extind pe cel existent fără a cauza probleme.
+
+Polimorfismul este un concept ce face referire la capacitatea accesarii a unor multiple entități
+prin intermediul unei singure interfețe, în contextul microserviciilor putem spune că un microserviciu
+ar putea să înlocuiască alt microserviciu dacă are aceași interfață de comunicare și duce la
+crearea a unor aceleași rezultate.
+
+Pentru microservicii putem aplica și concepte mai complicate de OOP precum principiile SOLID.
+Principiile SOLID sunt un set de reguli cu scopul de a oferi dezvoltatorilor o metodă de a
+scrie cod, astfel încât acesta să respecte cerințele actuale și să permită dezvoltări/modificări
+ulterioare cu ușurință fără a avea dificultăți cu metodele deja existente. SOLID este un acronim
+iar fiecare literă face referire la un principiu. Principiul responsabilității unice (Single Responsible
+Principle) se referă la necesitatea ca fiecare clasă și metodă să aibă o singură funcționalitate,
+făcând asta reducem complexitatea dar și eventuale redundanțe create prin folosirea aceluiași
+cod în mai multe locuri făcând ca fiecare porțiune din cod să aibă un singur motiv de a exista.
+Principiul Deschis – Închis (Open Close Principle) conduce la faptul că entitățile scrise trebuie să
+fie deschise pentru moștenire dar să nu poată fie modificate, astfel asemănător cu principiul
+anterior, codul deja scris nu va fi afectat întrucât noile modificări se aduc asupra unei porțiuni
+noi. Principiul substituției al lui Liskov (Liskov Substitution Principle) se referă la faptul că clasele
+derivate trebuie să acopere funcționalitățile clasei pe care o moștenesc astfel încât acestea să
+poată să le înlocuiască fără modificări adiționale. Principiul separării interfețelor (Interface
+Segregation Principle), clasele ce implementează interfețe nu ar trebui să implementeze metode
+de care nu au nevoie, astfel dacă este nevoie să adăugăm o metodă nouă unei interfețe aceasta
+trebuie să fie implementată doar de către obiectele care au nevoie, dacă acest fapt nu este
+satisfăcut trebuie ca interfețele să fie separate ca să nu forțăm alte clase să implementeze
+metode noi. Principiul inversării dependințelor (Dependency Inversion Principle) se referă că
+modulele de nivel înalt nu ar trebui să depindă de cele de nivel scăzut, ele trebuie să fie
+abstractizate astfel acestea pot fi modificate în orice moment dacă vrem să aducem un alt modul
+cu funcționalități similare dar cu implementări diferite.\cite{temasolid}
+
+\subsection{Migrarea}
+
+În planificarea urbană există conceptul de dezvoltare pe spațiu verde. Aceasta se referă 
+la dezvoltarea pe un loc în care la momentul începerii lucrărilor este spațiu varde ce nu necesită
+costuri adiționale pentru curățare. Atunci când vrem să construim un sistem bazat pe microservicii
+pornind de la zero, apare acest fenomen. Însă de multe ori există un sistem existent ce ajunge
+la anumite limitări ce fac dorința de trecere către microservicii. Acest lucru face referire la 
+conceptul de dezvoltare pe spatiu maro, adică pe un spațiu post industrial în care există costuri de 
+demolare sau restaurare și ce necesită o atenție mult mai ridicată datorită posibilității alterării
+compoziției pământului ce ar putea să fie toxic.
+
+Migrarea unei aplicații monolitice nu ar trebui să fie făcută cu scopul a obținerii unei aplicații
+formate din microservicii ci pentru că există o funcționalitate ce este împiedicată de a
+funcționa la capacitățile necesare pentru funcționare optimă, astfel migrarea unui sistem 
+monolitic ar trebui să fie făcută incremental și posibil nu complet dacă nu este nevoie.
+
+Începutul migrării ar trebui să fie făcut cu o analiză a sistemului și identificarea dacă 
+avem posibilitatea de a întreține microserviciile, acest lucru înseamnă să avem prezentă infrastructură și
+oameni care să știe să configureze uneltele necesare precum cele de CI/CD pentru a livra cu aceași consistență.
+Ulterior putem analiza sistemul pentru a observa locurile unde se formează coeziune fapt
+ce duce la posibilitatea creării unui microserviciu cu cod grupat. Pentru acest lucru se pot folosi 
+unelte precum CodeScene ce pot identifica porțiunile de cod ce se schimbă împreună. Acest lucru 
+ajută în crearea unui context mărginit și să identificăm modul în care acesta ar funcționa cu exteriorul.
+
+O dată ce identificăm lucrurile ce vrem să le separăm putem separa funcționalități și elementele 
+conținute, UI-ul, backend-ul și baza de date. Am fi tentați să ignorăm o parte din aceste componente
+însă microserviciile funcționează cel mai bine atunci când toate acestea sunt separate prin simplul motiv
+ca chiar daca UI-ul nu este 1:1 cu backend-ul, acestea tot vor fi modificate în același timp. În acest scop,
+există două modalități în care putem face migrarea, pornind de la cod, însemnâand că separăm funcționalitatea
+însă în continuare folosim datele din baza de date monolitică. Acest tip de abordare este destul de simplu,
+întrucât obținem rezultate bune pe termen scurt, însă există limitări întrucât este posibil să nu
+putem separa datele din baza de date, fapt ce înseamnă că munca depusă pentru pentru separare ar fi
+inutilă. Separarea datelor mai întâi se referă la crearea unei baze date separate pentru datele 
+pe care vrem să le folosim, acest tip de abordare aduce mai multe probleme la început întrucât 
+ne face să ne gândim la probleme precum pierderea integrității datelor.
+
+Atunci când facem modificări de tipul acesta trebuie să avem grijă cum orchestrăm schimbările.
+O modalitate ce provine de la un arbust tropical „Strangler Fig” se referă la crearea unui strat
+de intercepție ce verifică dacă funcționalitatea apelată a fost implementată într-un microserviciu,
+și daca este atunci va ruta traficul către microserviciu. Acest tip de implementare permite să nu
+modificăm aplicația monolitică și să putem să ne întoarcem la ea în cazul în care avem probleme.
+De asemenea, dacă datele sunt comune putem folosi load balancing între cele două la nevoie.
+În rularea paralelă, microserviciul și aplicația monolitică funcționează în paralel și ne permite să
+le comparăm ca să ne asigurăm că avem funcționalitatea dorită. Metoda comutatorului ne permite
+să avem cele două sisteme aplicația monolitică și microserviciul să funcționeze în același timp și să 
+comutăm între cele două foarte ușor printr-un proxy.
+
+În momentul în care începem separarea datelor, apar probleme ce nu pot fi prezise cauzate de lipsa
+unei baze de date monolitice. De exemplu, performanța unei baze de date este extrem de bună când este vorba
+de crearea de cereri ce conțin operații de alăturare de tabele, astfel noi trebuie să mutăm aceste operații
+extrem de optimizate în interiorul microserviciilor. O dată cu lipsa unei baze de date comună pentru toate
+tabelele apar problema lipselor de constrângeri, nu ne mai putem baza pe baza de date să 
+forțeze aceste constrângeri și trebuie să verificăm și să tratăm erorile în cazul în care apar erori.
+Tranzacțiile nu mai sunt garantate. O dată cu separarea datelor se pierde ACID-itatatea, o altă problemă 
+a microserviciilor atunci când avem tranzacții distribuite între mai multe microservicii. 
+În funcție de necesități ar fi necesar să rulăm cereri direct în baza de date sau să oferim acces
+către persoane din exterior către aceasta, însă prin conceptul
+de ascundere de informație acest lucru nu ar fi posibil. Ca să rezolvăm această problemă putem crea o copie
+a bazei de date, read only, pe care microserviciul o va popula o data ce populeaza baza de date inițială.
+
+Astfel, migrarea unui sistem monolitic este extrem de dificilă și vor apărea probleme, din acest
+motiv este recomandat să folosim o abordare incrementală în care mutăm funcționalități una câte una,
+acoperindu-ne obiectivul pe care ni-l dorim prin introducerea arhitecturii formate din microservicii.
+
+
+
+
+
+
+
+
+
+
+
