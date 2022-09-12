@@ -1,0 +1,30 @@
+Trecerea de la o aplicație monolitică la una bazată pe microservicii uneori nu este
+ușoară. Unul din principalele motive este o posibilitate de a regândii modul cum accesăm
+anumite elemente. Atunci când totul se află în cadrul unui singur proces, acessarea datelor
+devine mai grea întrucât nu avem acces la ele și uneori nu este rentabil să căutăm după ele.
+Atunci când apelăm o funcție local, timpul necesar pentru executarea acesteia este neglijabil,
+atunci când această funcție trebuie să apeleze un alt microserviciu, lucrurile se complică și
+trebuie decis dacă chiar avem nevoie. Un apel făcut printr-o rețea mereu va avea o întârziere, de asemenea
+cresc locurile în care acesta poate eșua. În dezvoltarea aplicațiilor mobile întrucât 
+ne așteptam ca aplicația să reacționeze la atingeri, nu putem să facem anumite operații pe
+thread-ul principal, acestea pot fi apelarea lucrurilor de pe Internet sau accesarea unei baze
+de date (chiar și dacă este de tipul SQLite3 fiind locală), aceasta pune în perspectivă 
+impactul pe care acest tip de apeluri le pot avea.
+
+Atunci când modificăm modul în care comunică un microserviciu trebuie să avem grijă la modul
+cum ar afecta alte microservicii, sau atunci când acest lucru este necesar trebuie să orchestrăm
+aplicarea acestor schimbări. Un alt concept ce într-o arhitectură monolitică se tratează ușor
+este tratarea erorilor, întrucât toate se întâmplă în același mediu de lucru putem avea o viziune
+asupra ce poate să cadă și în ce mod. Într-un sistem distribuit, pot apărea mai multe tipuri
+de erori care se datorează rețelor, de exemplu crash-uri de microservicii ce necesită resetări,
+erori de omisie de mesaje, când încercăm să apelăm un microserviciu însă acesta nu trimite un răspund,
+în același timp acest răspund poate să fie mult prea rapid și să nu putem să îl recepționăm
+sau prea târziu și să considerăm că nu am primit, dar și erori arbitrare precum unele în care 
+ne așteptăm la un răspund și nu primim ce avem nevoie.
+
+Toate aceste aspecte trebuie tratate atunci când lucrăm cu microservicii, însă fiind vorba
+de o arhitectură paralelă ce oferă independență avem flexibilitatea de a alege ce folosim și ce nu.
+De aceea este important să alegem tehnologii și stiluri de comunicare care oferă 
+performanțele dorite încercând să minizăm timpul de răspuns și tipurile de avarii ce pot apărea.
+
+\subsection{Tipuri de comunicare}
