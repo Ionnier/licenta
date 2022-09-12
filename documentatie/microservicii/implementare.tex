@@ -28,3 +28,18 @@ De aceea este important să alegem tehnologii și stiluri de comunicare care ofe
 performanțele dorite încercând să minizăm timpul de răspuns și tipurile de avarii ce pot apărea.
 
 \subsection{Tipuri de comunicare}
+
+La fel ca în comunicarea între procese sau în cadrul unui proces, există comunicare sincronă
+ce introduce blocare la un anumit nivel și comunicare asincronă ce permite procesele să 
+trateze cererile în momentul în care pot, aducând îmbunătățiri ale perfomanței dar crescând
+dificultatea întelegeri și a modurilor în care aplicația poate cădea.
+
+Cel mai simplu de înteles mod de comunicare este comunicarea sincronă bazată pe cerere și răspuns.
+În cadrul acestuia un microserviciu face o cerere(indiferent de formă) către un alt microserviciu și așteaptă
+un răspuns. Acest scenariu este extrem de familiar, semănând cu cererile către o bază de date sau către
+un API extern, ceea ce le face ușor de implementat însă nu este o tactică eficientă în cadrul unui sistem distribuit
+întrucât aduc dezavantaje precum apariția acestui blocaj, creșterea latenței dar și apariția
+acestui cuplaj temporar întrucât se poate întâmpla ca unul dintre microservicii să nu fie același
+ca cel care a răspuns întrucât a fost necesară o resetare. Acest tip de comunicare poate fi folosită
+pentru microservicii simple dar trebuie evitat crearea unui șir întreg de cereri întrucât crește
+timpul total de răspuns dar și apariția unui eșec în cascadă.
