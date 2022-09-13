@@ -43,3 +43,31 @@ acestui cuplaj temporar întrucât se poate întâmpla ca unul dintre microservi
 ca cel care a răspuns întrucât a fost necesară o resetare. Acest tip de comunicare poate fi folosită
 pentru microservicii simple dar trebuie evitat crearea unui șir întreg de cereri întrucât crește
 timpul total de răspuns dar și apariția unui eșec în cascadă.
+
+Însă, o arhitectură paralelă are posibilitatea creării a unui tip de comunicare asincronă ce
+nu blochează funcționarea microserviciilor, adică ele nu așteaptă un răspuns direct. Avantajul
+unui tip astfel tip de comunicare este posibilitatea tratării operațiunilor ce ar dura mai mult 
+întrucât se elimină conceptul de cuplare temporară. Dezavantajul este creșterea nivelului de complexitate
+și creșterea dificultății de monitorizare și de a manevra erorile, însă ar trebui să fie 
+utilizată atunci când avem procese de lungă durată sau pentru a comunica cu mai multe microservicii 
+în același timp.
+
+Cel mai simplu mod de a implementa comunicarea asincronă este crearea de resurse partajate.
+Un microserviciu adaugă date, fie într-o locație de stocare, adăugăm un fișier sau la o bază de date
+adăugăm alte date, iar celelalte microservicii ce vor să acționeze în urma primirii acestei informații
+doar verifică apariția de date noi, iar atunci când apare o prelucrează. Dezavantaje includ
+necesitatea tratării cazurilor în care microserviciile ce scanează sunt căzute, iar în momentul
+în care vor reveni sunt nevoie să trateze date noi dar și faptul că se realizează o formă
+de cuplare asupra domeniului partajat. Această formă de comunicare poate fi folosită atunci 
+când suntem restricționati de tehnologiile folosite, întrucât orice tip de sistem poate să
+citească date dintr-un fișier dar și atunci când vrem să trimitem un volum de date ridicat.
+
+Un alt tip de comunicare este cel sub formă cerere-răspuns, acesta poate fi sincron sau asincron.
+În mod blocant, microserviciul ce face cererea va astepta un răspuns iar în funcție de acesta 
+își va continua activitatea. În mod asincron, se va proceda în mod asemănător însă de data aceasta nu se
+va mai aștepta un răspuns, sau cel puțin nu unul cu informația cerută. Acest lucru este mai dificil,
+întrucât pentru a răspunde cererii, microserviciul trebuie să trimită unui microserviciu
+specific răspunsul creat și există posibilitatea ca microserviciul ce inițiază cererea să
+nu mai existe astfel am putea încerca ca orice microserviciu să poată să trateze orice cerere.
+Putem folosi acest mod de implementare atunci când avem nevoie să avem o confirmare la 
+cererile făcute și de asemenea este destul de ușor de implementat, cel puțin varianta blocantă.
