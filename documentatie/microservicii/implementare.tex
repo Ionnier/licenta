@@ -103,7 +103,7 @@ Deși comunicarea asincronă aduce îmbunătățiri în decuplarea sistemelor ș
 greu de depanat, astfel avem nevoie de monitorizare și moduri de identificare a modului
 evoluției cererii implementate corespunzător.
 
-\subsection{Tehnologii}
+\subsection{Tehnologii de comunicare}
 
 Am menționat anterior că microserviciile ne cumpără flexibilitate, însă din acest motiv avem
 și mai multe probleme întrucât mereu când alegem un tip de tehnologie trebuie să limităm
@@ -186,3 +186,58 @@ binară. În general, putem trimite sub formă text adică JSON sau XML însă d
 să eficientizăm viteza atunci va fi necesar să encodăm mesajele trimise și să le trimitem sub
 formă binară însă acesta nu este un proces ce ar aduce suficient de multe îmbunătățiri.
 
+Atunci când am vorbit de comunicarea între microservicii am menționat importanța creării
+unei interfețe sau a unei scheme pentru a afișa modul cum comunică microsericiul cu exteriorul.
+Acest lucru permite consumatorilor să știe la ce să se aștepte și să implementeze mult mai 
+ușor crearea legăturii iar pentru cei ce administrează microserviciul ar cunoaște ce 
+câmpuri sunt expuse și ce trebuie să facă. Deși unele tehnologii necesită prezența unei
+scheme sub o formă sau alta, schemele ne ajută și în crearea unei documentații consistente
+ce ajută la implementare. Cu ajutorul unei scheme putem găsi probleme mult mai ușor, asemănător
+cu modul în care funcționează limbajele de programare ce necesită specficarea unui tip
+atunci când declarăm variabile și limbajele interpretate ce pot avea orice valoare, 
+avem un nivel în plus de siguranță, cel la nivelul la compilare, astfel într-un limbaj
+în care acest tip de verificare ar lipsii, unele probleme apar doar în producție. Atunci când
+trebuie să modificăm o schemă aceasta se poate face în doua feluri, structural când câmpurile se schimbă,
+astfel clienții trebuie sunt nevoiți să administreze noul câmp, sau semantice atunci când câmpul
+nu își schimbă numele însă modul de calculare este diferit. Acest ultim tip este destul de periculos
+întrucât este ușor de ignorat dacă nu apar probleme evidente. În general este recomandat să 
+creăm scheme de tipul acesta, mai ales dacă microserviciile sunt deținute de echipe diferite, 
+în cazul acesta nivelul de comunicare dintre cele două este îmbunătățit iar problemele sunt
+rezolvate mult mai ușor.
+
+\subsection{Schimbări în funcționalitate}
+
+Atunci când este vorba de microservicii, este inevitabil ca funcționalitatea acestora să
+se schimbe la un moment dat, iar în cazul cel mai fericit în care cuplarea și coeziunea sunt favorabile,
+atunci cel mai probabil nu trebuie să modificăm alte microservicii, însă de multe ori acesta nu este
+cazul.
+
+O primă parte sunt metodele de evitare ale acestor probleme, cel mai simplu prin asigurarea
+că funcționalitatea microserviciului nu este schimbată ci doar se adaugă funcționalitate. De asemenea,
+putem implementa în consumatori ca aceștia să fie mai toleranți și să încerce să își găsească 
+datele de care au nevoie chiar dacă se schimbă schema, acest lucru se poate face și prin prelucrarea
+strictă a câmpurilor de care avem nevoie și nu de întreg fișierul. Putem folosi tehnologii care să
+permită adaptare ușoară, de exemplu atunci când serializăm un obiect in Java acesta are o anumită
+versiune, însă dacă modificăm obiectul adăugând un câmp această versiune s-ar schimba deși 
+câmpurile de care am avea nevoie ar rămâne la fel, acest lucru creând o incompatibilitate, însă
+dacă am folosi ceva asemănător cu HATEOS ar fi mult mai ușor de adaptat fără nicio modificare.
+Este important ca orice modificare adusă datorită unei schimbări în funcționalitatea unui microserviciu
+să fie prinsă cât mai rapid, de asta sunt importante testele iar cu ajutorul schemelor definite 
+explicit putem folosi diferite unelte ce pot valida diferențe între modificări la nivelul 
+protocoalelor, schemelor sau a specificiațiilor OpenAPI.
+
+Însă uneori este imposibil să mitigăm toate problemele și este nevoie să adăugăm schimbări pe care
+și alte microservicii sunt obligate să le facă, astfel apar dificultăți în orchestrarea ordinii acestor schimbări.
+Una dintre soluții este anunțarea schimbărilor pe care vrem să le facem și să lăsăm toți consumatorii 
+să lanseze versiuni noi ce tolerează schimbările și după aceea să lansăm varianta schimbată.
+Acest lucru nu este în general suficient întrucât datorită modului de planificare aceste 
+apariția acestor schimbări în consumatori poate să fie destul de lentă. O altă metodă 
+de administrare a schimbărilor este de a lansa două servicii în paralel, una ce conține 
+modificările și una care nu le conține pentru microserviciile care încă nu s-au adaptat.
+Acest lucru este de evitat din același motiv ca precedentul dar și faptul că crează multe 
+dificultăți să ai mai multe servere de același timp lansate. De asemenea se poate păstra
+versiunea veche și doar crearea unei noi versiuni a endpoint-ului. Versiunile mai vechi
+pot fi schimbate să fie compatibile cu versiunea nouă și eventual retrase când suntem siguri că
+toți clienții au primit modificările necesare. Acest lucru se poate face prin monitorizarea traficului
+pe interfață. Acesta este tipul preferat de adus schimbări întrucât este cel mai convenabil pentru
+consumatori dar și pentru server.
