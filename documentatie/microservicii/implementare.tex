@@ -71,3 +71,118 @@ specific răspunsul creat și există posibilitatea ca microserviciul ce iniția
 nu mai existe astfel am putea încerca ca orice microserviciu să poată să trateze orice cerere.
 Putem folosi acest mod de implementare atunci când avem nevoie să avem o confirmare la 
 cererile făcute și de asemenea este destul de ușor de implementat, cel puțin varianta blocantă.
+
+Una dintre comunicările reprezentative pentru microservicii este cea făcută prin evenimente,
+este asincronă în natură și se bazează că atunci când în cadrul unui microserviciu 
+se întâmplă un lucru pe care consideră că ar trebui să îl comunice în exterior, acesta 
+emite un eveniment cu diferite informații astfel celelalte microservicii pot asculta
+iar în momentul primirii acestea vor reacționa independent. Este un opus al modelului anterior
+întrucât în acest tip de comunicare, în general, nu avem cunoștințe dacă evenimentul a ajuns
+către celelalte părți sau dacă cineva ascultă pentru acest tip de evenimente
+ci eventual dacă a fost procesat de către Event Bus. Comunicarea prin evenimente oglindește
+modul de organizare al unor echipe autonome din cadrul companiilor, acestea anunță atunci 
+când produc un rezultat nou și nu primesc feedback direct dacă s-a acționat după mesajul lor
+în mod implicit, întrucât comunicarea poate fi un mail general la o listă de abonați, aceștia
+ar primi doar confirmarea că serverul ce procesează mail-urile a validat cererea. Implementarea
+constă în crearea unei metode de a trimite evenimente și de a recepționa. Un prim mod
+este folosirea de programe specializate precum Apache Kaftka sau RabbitMQ ce livrează 
+platforme dar și implementări pentru ambele probleme ce vin cu avantajul că toate problemele
+care le-am avea precum garantarea livrării și permit scalare însă sunt un sistem în plus de 
+administrat. Un alt mod de implementare include folosirea specificatiilor declarate in
+Atom pentru a crea un flux web de resurse ce poate fi folosit pentru a trimite și consuma
+evenimente însă nu oferă latență mică. În general, ar fi bine să nu implementăm comunicarea
+prin evenimente de la zero întrucât este dificil de administrat și sunt multe probleme greu de
+tratat, de aceea putem folosii produse existente. Avantajul unui astfel tip de comunicare
+este posibilitatea ca un eveniment sa fie tratat de mai multe microservicii in acelasi timp,
+astfel evenimentul trebuie să conțină informații suplimentare pentru ambele microservicii,
+deci apare riscul de a distibui mai multe informații ceea ce induc diferite probleme de securitate,
+astfel putem folosii acest tip de arhitectură acolo unde putem profita de acest avantaj.
+
+Deși comunicarea asincronă aduce îmbunătățiri în decuplarea sistemelor și în timpul de răspuns
+în cazul în care vrem să comunicăm cu mai multe evenimente acesta aduce complexități ce devin
+greu de depanat, astfel avem nevoie de monitorizare și moduri de identificare a modului
+evoluției cererii implementate corespunzător.
+
+\subsection{Tehnologii}
+
+Am menționat anterior că microserviciile ne cumpără flexibilitate, însă din acest motiv avem
+și mai multe probleme întrucât mereu când alegem un tip de tehnologie trebuie să limităm
+dezavantajele și în același timp să maximizăm avantajele pe care le poate aduce. Astfel putem să alegem
+tehnologii mai vechi care au fost testate dar limitate sau tehnologii noi care promit că aduc îmbunătățiri
+dar e posibil să nu fie lipsite de erori ce s-ar rezolva în timp.
+
+Când alegem o tehnologie, trebuie să avem grijă că aceasta trebuie să fie compatibilită cu
+serviciile pe care le avem, de asemenea trebuie să nu ne limiteze în alegerea tehnologiilor viitoare.
+În acest scop modul de comunicare al microserviciilor ar trebui să fie clar definit întrucât 
+nu putem fi siguri ce elemente sunt folosite și care nu. De asemenea tehnologia aleasă
+nu ar trebui să inhibe comunicarea cu alte microservicii.
+
+Remote procedural call (RPC) (Apel procedural la distanță) este un mod de apelare de funcții local
+însă care se execută într-un serviciu la distanță. Pentru a face asta posibil sunt necesare 
+definirea unor scheme explicite precum SOAP sau gRPC definite ca limbaje de definit interfețe
+(interface definition language). Definirea unor scheme explicite face ca folosirea tehnologiilor
+diferite să fie mai ușoară însă dacă nu vrem să folosim astfel de scheme putem folosi Java RMI
+care necesită folosirea aceleași tehnologii însă fără schemă definită. Folosind o astfel de tehnologie
+ne permite generare de cod pe care clientul le poate folosi pentru a comunica cu serverul 
+făcând implementarea pe partea clientului mai ușoară întrucât nu trebuie să facă ceva în mod special.
+Limitările acestei tehnologii reprezintă restricționarea tehnologiilor folosite (mai ales în cazul
+Java RMI) însă celelalte menționate funcționează cu diferite tehnologii. Ascunderea faptului
+că prin aceste metode se face un apel peste Internet poate fi înșelător și ascunde complexitatea.
+De asemenea atunci când producem modificări asupra codului serverului trebuie să generăm codul
+pentru client, însă dacă adăugăm sau eliminăm câmpuri din interiorul funcțiilor, clientul trebuie 
+să facă mai multe modificări deși el poate să nu folosească acele părți din cod. Acest tip de abordare
+este potrivit pentru comunicarea blocantă între doua sisteme asupra căruia știm când se modifică lucrurile și 
+în ce fel, astfel cunoaștem cât de multe modificări vor trebui să fie făcute.
+
+Representational State Transfer (REST) prin HTTP, în acest tip de arhitectură avem definite 
+niște resurse ce pot fi accesate prin link-uri sub diferite forme ce permite identificarea și
+modificarea acestora în funcție de modul de accesare. Acest tip de abordare funcționează 
+foarte bine cu verbele HTTP predefinite (GET, POST, UPDATE) întrucât știm la ce comportament 
+ne putem aștepta indiferent de resursa pe care o accesăm. Faptul că folosim HTTP ne permite să
+folosim toate elementele dezvoltate pentru a îmbunătății sistemul precum caching, echilibrări de trafic,
+unelte de monitorizare existente dar și elemente de securitate precum autentificare și certificate.
+O altra trăsătură adusă în REST este Hypermedia as the engine of application state (HATEOS) ce permite
+să nu cunoaștem întreg URI-ul către resursă ci doar cel de început. O dată intrat pe prima intrare,
+aceasta va afișa alte intrari pe care putem intra și ce am putea accesa dacă intrăm pe ele. Acest lucru
+este util pentru că nu trebuie să definim niște căi explicite ci acestea pot fi căutate însă
+pentru a face asta cresc numărul de cereri pe care trebuie să le faci doar pentru a executa o
+singură comandă. Atunci când folosim această tehnologie nu avem o modalitate simplă de a crea
+librării pe care clienții serverului le pot folosi, din acest motiv s-a creat specificația
+OpenAPI din Swagger ce permite ca din anumite informații să generezi automat o documentație 
+dar și cod pentru o varietate de limbaje însă nu a fost adoptat la fel de mult întrucât 
+ar fi dificil de implementat pentru proiectele existente. Prin acest format putem trimite o
+varietate de formate de date însă din cauza cerințelor adăugate de HTTP atunci când creăm o cerere
+ar putea să împiedice performanțe ridicate atunci când nu avem date multe de trimis. Putem folosi
+acest mod de comunicare cam în toate situațiile în care avem nevoie de comunicare unu la unu între
+servicii, fiind un stil comun de comunicare este suportat de majoritatea tehnologiilor 
+deci ne garantează ca am avea compatibilitate.  
+
+Ambele tipuri de apeluri au aceași problemă, în unele cazuri ar trebui să facem mai multe 
+apeluri pentru aceași resursă întrucât nu avem suficiente date, sau în cazul în care un 
+câmp dintr-o cerere se schimbă acesta ne-ar forța să modificăm în mai multe locuri. Astfel de probleme
+sunt rezolvate de GraphQL ce permite să specificăm exact ce câmpuri avem nevoie fără a fi nevoie
+să facem mai multe cereri. Deși ar ușura cererile la nivelul clientului, dezavantajele apar 
+la server, în primul rând acesta este un Query Language, deci dacă cererea este complicată
+atunci server-ul va trebui să o proceseze, dacă se adună multe cereri de tipul acesta
+ar scădea performanța. De asemenea, întrucât de fiecare dată se face un query, caching-ul 
+este mai dificil de realizat și nu poate fi folosit la fel de eficient pentru a scri informații.
+
+În arhitectura bazată pe evenimente putem folosi agenți de mesaje (Message Brokers), 
+aceștia funcționează ca un intermediar pentru comunicațiile între microservicii, astfel în loc
+să comunice direct acestea comunică prin intermediar trimițând orice tip de mesaje.
+Acestea oferă diferite facilități în modul în care trimit mesaje, printr-o coadă în care
+se pun mesajele iar consumatorii doar preiau direct din coada aceasta sau prin topică ce permite
+consumatorilor să se aboneze la un anumit tip de mesaj iar atunci când un mesaj vine ce îndeplinește
+criteriul, acesta va fi trimis la toți abonații. Principalul motiv pentru care am folosi o astfel
+de tehnologie este pentru că oferă diferite caracteristici care ar fi greu de implementat
+precum garanția livrării, astfel dacă nu există nici-un microserviciu care să accepte un mesaj,
+atunci el va fi livrat la primul care va fi disponibil să prelucreze acel mesaj. Alte caracteristici
+includ garantarea ordinei în care mesajele sunt primite sau să îți permită să trimiți același 
+mesaj către mai multe topice.
+
+Asupra acestor diferite moduri de comunicare apar diferite moduri de a trimite un mesaj, 
+referindu-ne la compoziția acestora. Astfel, acestea pot fi sub formă de text sau sub formă
+binară. În general, putem trimite sub formă text adică JSON sau XML însă dacă o să ne intereseze
+să eficientizăm viteza atunci va fi necesar să encodăm mesajele trimise și să le trimitem sub
+formă binară însă acesta nu este un proces ce ar aduce suficient de multe îmbunătățiri.
+
