@@ -241,3 +241,62 @@ pot fi schimbate să fie compatibile cu versiunea nouă și eventual retrase câ
 toți clienții au primit modificările necesare. Acest lucru se poate face prin monitorizarea traficului
 pe interfață. Acesta este tipul preferat de adus schimbări întrucât este cel mai convenabil pentru
 consumatori dar și pentru server.
+
+\subsection{Partajare între microservicii}
+
+Unul dintre cele mai simple concepte de programare ce aduce îmbunățiri în scrierea
+codului este DRY, „Să nu te repeți” (Don't Repeat Yourself) acesta la prima vedere 
+are ca sens să nu duplici codul întrucât dacă ar trebui să schimbi o funcționalitate
+e posibil să fie nevoie să modifici în mai multe locuri din cadrul sistemului ceea ce face
+ca modificările să fie mai greu de făcut.
+
+În universul microserviciilor, acestea sunt separate din natură, astfel repetarea codului 
+în cadrul mai multor microservicii este inevitabilă, de asta am fi tentați să creăm librării
+comune (de exemplu pachete de NPM sau dependințe în Maven) însă chiar dacă inițial ar fi mai ușor de scris
+acest lucru generează o cuplare ridicată între aceste sisteme deoarece atunci când o librărie comună
+este actualizată atunci sistemele trebuie să implementeze versiunea nouă, însă nu de multe ori este
+posibil acest lucru întrucât nu toate microserviciile ar putea fi actualizate în același timp,
+în acest scop trebuie să înțelegem că librăria creată de noi va fi consumată sub forma unor 
+versiuni multiple de clienți diferiți.
+
+Un mod avansat de a folosi diferite microservicii este crearea unei librării pentru acel microserviciu
+pe care mai târziu o oferim altor consumatori. Când este vorba de echipe mici, este dificil de implementat
+întrucât logica de server ar trebui să fie diferită de logica ce se găsește în librăria de client,
+când libraria ar trebui să funcționeze ca o abstractizare al API-ului pe care îl oferă microserviciul, astfel
+e indicat ca cele două să fie separate. La fel ca librăriile trecute trebuie să ne obișnuim cu ideea
+că librăria va fi consumată în mai multe versiuni.
+
+Când lansăm microservicii trebuie să ne asigurăm că acestea pot să comunice între ele. Acest lucru,
+în general, este dificil de implementat întrucât microserviciile pot rula pe servere care dispar și
+apar din nou constant, mai ales când e vorba de infrastructură oferită ca serviciu. Sisteme de 
+orchestrare precum Kubernetes ne oferă o metodă simplă de configurare a microserviciilor ce se află
+într-un singur cluster însă atunci când introducem mai multe, devine mai complicat. Însă chiar și așa
+nu ne putem baza pe serviciul de orchestrare să ne facă legătura întrucât dacă avem un număr 
+mic de microservicii nu ar fi suficient de rentabil să rulăm o astfel de tehnologie.
+
+O metodă simplă folosită și pentru Internet este Domain Name System (Sistem de nume de domeniu)
+prescurtat DNS. Acesta ne permite să asociem unui IP un nume, astfel nu ar trebui să cunoaștem exact
+IP-ul sistemului cu care vrem să comunicăm ci doar numele acestuia. Avantajele acestei metode este
+familiaritatea tuturor persoanelor cu acest lucru, din acest motiv ansamblarea unui sistem nu ar 
+trebui să fie grea, însă în cadrul microserviciilor apar mai multe probleme datorită faptului că
+acestea pot să fie înlocuite mereu de instanțe noi. Fiecare intrare de DNS are o perioadă în care
+nu este actualizată (Time to live - TTL), și poate fi cached sub diferite forme. Din acest motiv 
+putem opta pentru varianta în care păstrăm în DNS doar calea către un load-balancer sub care 
+se află microserviciile de care avem nevoie, însă această solutie aduce problema în care nu știm 
+exact cu cine comunicăm iar dacă unul din ele are probleme acesta nu va fi evitat.
+
+Limitările DNS-ului au adus la apariția tehnologiilor sub nume de Regiștrii dinamice de servicii
+Dynamic Service Registries ce presupune ca microserviciul să fie cel care se înregistrează
+la un serviciu central iar pentru ceilalți ce vor să îl acceseze vor lua intrarea din cadrul
+acestui centru. Astfel de sisteme includ ZooKeeper ce necesită rularea mai multor noduri 
+într-un cluster ce poate funcția ca un sistem de configurare și permite crearea unei ierarhii
+în care se pot insera, modifica și interogra noduri sub diferite forme. Consul este asemănător 
+cu tehnologia precedentă însă are mai multe facilități printre care include o interfață
+RESTful prin HTTP ce face integrarea cu diferite tipuri de tehnologii mult mai ușoară 
+sau prin faptul că se pot genera fișiere de configurare ce vor fi actualizate în timp real, ceea
+ce permite ca programul să nu interacționeze cu Consul. O altă metodă am menționat-o anterior,
+adica prin Kubernetes, modul în care lucrează acesta este că prin faptul că microserviciile 
+sunt lansate prin aceasta platformă, aceasta poate să înregistreze modul în care a evoluat
+și să își păstreze un serviciu ce poate identifica locația pod-urilor lansate prin el.
+Kubernetes oferă multe servicii fără nicio configurare ce permite să evităm platforme dedicate
+ca cele două menționate anterior 
