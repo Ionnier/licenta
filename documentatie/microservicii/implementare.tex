@@ -299,4 +299,55 @@ adica prin Kubernetes, modul în care lucrează acesta este că prin faptul că 
 sunt lansate prin aceasta platformă, aceasta poate să înregistreze modul în care a evoluat
 și să își păstreze un serviciu ce poate identifica locația pod-urilor lansate prin el.
 Kubernetes oferă multe servicii fără nicio configurare ce permite să evităm platforme dedicate
-ca cele două menționate anterior 
+ca cele două menționate anterior.
+
+Serviciile Cloud în general se împart în regiuni ce oferă servicii. În cadrul acelor regiuni
+putem avea mai multe resurse ce ar fi grupate sub același centru. Putem definii ca trafic
+Nord-Sud, traficul ce se află în afara centrului de date (de exemplu clienți) și 
+Vest-Est traficul ce se produce în interior.
+
+Pentru a facilita comunicarea Nord-Sud există conceptul de API Gateway (Pasarelă API) ce 
+funcționează ca un intermediar între persoanele din exterior ce vor să acceseze microserviciile 
+din interior. Un segment de piață care s-a dezvoltat recent este acela de a monetiza
+API-uri create prin diverse metode precum abonamente cu un număr limitat de cereri. Când 
+vrem să oferim un astfel de serviciu apariția unui intermediar ce poată să îndeplinească
+diferite facilități precum monitorizare, limitare de trafic sau funcționarea ca un reverse 
+proxy și poate să ofere un fel de panou de cantrol, însă în general este folosit de către
+companii pentru a-și accesa microserviciile din aplicațiile dezvoltate, acest lucru se 
+întâmplă pentru că în general un API Gateway este destul de complex și uneori nu avem
+nevoie de toată funcționalitatea pe care ne-o oferă, de asemenea pot să fi și alte
+soluții care să fie mai eficiente. De exemplu, dacă vrem să externalizăm microservicii ce
+rulează în Kubernetes putem folosi soluții precum Ambassador. Dacă vrem un API Gateway
+întrucât ne așteptăm la mult trafic, atunci probabil nu avem nevoie de ceva central ci de mai multe.
+Un API Gateway poate funcționa însă trebuie să știm dacă se pliază cu funcționalitatea de care
+avem nevoie și să folosim alte tehnologii mai specializate dacă nu găsim.
+
+Comunicarea Vest-Est se poate îmbunătății folosind Service Meshes, aceasta îmbunătățește 
+comunicarea între microservicii prin adăugarea unui proxy, astfel microserviciile nu ar comunica
+direct ci fiecare ar avea propriul proxy cu care comunică iar acestea vor comunica între ele.
+Ele sunt administrare de servicii de control și îmbunățește traficul întrucât proxy-urile 
+pot fi în aceași rețea locală. Acest lucru simplifică dezvoltarea întrucât microserviciile
+doar fac cereri normale însă defapt sunt rutate de către proxy. Deși utile, acestea induc multă
+complexitate în infrastructură ceea ce e bine să fie evitată.
+
+Îmbunătățirea metodelor de comunicare între microservicii nu este suficientă pentru a
+crea un sistem complet pentru care este ușor să dezvoltăm. Am menționat importanța schemelor
+explicite, acestea au ca rol îmbunătățirea comunicării capabilităților unui unct de acces prin
+prezentarea schemei însă nu este suficient, de asta e necesară documentație explicită.
+Standardul OpenAPI este eficient în crearea eficientă a documentației combinând cu Ambassador
+pentru Kubernetes poate să descopere atuomat puncte de accest OpenAPI și să afișeze 
+documnetația automat. Documentația pentru comunicarea bazată pe evenimente nu este la fel de 
+dezvoltată însă avem opțiuni precum AsyncAPI sau CloudEvents.
+
+Atunci când avem multe sisteme devine din ce in ce mai greu să cunoaștem exact ce face fiecare sistem,
+de asta e important să știm starea fiecăruia. Folosind ID-uri de corelare pentru tranzacții
+putem să vedem modul cum interacționează. Folosind servicii de descoperire precum Consul
+putem să vedem unde rulează microserviciile, OpenAPI ne arată ce capabilități are fiecare sistem
+și sistemele de monitorizare ne arată starea sistemelor. Toate informațiile acestea sunt
+disponibile prin intermediul diferitelor API-urilor de care dispunem atunci când folosim aceste
+tehnologii. De asta este destul de important să avem pagini dedicate care se actualizează 
+în timp real ce arată nu doar documentația microserviciiliro ci și starea acestora.
+O astfel de unealtă a fost construită la Financial Times, Biz Ops, ce oferă starea întregului
+sistem și calculează pentru fiecare o metrică ce ar indica dacă acestea au nevoie de 
+schimbări. Astfel de unelte există disponibile și liber, precum Backstage de la Spotify.
+
