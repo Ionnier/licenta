@@ -351,3 +351,32 @@ O astfel de unealtă a fost construită la Financial Times, Biz Ops, ce oferă s
 sistem și calculează pentru fiecare o metrică ce ar indica dacă acestea au nevoie de 
 schimbări. Astfel de unelte există disponibile și liber, precum Backstage de la Spotify.
 
+O arhitectură distribuită ne permite creșterea eficienței prin distribuirea sarcinilor către
+mai multe sisteme de calcul. Într-o aplicație monolitică putem să obținem performanțe mai bune
+prin eficientizarea algoritmilor, prin folosirea thread-urilor în interiorului sau prin
+crearea unor procese copil, însă toate acestea rulează sub un singur procesor, ceea ce înseamnă
+că indifierent că se întâmplă aproximativ concurent, nu este chiar în totalitate. Însă
+cu ajutorul microserviciilor, acest lucru este posibil.
+
+Însă atunci când apare un lanț lung de instrucțiuni, înseamnă că sunt multe puncte în care
+acesta se poate întrerupe și să aibă nevoie să se facă o analiză a lucrurilor care s-au întâmplat
+și să se întoarcă la o versiune sigură. Acest concept apare în contextul prezenței unei baze de date,
+în general relaționale însă există și versiuni care nu sunt relaționale care promit același lucru.
+O tranzacție reprezintă un grup de instrucțiuni ce ar trebui să se execute împreună, dacă
+una din ele eșuează din diverse motive, atunci toate acestea sunt anulate și ne întoarcem 
+la un punct de recuperare de la începutul tranzacției. Acest lucru se referă la „aciditatea”
+bazei de date ce fac parte din acronimul „ACID” ce reprezintă un set de proprietăți 
+ce se referă la consistența datelor dintr-o bază de date. Consistența se referă că în cadrul
+unei operațiuni cu baza de date, la finalul acesteia este lăsată într-o stare validă pe 
+care se poate continua să se execute operațiuni. Izolarea se referă ca multiple tranzacții
+se pot întâmpla în același timp fără ca cealaltă sa fie afectată, acest lucru este asigurat
+de separare stărilor intermediare către o altă tranzacție. Durabilitatea se referă că la finalul
+unei tranzacții, datele nu sunt pierdute dacă sistemul cade.
+
+În cadrul unui sistem format din microservicii, putem avea tranazacții de tipul acesta,
+în general atunci când microserviciul interacționează cu datele din baza de date proprie,
+iar microserviciul are control complet asupra acestora. Problemele apar atunci când 
+modificările trebuie să fie făcute în cadrul mai multor microservicii în același timp
+iar asupra acestora să rămână proprietățile ce oferă consistența datelor. Acesta este un
+lucru mai dificil de implementat și e nevoie de mai mulți pași pentru a avea un comportament
+asemănător ca în cadrul unui sistem monolitic.
