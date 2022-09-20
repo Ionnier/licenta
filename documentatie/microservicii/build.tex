@@ -1,0 +1,94 @@
+Partea de construire a executabilului este o parte importantă din dezvoltare. Pentru limbajele
+compilate este un moment în care putem să vedem dacă avem erori ce în general sunt destul de minore
+însă sunt prinse încă de la începutul rulării ceea ce ne permite să le rezolvăm rapid, având
+feedback aproape instant de la compilator.
+
+În aplicațiile monolitice, crearea executabilului este destul de ușoară întrucât există 
+un singur produs ce se află într-un singur loc ce trebuie să fie lansat, 
+astfel avem un număr de executabil minim. În contextul microserviciilor, 
+fiecare microserviciu are „executabilul” propriu, însă lucrurile se complică 
+atunci când luăm in considerare că fiecare microserviciu are și o bază de date locală pentru el,
+astfel aceasta trebuie să vină la pachet și să fie configurată și executată.
+
+Un concept devenit standard este integrarea continua („Continious Integration”) - CI, aceasta
+presupune ca atunci când lucrăm într-o echipă, codul cu care lucrăm să fie mereu merge-uit
+într-un loc central pe care se rulează teste automate pentru a verifica că nu există probleme
+la integrare, iar dacă există atunci acestea ar trebui să fie principala prioritate. Acest 
+concept își are baza în Agile și partea în care vrem ca mereu produsul să fie într-o stare
+în care poate fi livrat. CI-ul presupune să avem artefacte create din codul ce este merge-uit,
+astfel beneficiem de un istoric al build-urilor ce ne permite să testăm pe versiuni anterioare
+în cazul în care apar probleme.
+
+Necesarul pentru un sistem de CI eficient este să integrăm codul frecvent, ideal zilnic,
+pentru a putea valida că codul rulează bine împreună, acest lucru făcându-se prin teste automate
+pentru a asigura că modificările aduse nu aduc schimbări de comportament, fiind validat 
+prin teste dar și corectarea codului ce face ca testele să nu funcționează, acest lucru este necesar
+întrucât cu cât mai multe modificări aducem unui produs într-o stare stricată, va fi mai dificil 
+de depanat.
+
+Un mod de dezvoltare a caracteristicilor noi este de a crea branch-uri separate pentru fiecare.
+Dacă cerința pe care încercăm să o dezvoltăm necesită mult timp, asta înseamnă că nu o să integrăm
+codul decât la finalizare, ceea ce nu este în corcodanță cu principiul integrării frecvente.
+Astfel, e mai indicat să fie un singur branch în care cei care dezvoltă adaugă schimbări frecvent
+ceea ce evită problemele de integrare, frecvent numit și „trunk-based development”, însă nu este
+perfect întrucât modificările făcute de alții sunt mai puțin vizibile, întrucât pull-request-urile sunt 
+făcute ca o atenționare asupra modificărilor care vor apărea în cod, din acest motiv
+problema cea mai mare este să așteptăm primirea acceptului la pull-request-urile lansate.
+
+Integrarea continuă se face prin intermediul pipeline-urilor care sunt configurate prin 
+intermediul anumitor unelte care sunt făcute special ca să îndeplinească aceste cerințe,
+în cadrul lor se rulează mai multe etape în care se face o parte din procesul de construire al
+artefactului. Acestea sunt definite cu ajutorul aplicației de CI. Cel mai important pas
+este cel în care se rulează testele. În general este bine ca testele care rulează repede
+să fie executate la început întrucât cu cât feedback-ul pipeline-ului este mai rapid, cu atât
+fixarea lui va fi mai rapidă. În cadrul pipeline-ului se crează un artefact asupra căruia
+se vor executa restul pașilor.
+
+Un alt aspect de considerat este modul de organizare al codului sursă, când avem o aplicație
+monolitică aceasta nu are motiv să fie despărțită în mai multe repo-uri, însă în cadrul microserviciilor
+avem opțiuni.
+
+Cea mai simplă alegere este să nu facem nimic special și doar să punem toate microserviciile
+într-un singur director, iar la final avem un singur build. Din punctul de vedere al unui operator,
+acesta trebuie să lanseze cod și să configureze un singur loc, iar un dezvoltator indiferent
+de cât de multe microservicii ar schimba, acesta face un singur commit. Însă o astfel de arhitectură
+face lucrurile simple la început dar complicate la final. Având un singur build, timpul pentru feedback
+crește întrucât se pot rula teste și pentru microservicii care nu sunt schimbate. De asemenea,
+nu știm ce microservicii ar trebui să fie lansate și care nu întrucât la final ce ne face
+să lansăm totul în același timp. Astfel, putem să începem cu o astfel de organizare însă
+dacă vrem să avem un sistem de succes, eventual va trebui să avem o altă abordare.
+
+Într-o arhitectură distribuită formată din mai multe programe, probabil primul gând ar fi să
+avem o sursă pentru fiecare microserviciu, numit și multirepo este un mod de organizare
+în care fiecare dintre acesta are spațiul și pipeline-ul propriu, astfel se produce 
+o separare foarte ușoară între organizare și se cunosc echipele ce lucrează la fiecare
+microserviciu. Însă simplitatea acestei separări aduce probleme în alte părți. Reutilizarea
+codului devine mai complicată, întrucât fiecare microserviciu va depinde de librării
+specializate, dacă microserviciul de la care pornește această librărie face o extensie 
+atunci pentru a lansa caracteristicile noi trebuie să așteptăm ca microserviciile ce implementează
+librărie să aducă o versiune actualizată. Arhitecturile distribuite contribuie la un tot unitar,
+deci uneori o modificare trebuie să fie făcută în cadrul mai multor microservicii, în acest caz
+trebuie să avem acces la ambele repo-uri, să facem commit-urile în ambele și după să actualizăm
+și UI-ul ce consumă aceste microservicii. Dificultatea modificărilor crește mai ales dacă
+e nevoie să fie implicați mai mulți oameni, însă dacă avem astfel de probleme e posibil 
+ca modelul de microservicii să fie prea cuplat. Folosirea unei astfel de organizări 
+merge suficient de bine indiferent de nivelul la care ne aflăm însă dacă facem modificări
+des în mai multe locuri probabil ar trebui să facem câteva modificări la modul de desfășurare.
+
+Un alt mod de organizare este de avea tot codul sursă într-un singur loc. Acesta sună asemănător
+cu prima variantă prezentată însă aceasta este configurată și se cunoaște faptul că în cadrul
+ei sunt mai multe proiecte. În primul rând, serverele de integrare continuă ar începe să diferențeze
+între proiecte în funcție de poziția lor în director, astfel nu ar mai exista probleme cu
+build-urile de lungă durată întrucât s-ar face per proiect modificat. Un avantaj al acestui
+mod este faptul că reutilizarea codului este mult mai ușoară întrucât fișierele s-ar afla 
+într-un loc foarte apropiat, singura dificultate ar fi să includem aceste fișiere în
+serverele ce crează build-urile. Totuși separarea între echipe nu este la fel de evidentă,
+pe GitHub există un tip special de fișier numit CODEOWNERS în care putem să specificăm 
+pentru fiecare folder cine deține elementele, acest lucru ajută întrucât cei menționați
+vor fi adăugați automat la recenzie atunci când se face pull request. Acest tip de pattern
+are dezavantajul că ar consuma extrem de multă memorie, în același sens ar fi destul de greu
+de descărcat mai ales când nu avem nevoie. În acest scop companiile mari își creează unelte
+proprii pentru a rezolva aceste probleme, precum Google ce folosește unelte de versionare
+a codului propriu, Piper, astfel acest tip arhitectural funcționează foarte bine pentru companiile
+mari ce pot investi în îmbunătățirea acestuia dar și pentru echipe foarte mici în care 
+separarea între proiecte este ușor de făcut.

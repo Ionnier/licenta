@@ -380,3 +380,72 @@ modificările trebuie să fie făcute în cadrul mai multor microservicii în ac
 iar asupra acestora să rămână proprietățile ce oferă consistența datelor. Acesta este un
 lucru mai dificil de implementat și e nevoie de mai mulți pași pentru a avea un comportament
 asemănător ca în cadrul unui sistem monolitic.
+
+Cea mai simplă implementare a unei tranzacții distribuite este numită „Two-Phase Commit”,
+(Înregistrare în două faze) aceasta presupune o parte de inițializare și execuția propriu-zisă.
+În prima parte, un microserviciu ce vrea să inițieze o tranazcție va trimite către microserviciile
+implicate o înștințare cu începerea tranzacției. Acestea verifică dacă pot să execute cerințele
+cerute și întorc un răspuns. Dacă toate răspunsurile sunt pozitive atunci se încep schimbările
+și se face commit-ul propriu zis. Din cauză că răspunsul acesta nu este livrat în același timp la 
+toți cei implicați, înseamnă că putem să avem stări intermediare, deci se pierde izolarea datelor 
+în timpul tranzacției.
+
+O tranzacție implementată în acest stil are foarte multe probleme. În primul rând, garantarea
+faptului că un microserviciu poate să își execute partea sa din tranzacție se face de cele
+mai multe ori prin blocarea coloanei sau tabelului ce trebuie să fie modificat. Acesta introduce
+probleme atunci când avem un sistem destul de mare, întrucât trebuie să tratăm cazurile în 
+care alte tranzacții vor să se execute dar nu pot. Dacă tranzacția aceasta este de lungă durată,
+atunci această blocare poate să afecteze pe termen lung. După apar probleme de tipul, ce se întâmplă
+dacă un microserviciu spune că poate să execute commit-ul, însă după nu primim răspuns dacă s-a executat sau nu,
+asta ar aduce multă complexitate pentru a anula tranzacția și e greu să garantăm că nu ar
+exista pierderi de date. Din cauza complexității și a multor probleme de acest tip, e bine să
+fi evitate. În general putem să facem asta grupând elementele care ar avean evoie de o tranzacție 
+distribuită și să le punem într-un singur microserviciu.
+
+Chiar și în aplicațiile monolitice apar tranzacții care se desfășoară pe o perioadă mai lungă
+de timp, numite și long-lived transactions, acestea cauzează probleme întrucât pot bloca
+tabele pe o perioadă lungă de timp. În „Sagas”\cite{DBLP:conf/sigmod/Garcia-MolinaS87} se 
+descrie un mod de prevenire a acestor tipuri de tranzacții prin separarea unei singure
+tranzacții în mai multe astfel încât acestea să poată să fie realizate separat pentru 
+a evita blocările. Deși inițial a fost formulat pentru baze de date normale, se aplică foarte
+bine pentru microservici, însă se pierde atomicitatea generală a tranzacției, chiar dacă 
+fiecare componentă este în continuare „acidă”.
+
+Atunci când facem o tranzacție prin acest mod, se fac mai multe etape în funcție de câte 
+microservicii sunt implicate, fiecare sub tranzacție fiind o etapă. Atunci când o operație eșuează
+într-o tranzacție unică, se anulează tranzacție. În acests mod de operare fiecare etapă care a rulat
+trebuie să fie anulată, acest lucru se face lansând operații de anulare pentru toate etapele 
+care au fost efectuată.
+
+Acest mod de operație ne permită să tratăm erorile care apar din cauza erorilor care apar
+din motive condiționate de date și nu tehnic. Există două tipuri de anulare, cele care încearcă
+să anuleze tranzacția și cele care încearcă să compenseze tranzacția. De exemplu atunci când încercăm
+să anulăm tranzacția lansăm operații de anulare însă acestea nu pot fi identice ca cele care le-au creat
+pentru că aceste operații pot conține pași care nu pot fi anulați (de exemplu trimiterea unui mail),
+în cazul acesta operația de anulare ar trebui să fie o înștiințare că mail-ul a fost o greșeală,
+astfel acest tip de anulare este doar semantic. Compensarea unei tranzacții apare atunci când
+apare o eroare însă în loc să anulăm tranzacția, încercăm să continuăm cu ea însă în mod compensator
+pentru eroare care apare.
+
+În general, anularea unei tranzacții de lungă durată este complex întrucât pot să existe cazuri
+în care nu se poate ajunge înapoi la starea inițiala, deci pot exista tentative de anulare,
+de exemplu mutarea pașilor care sunt cei mai posibili să eșuează sau cei care ar fi mult mai greu
+de recuperat la început, astfel operațiile compensatoare sunt mai ușor de executat.
+
+Implementarea unor astfel de tranzacții se poate face în mai multe moduri. Saga-urile orchestrare
+apar prin crearea unui microserviciu central care va trimite comenzile ce implementează etapele
+din cadrul tranzacției asupra căruia are control total. Acest mod de implementare duce la crearea
+unui cuplaj intre aceste microservicii și are la bază comunicarea bazată pe cereri-răspunsuri
+ce în general face ca tranzacțiile să fie aproape secvențial. Saga-urile coregrafiate au la centru
+paralelismul arhitecturii, astfel nu mai există comenzi trimise de un microserviciu central
+ci acestea emit și reacționează la evenimentele pe care fiecare etapă le crează. Această abordare
+ne permite ca doua microservicii să consume același eveniment însă problemele apar la partea de monitorizare,
+datorită naturii distribuite nu mai avem implicit o metodă să vedem ce se întâmplă, astfel
+putem crea un microserviciu ce ascultă toate evenimentele și asociem un ID de corelare folosit
+pentru a grupa acțiunile din cadrul unei tranzacții.
+
+Ambele abordări ale saga-ului dar și tranzacțiile distribuite în două faze aduc complexitate
+sistemului nostru, cel mai bine e să fie evitate dar dacă este nevoie atunci ar trebui să o
+alegem pe cea care se pliază cel mai bine cu modul în care operația ar avea sens, iar dacă
+ar trebui să alegem modul de derulare atunci ar trebui să încercâm să fie cât mai asemănător
+cu stilul pe care vrem să îl implementăm și în cod.
