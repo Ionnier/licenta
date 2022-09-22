@@ -1,0 +1,48 @@
+Ciclul de viață al unei aplicații monolitice continuă să fie simplă și în contextul
+lansării acesteia. În urma trecerii prin toate fazele pipe-ului de build și posibila
+validare manuală acesta poate fi trimis către client sau urcat din diverse platforme
+de hostare, posibil să existe o perioadă în care platforma nu ar putea să fie accesibilă
+datorită necesității de a reporni, dacă nu folosim un proces mai amplu de lansare 
+care ar acoperi aceste goluri. Dacă este implicată și o bază de date atunci aceasta poate 
+să fie lansate înaintea aplicației și totul ar funcționa, dacă este invers atunci probabil
+aplicația tratează cazurile în care aceasta nu este disponibilă.
+
+În cazul microserviciilor, procesul este mai complex întrucât caracteristica specficiă 
+acestora este capacitatea de a fi lansate și a funcționa independent de celelalte, chiar
+dacă pot fi uneori limitate de absența celorlalte, astfel procesul menționat anterior 
+se repetă pentru fiecare microserviciu. Totuși, fiecare microserviciu poate să fie de o tehnologie
+diferită, poate ca baza de date a fiecăruia să aibă un anumit tip și anumite cerințe de lansare,
+astfel flexibilitatea oferită de acestea se poate resimți atunci când este timpul lansării.
+
+Până acum, toate conexiunile între microservicii erau făcute doar logic, nu cunoșteam 
+detalii despre modul cum acestea vor fi aranjate sau unde vor fi lansate sau sub ce formă.
+O caracteristică a microserviciilor este capacitatea de a scala un anumit serviciu ce simte
+o cerere mai mare, în acest context putem avea mai multe instanțe al aceluiași microserviciu,
+la fel cum am face și cu o aplicație monolitică în cazul în care am vrea să servim mai mulți
+clienți, mai lansăm o copie a aplicației. În acest caz, comunicarea nu se va mai putea 
+face direct către microservicii întrucât scalarea se face automat, ci este nevoie să comunicăm
+cu un intermediar ce ar face rutarea către acestea care are și scop să echilibreze
+traficul între cele două, astfel folosim un load balancer și vom comunica direct cu acesta 
+și nu cu microserviciul propriu-zis. În cazul comunicării cu evenimente, trebuie doar să 
+ne asigurăm că evenimentul este consumat de un singur microserviciu iar în urma se va 
+lansa evenimentul răspuns.
+
+Un factor important însă care a fost ignorat în lansarea microserviciilor, este baza de date.
+Întrucât fiecare microserviciu trebuie să aibă propria bază de date pentru a-și ascunde starea
+internă și să poată să aibă control asupra tuturor operațiilor ce ar avea loc pe 
+domeniul său, microserviciul trebuie să fie lansat împreună cu aceasta independent. Însă 
+în momentul în care avem mai multe microservicii de același tip, adică mai multe replici,
+baza de date va fi defapt comună pentru toate microserviciile, adică toate replicile
+vor folosi ca sursă de date același loc. În acest context apar probleme cu scalarea,
+întrucât e posibil ca serviciul nostru să scaleze infinit, baza de date nu se va scala, 
+astfel poate să devină un impediment în performanța sistemului, dacă nu cumva își cauzează
+sieși atacuri de tipul Denial of Service prin existența prea multor cereri. Însă scalarea
+bazelor de date este complicată, mai ales în cazul în care acestea sunt relaționale, întrucât
+necesită fragmentarea datelor ceea ce este greu de calculat, din acest motiv putem 
+construi organizări precum existența unei singure baze de date pentru scriere și multiple
+baze de date pentru citire, în acest context putem separa traficul însă datele pe care le 
+servim pot să nu fie actualizate. Modul de lansare al bazei de date poate să difere de cel
+al microserviciilor, mai ales pentru companiile existente ce au deja date, migrarea devine
+mult mai dificilă, din acest motiv aceștia pot preferă să folosească infrastructura existentă
+în loc să migreze către cloud unde ar putea avea o bază de date per microserficiu, astfel microserviciile
+pot avea baze de date logic diferite însă care rulează de pe aceleași server.

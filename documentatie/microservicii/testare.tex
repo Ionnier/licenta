@@ -1,0 +1,129 @@
+Testarea este o parte importantă în dezvoltarea produsului, avantajele creării de produse
+sustenabile ce nu conțin defecte sunt destul de evidente întrucât clienții pot aprecia
+faptul că aplicația nu se strică și pot construi o reputație în acest sens. Pe de altă parte,
+apariția unei probleme majore în produs poate fi extrem de costisitoare în funcție de momentul
+în care aceasta este găsită, astfel este important ca în procesul creării defectele să
+fie prinse și rezolvate din timp.
+
+Testarea poate să aibă o reputație scăzută fiind asociată ca ceva repetitiv ce trebuie făcut
+manual însă aceasta a avansat și se face în diferite moduri inclusiv automat astfel poate
+să fie la același nivel cu dezvoltarea însă necesitând un alt set de abilități și un mod
+de gândire diferit.
+
+Însă acest tip de testare se referă la oamenii dedicați pentru asigurarea calității produsului,
+deci echipa de QA. Însă ei nu sunt singurii cu responsabilitatea de a monitoriza
+calitatea sistemului, acesta pornește direct de la dezvoltator. În general, un tester poate
+să nu aibă acces sau să nu se uite la cod, numit si black-box testing, în timp ce primind
+acces se numește white-box testing iar atunci când avem acces parțial, gray-box testing.
+
+Testele pot urmării lucruri diferite, astfel conform cărții „Agile Testing” de Lisa Crispin
+și Janet Gregory putem împărții testele în funcție de ce încearcă să descopere. Testele de acceptare
+testează dacă funcționalitatea este conform specificațiilor. Testarea exploratorie se face
+în general manual și încearcă să verifice dacă există probleme în implementare. Testele unitare
+sunt automate și verifică dacă nu s-a stricat funcționalitatea funcțiilor în urma unor modificări noi.
+Testele de proprietate verifică performanța sistemului și capacitatea acestuia, se face
+prin folosirea de unelte specializate și urmărește timpul de răspus, scalabilitatea sau reziliența.
+
+Putem grupa aceste categorii și să obținem mai multe clasficări, testele de afaceri ajută
+alte persoane să înțeleagă calitatea produsului (TU, TE) și testează o parte mai largă din produs,
+testele ce vizează tehnologia sunt mai rapide și au componente care sunt automatizate (TU, TP).
+Pentru a observa calitatea produselor se pot folosi teste care au ca scop asistența în dezvoltarea
+pentru a nu apărea regresii (TU, TA) dar și unele care critică produsul în funcție de performanță
+sau adaptibilitate (TE, TP). În general testele se fac în timpul dezvoltării, însă există teste 
+care se fac pe produsul care este în piață.
+
+Testele de serviciu au ca scop testarea unui microserviciu, acestea evită testarea UI-ului
+ci doar a componentelor folosite de UI ca să aducă funcționalitate utilizatorului. Limitând
+testele la un singur microserviciu, testăm capacitatea acestuia iar orice comunicare cu exteriorul
+este mimată, astfel cauzele de eșec pot să fie strict legate de microserviciul testat
+Aceste tipuri de teste, întrucât nu testează componenta grafică pot sa fie la fel de rapide
+ca testele unitare însă întrucât pot intra în componență apeluri la baza de date sau la rețea.
+Astfel în implementarea acestora există necesitatea înlocuirii comunicării cu exteriorul și se
+face în general fie prin mimicarea datelor sau prin înlocuirea acestora. Mimicarea se referă
+că la orice tip de apel al unei funcții, indiferent de datele de intrare, timpul la care a fost
+făcut sau numărul de ori de câte este apelată acesta va returna un singur set de date. Înlocuirea
+se face prin replicarea funcționalității astfel putem apela funcții care procesează datele de 
+intrare și returnează date în funcție de acestea. Putem să dezvoltăm această idee și să 
+încercăm să creăm servere de test care furnizează această înlocuire existând unelte pentru aceasta,
+de exemplu mountebank ce poate să mimice date trimite prin HTTP/S, TCP sau SMTP însă nu poate să
+mimice comunicarea prin evenimente.
+
+Însă chiar dacă facem aceste teste, nu putem să garantăm că putem livra microserviciul.
+Testele end-to-end se fac prin mimicarea utilizatorului și a diferitelor comportamente pe care 
+acesta le-ar face, astfel verificând funcționalitatea sistemului prin interfața cu care el comunică. 
+Acestea pot să implice multiple microservicii ce trebuie să nu aibă probleme, însă având o arie mai mare 
+de acoperirea acestea sunt mai greu de testat iar atunci când pică nu se poate observa din 
+prima posibila cauză. Una dintre problemele care arpare în aceste teste este nevoia de a rula
+mai multe microservicii in același timp, astfel pentru fiecare din aceste microserviciu s-ar rula aceleași
+teste. Acesta ar duce la o repetare de teste care nu s-au schimbat, astfel o metodă de a eficientiza
+procesul este de a combina testele end-to-end pentru mai multe microservicii in același timp.
+
+Aceste tipuri de teste acoperă o arie extinsă de cod iar fiecare dintre acestea poate să aibă
+probleme, astfel pot exista în suita de teste unele teste care uneori pică deși uneori trec, cauza
+unor astfel de situații poate să fie probleme temporare de rețea ce cauzează un timeout.
+În astfel de cazuri ar trebui ca acest test să fie fixat, fie eliminat întrucât existența 
+unui test neconcluziv poate duce la ignorarea acelui test, astfel este ca și cum acesta nu ar
+rula de la bun început. 
+
+Întrucât testele end-to-end acoperă mai multe microservicii apare problema asocierii 
+responsabilității scrierii acestora. Întrucât în același timp mai multe echipe sunt implicate,
+acestea toate ar avea o parte de responsabilitate însă scrierea unui astfel de test 
+include cunoașterea sistemului întreg și observarea locurilor ce pot fi mai sensibile,
+astfel companiile mari pot investii în crearea de echipe dedicate ce au ca rol scrierea, 
+rularea și rezolvarea (când este cazul) a testelor end-to-end. Însă crearea unor teste
+end-to-end complexe poate duce la timpuri mari de executare ale acestora, astfel 
+feedback-ul compatibilității întârzie iar în acest timp se pot aduna mai multe caracteristici
+adăugate de dezvoltatori, astfel se încalcă regula menținerii o prioritate a rezolvarilor
+problemelor ce sunt asociate pipeline-urilor, în acest caz putem analiza suita de teste și să
+păstrăm doar esențialele, mai ales când un build poate să pornească suite de teste end-to-end diferite
+întrucât acesta este prezent în mai multe procese care se desfășoară în cadrul mai multor
+microservicii.
+
+Problemele cu testele end-to-end duc la crearea unor probleme asociate cu arhitectura paralelă,
+întrucât acestea ar trebui să ruleze separat, atunci ar putea să fie și testabile independent,
+astfel putem rula teste end-to-end mai rar dacă avem diferite caracteristici care să 
+ajute la interoperabilitatea precum interfețele explicite sau prin folosirea unor unelte precum Pact 
+putem să creăm o schemă a comunicațiilor exterioare ce include așteptările pe care le avem de la 
+aceștia. Acestea pot fi rulate după de dezvoltatorii microserviciului și să cunoască 
+dacă apar probleme de compatibilitate. Acestea sunt folositoare întrucât nu trebuie să mai rulăm
+mai multe microservicii în același timp ci rulează ca testele unitare sau cele de serviciu în cadrul
+unui singur microserviciu, astfel devin mult mai rapide.
+
+Majoritatea testelor rulează în timpul perioadei de dezvoltare, însă putem rula teste 
+și pe produsul final. Înainte de lansare se poate lansa o suită de teste numită Smoke, ce 
+are ca scop verificarea funcțiilor de bază, de multe ori aceasta ar trebui să ruleze înainte de testarea
+manuală întrucât căderea acestuia ar însemna lipsa funcționalităților de care am avea nevoie 
+în mod normal, însă ca o ultimă măsură putem să îl rulăm alături de un test de Sanity ce conține
+o gamă mai largă de de teste înainte unei posibile lansări. De asemenea, alte
+teste în producție pot fi cele de A/B sau feature toggles sau Canary releases însă acestea
+sunt mai mult tipuri de lansări de produs. Alte tipuri de teste pot fi cele care simulează
+un utilizator normal în timp ce produsul este în piață pentru a verifica dacă funcționalitățile rămân 
+la fel și nu există probleme de configurări ale mediilor de lucru.
+
+În cazul apariției a unei probleme în producție, unele companii rulează simulări și rapoarte
+a modului de lucru în cazul apariției unei probleme. În cazul acestora se pot definii concepte 
+precum timpul mediu de reparare(MTTR) sau timpul mediu între erori(MTBF). Prima dintre ele
+se poate rezolva ușor prin crearea unei restaurări a versiunii anterioare iar a doua prin 
+îmbunătățirea capacității sistemului de a rezista la erori sau de a le trata. Aceste două metrici
+sunt la fel de importante ca și testarea întrucât ambele au același scop, asigurare calității 
+unui produs.
+
+Majoritatea testelor rulate vor avea ca scop testarea caracteristicilor și validarea
+că acestea funcționează în parametrii normali, însă datorită volatilității traficului
+pot apărea scenarii complexe în care pot apărea un influx de trafic, astfel există 
+dorința de a testa după funcționalitate, adica aspecte precum performanța sistemului.
+În cadrul unei arhitecturi paralele aceasta poate cauza probleme întrucât într-o aplicație
+monolitică comunicarea se face într-un singur loc, însă datorită necesității a comunicării 
+colective pot apărea momente în care sunt necesare crearea mai multor cereri, acestea pot
+cazuri în care pentru microservicii suprasolicitate să creze creșterea latenței sau
+chiar acestea să nu mai poată fi accesibile. Astfel pot exista mai multe teste de performanță,
+cele de enduranță ce testează sistemul pe o perioadă lungă de trafic dar în parametrii normali,
+de stres în care testăm sistemul ăn afara parametrilor normali, ale spike-urilor ce sunt creșteri
+mari in trafic pe perioade scurte de timp și de scalabilitate ce observă capacitatea 
+sistemului de a servi atunci când numărul de utilizatori crește. Toate acestea ar trebui să 
+se facă cunoscând funcționalitatea normală a sistemului pe trafic real, în absența acestei condiții
+putem să ne concentrăm pe direcții pe care utilizatorul nu le ia. Într-o arhitectură paralelă,
+la fel ca în securitate, capacitatea acestuia de a rula eficient este dată de capacitatea celei
+mai încete piese astfel putem crea scenarii de test în care testăm lipsa unor componente ce
+au ca scop creșterea rezilienței în cazul erorilor.
+
