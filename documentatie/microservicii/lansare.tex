@@ -46,3 +46,57 @@ al microserviciilor, mai ales pentru companiile existente ce au deja date, migra
 mult mai dificilă, din acest motiv aceștia pot preferă să folosească infrastructura existentă
 în loc să migreze către cloud unde ar putea avea o bază de date per microserficiu, astfel microserviciile
 pot avea baze de date logic diferite însă care rulează de pe aceleași server.
+
+Atunci când se rulează un microserviu se crează un mediu lucru pentru acesta. Când acesta
+este în dezvoltare, programatorul are drepturi depline la locul în care acesta rulează și
+cu ce alte microservicii comunică, însă atunci când ajunge în producție microserviciul are
+alt mediu ceea ce face creșterea importanței creării unui mediu de testare cât mai asemănător
+cu cel pe care va rula. Un exemplu simplu sunt datele de test, întrucât acestea pot avea
+o anumită distribuție atunci când sunt în producție și alta atunci când generăm aleator
+date, din acest motiv timpul de răspuns al bazei de date și alegerea parametrilor de
+indexare nu poate fi ușor testată fără să interacționăm direct cu mediul de producție,
+iar existența anumitor legi nu ne permite să copiem datele utilizatorilor în mediul de test
+cu ușurință. Astfel lansarea microserviciului trebuie să fie ușor de adaptat pentru fiecare mediu,
+fie el prin anumite variabile ce ar lua valorile mediului sau comportamente diferite în funcție
+de numărul de instanțe ale microserviciului în fiecare loc.
+
+Lansarea și mentenanța microserviciilor este o sarcină ce necesită coordonarea mai multor echipe, 
+în general cei care se ocupă cu dezvoltarea nu o să se implice în configurarea infrastructurii, 
+din acest motiv există câteva principii pe care le putem urmării atunci când lucrăm cu microservicii
+pentru a maximiza caracteristicile pe care acestea le oferă.
+
+Întrucât microserviciile sunt implementate pentru a rula independent, ar fi o idee bună ca acestea
+să ruleze independent. În general, dificultățile în crearea infrastructurii apar atunci când
+sistemele de calcul trebuie să fie configurate, astfel o metodă ar fi lansarea microserviciilor
+pe aceași mașină, în acest caz monitorizarea sistemului scade întrucât metricile asupra
+impactului peste componente nu ar putea fi atribuit unui anumit microserviciu, în același stil
+acestea nu ar putea să fie la fel de scalabile și ar fi constrânse la fel ca o aplicație monolitică.
+Recent, acesta a devenit mai ușor prin lansarea în container sau prin platforme precum Heroku
+ce izolează sistemele by default. Există mai multe tipuri de izolare în funcție de modul în care lansăm
+aplicația din acest motiv, cu cât izolarea este mai puternică cu atât cresc costurile asociate
+acelui microserviciu și dificultățile în administrare.
+
+Toate activitățile încep manual însă în timp ce le facem putem să găsim metode de a le eficientiza,
+în general prin automatizare. Atunci când încercăm o arhitectură bazată pe microservicii, 
+crește complexitatea lansării, astfel unele configurări care într-o aplicație monolitică 
+era ușor de considerat că nu merită să se încerce să se automatizeze, în microservicii ar trebui
+ca tot ce se poate automatiza să fie automatizat. În general, problemele care apar pot să fie 
+din greșeli umane care nu pot să fie evitate. Putem porni procesul de încercare a automatizării
+prin adaptarea de tehnologii și procese ce ne pot ajuta în acest scop.
+
+Dezvoltarea cu ajutorul Git-ului ne permite să observăm schimbările din cod foarte ușor, 
+putem să avem un istoric și persoanele implicate iar atunci când se crează o schimbare
+prin intermediul Pull Request-urilor putem fi anunțați că se dorește modificarea unei porțiuni de cod.
+În domeniul configurării infrastructuri aceasta se face manual, prin aducerea infrastructurii prin
+instalarea de computere, crearea unor mașini virtuale sau rularea unui container. Toate acestea
+implică munca unui operator ce ar trebui să seteze mașinile și ulterior să le configureze prin intrarea
+manuală prin SSH, comenzile făcute în interior, deși înregistrare nu sunt la fel de ușor
+vizibile ca și ceva pe Git, astfel a apărut conceptul de infrastructură ca și cod în care
+infrastructura este configurată prin intermediul unor limbaje ce pot fi interpretate de 
+unelte ce vor configura pentru noi computerele precum Puppet sau Ansible. Acestea ajută să
+scriem starea mașinii într-un mod declarativ iar acestea vor rula script-urile de care avem nevoie
+în interior. Terraform este o unealtă ce ajută în crearea resurselor ce provin din platforme cloud
+precum Azure sau AWS. Având infrastrctură ca și cod aceasta poate fi urmarită de toți participanți și 
+în același timp poate fi reaplicată pentru toate resursele ce trebuie să fie configurate în același
+stil.
+
