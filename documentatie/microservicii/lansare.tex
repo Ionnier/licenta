@@ -100,3 +100,43 @@ precum Azure sau AWS. Având infrastrctură ca și cod aceasta poate fi urmarit�
 în același timp poate fi reaplicată pentru toate resursele ce trebuie să fie configurate în același
 stil.
 
+Funcționarea independentă ne permite să lansăm produse fără ca alte microservicii să necesite
+o actualizare, în acest context putem să facem lansări mult mai dese accelerând dezvoltarea,
+acestea aduc avantajul că putem face o lansare pentru un număr restrâns de caracteristici,
+astfel dacă apar probleme în producție putem să fixăm mult mai ușor întrucât sunt puține
+funcționalități schimbate. În acest context trebuie să măsurăm contextul în care 
+sunt afectate celelalte microservicii atunci când facem o lansare, în mod tradițional
+sistemul ar fi oprit și ar cauza o perturbare pentru consumatori și ulterior al utilizatorilor.
+Această probleme poate fi diminuată cu tehnici de lansare precum lansarea treptată în care
+serviciile existente se actualizează una câte una în timp ce consumatorii existenți sunt păstrați
+iar cei noi redirecționați către cele noi. În cazul acesta apar probleme atunci când între 
+microserviciu și client se crează conexiuni de lungă durată precum un socket întrucât acestea
+nu pot fi întrerupte fără a cauza dificultăți.
+
+O altă specificație importantă este capacitatea de a putea configura o stare dorită a întreg 
+sistemului și să folosim uneltele potrivite pentru ca acesta să se întâmple. În acest
+scenariu, platforma folosită va monitoriza sistemul și va aplica comenzile necesare pentru
+a păstra forma dorită. Printre astfel de unelte se numără Kubernetes, iar unii distribuitori
+de infrastructură în cloud oferă aceleși servicii. În acest context, întrucât platforma este 
+cea care administrează starea este important să automatizăm modul de lansare, astfel platforma
+primește doar imaginea și o aplică. O continuare al acestui mecanism este GitOps, la fel ca
+infrsastructura ca și cod care prevedea configurarea sistemelor ca și cod, acest sistem
+prevede menținerea stării ca și cod și folosirea unor operatori automați care vor aplica
+comenzile din acel repository. Acest procedeu are aceleși beneficii ca și pentru infrastructură, 
+adică capacitatea de a avea o privire mai bună per ansamblu, un istoric, anunțarea schimbărilor
+și interogatoriu. În acest mod de lucru configurarea manuală a infrastructurii pe care 
+rulează sistemul nu mai este permisă, iar fiecare schimbare se va face în repo.
+
+Locurile în care putem să lansăm microserviciile vor fi mai detaliate în \autoref{orchestrare} % TODO: Maybe try to change this
+însă la fel cum avem flexibilitate în implementare, avem flexibilitate și în lansare. Acestea 
+pot include o lansare directă pe mașini direct sau într-o abstractizare precum un container sau ca
+Function as a Service (FaaS), astfel ar trebui să ne documentăm despre opțiunile pe care le avem,
+avantajele și dezavantajele fiecareia și ce suntem confortabili să facem pentru a administra sistemul.
+Ar trebui să folosim metodele existente de deployment însă dacă acestea au nevoie de modernizare
+atunci putem face schimbări. Cu ajutorul platformele existente precum FaaS sau containerizarea
+aplicației putem să scădem dificultățile în configurarea mediului și să ne concentrăm doar pe
+rulare. În același mod se pierde controlul asupra modului de configurare întrucât 
+acesta va fi administrat de platformă, astfel dacă folosim servicii precum Heroku, acesta ne va oferi
+anumiți parametrii însă configurarea efectivă a sistemului de calcul va fi abstractizată ceea ce ne
+permite să ne concentrăm pe alte aspecte ale sistemului. 
+
