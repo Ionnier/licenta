@@ -1,0 +1,116 @@
+Necesitatea monitorizării nu apare atunci când dezvoltăm microserviciile ci atunci când le lansăm.
+Atunci când apare o problemă nereproductibilă, singurul lucru ce ne poate descrie modul în care am ajuns în
+această situație sunt urmele pe care le creăm intenționat, adică fișierele de jurnalizare
+sau tranzacțiile care s-au desfășurat. Într-o aplicație monilitică acesta are un număr mic 
+de locuri în care poate să cedeze, astfel investigațiile pornesc mereu din același loc. Monitorizarea
+acestuia este mai simpla întrucât numărul de resurse pe care acesta le apelează este mai mic.
+În cazul unei arhitecturi distribuite atunci când apare o problemă, acleași investigații
+pe care le-am face pe o platformă monolitică o să le facem asupra mai multor componente.
+Din acest motiv trebuie să găsim metode de monitorizare eficiente ce sunt ușor de accesat
+și folosit pentru cei implicați
+
+Implementarea unui astfel de sistem în interiorul unui microserviciu depinde de modul în care
+acesta comunică. În cazurile simple în care avem o singură instanță al unui microserviciu
+atunci monitorizarea acestuia este simplă întrucât trebuie să colectăm date dintr-un singur loc.
+Atunci când acest microserviciu este scalat și există mai multe instanțe al acestuia care
+pot să apară sau să dispară în funcție de load, atunci trebuie implementat un sistem
+care colectează datele de la acestea și eventual le asociază datele asupra cererilor. Atunci când
+aceste microservicii comunică și cu exteriorul devine și mai complicat întrucât nu vom știi
+exact modul în care sistemul va acționa, în acest caz agregarea informațiilor nu este suficientă
+și avem nevoie de metode de prelucrare eficientă al acestora.
+
+Observabilitatea este capacitatea de a întelege starea unui sistem în funcție de datele pe care
+acesta le comunică, asemănător cu bordul unei mașini ce ar lumina anumite beculețe în funcție 
+de problemele pe care mașina ar putea să le întâmpine în interior. Aceste date furnizate pot
+ajută în prevenirea unui eventuale probleme, fie prin scalarea automată a sistemului în cazul în care
+datele furnizate de acesta indică că este suprasolicitat fie prin identiciarea problemelor 
+înainte să apară prin crearea de algoritmi bazați pe inteligența artificială, iar toate acestea
+ar trebui să se vadă dintr-un loc central pentru a putea examina starea sistemului în același 
+mod pentru toate componentele acestuia.
+
+În acest scop, atunci când creăm un sistem bazat pe microservicii ar trebui să pornim de 
+la construirea unei baze pentru observabilitate, astfel putem avea în vedere anumite 
+caracteristici care trebuie să apară. Una dintre cele mai importante și simple de implementat
+acțiuni este agregarea log-urilor. Dacă putem crea asta atunci putem să construim un istoric
+al acțiuniilor ce s-au declanșat în cadrul sistemului. Deși există unelte dedicate, toate
+ar lucra în același stil, microserviciile crează fișiere de jurnalizare local pe care alt componentă
+le va colecta și le va trimite către componenta de agregare. Este important ca acesta să nu există procesări mari 
+ale acestor linii întrucât cantiatea de informație care apare poate să creeze creșteri mari în
+consumul de resurse. Fiecare intrare în aceste fișiere ar trebui să fie standardizată cu informațiile 
+de care avem nevoie, de exemplu data, microserviciul, mașina, nivelul de importanță al log-ului și 
+atle date de care am avea nevoie în depanare. Toate aceste date sunt folosite de agregator pentru 
+a crea centralizări informațiilor sau pentru a cunoaște momentele în care ceva grav se întâmplă
+și să fie nevoie să alertăm personalul. Întrucât microserviciile funcționează pentru rezolvarea
+unei singuri cereri, este important să cunoaștem cererea pentru care se lucrează,
+în general se asociază un ID de corelare pe care fiecare microserviciu îl va comunica 
+pentru ca tranzacțiile din cadrul cererii să fie ușor de interogat atunci când acestea vor fi
+agregate. Deși fiecare înregistrare are o dată, aceasta nu poate să fie sigură iar încrederea în 
+acestea poate fi o capcană. În programare, cel puțin pentru mine, lucrul cu timpul este cel mai dificil,
+în interfață deoarce există fusuri orare ce trebuie tratate (desigur e ușor să salvăm datele 
+în UTC și doar să le afișăm în mod diferit, însă se adaugă și schimbările create de economiserea
+de economiserea de lumină), iar în cadrul fișierelor de log ale microserviciilor 
+timpul nu poate fi precis întrucât fiecare are timpul său intern, deși poate să fie sincronizat
+cu un server de sincronizare Network Timing Protocol (NTP) nu poate să fie exact. Putem folosi 
+unelte precum Fluentd ce trimite date în Elasticsearch cu interfață în Kibana însă acest spațiu
+este populat cu soluții. Atunci când avem un sistem de acest tip, pot apărea probleme, pe lângă ce a
+fost menționat, apar costuri cu privire la stocarea datelor dar și necesitatea unei puteri computaționale
+în creștere pentru a menține index-urile coloanelore din bazele de date.
+
+Un alt aspect ce comunică starea sistemului sunt metricile și telemetria. Datele colectate de 
+acestea pot include procentul de resurse consumate, arhitectura sistemului, modul cum răspund la cereri 
+sau chiar performanța acestora. Aceste metrici sunt în genera simple întrucât urmăresc 
+stocarea unei singure informații sau acțiuni, însă acompaniate de acestea apar informații 
+suplimentare iar acestea sunt costisitor de depozitat întrucât va trebui să fie interogate.
+În acest scop putem folosi unelte precum Prometheus sau Graphite.
+
+Colectarea datelor despre un sistem se face într-un singur scop, aprecierea dacă totul
+funcționează în parametrii nominali. În cadrul unei aplicații monolitice, această apreciere 
+era simplă întrucât lucrurile pot să meargă sau să nu meargă. Într-o arhitectură paralelă
+ce se bazează pe independență această apreciere devine mai dificilă. Dacă un microserviciu rulează,
+este un pas, însă nu este suficient. Acesta trebuie să fie accesibil pentru toți consumatorii 
+acestuia. Însă dacă funcționarea acestui microserviciu depinde de alt microserviciu care 
+momentan are probleme, putem să spunem că acest microserviciu este într-o stare bună?
+În aceste cazuri se creează anumiți termeni, primul concept fiind Termeni la nivel de serviciu,
+„Service level agreement” ce se crează între cei care construiesc un sistem și cei care folosesc
+acest serviciu, astfel aceștia din urmă pot să își creeze un anumit grad de încredere sau
+nivelul la care se așteaptă. De exemplu, providerii de infrastructură în cloud pot 
+crea astfel de termeni pentru a garanta funcționalitatea serviciilor oferite de ei, pe
+perioadele în care acestea nu pot fi accesibile din cauza lor, probabil nu vor exista credite 
+consumate însă probleme ale sistemului nostru tot pot apărea ce pot afecta clienții proprii.
+Obiectivele la nivel de serviciu („Service-Level Ojective) sunt create pentru a crea o imagine sau un posibil progres
+în atingerea SLA-ului. Accestea pot include lucruri precum timp stabil sau latență. Pentru 
+a aprecia atingerea SLO-ului putem crea Indiccatori la nivel de serviciu („Service-level Indicators”)
+ce depind de sistemul oferit. În construirea unui sistem putem să alocăm spațiu pentru erori, 
+acesta este scopul SLA-urilor, întrucât nu putem să fim perfecți ar trebui să păstrăm
+loc și pentru apariția unor erori. Acestea ajută în crearea deciziilor care includ riscuri 
+precum înceracare de tehnologii noi.
+
+Apariția erorilor este inevitabilă, din acest motiv trebuie să întelegem modul în care
+acestea pot să fie raportate. Există erori al căror apariție poate fi ignorată pe moment, în 
+general la aceste tipuri de erori ne putem aștepta și au o severitate redusă. În interiorul unui sistem
+trebuie să știm tipurile de erori care impactează funcționalitatea sistemului și trebuie remediate
+în cel mai scurt timp, în general pentru cazurile acestea un tehnician ar fi alertat 
+prin diferite forme pentru a remedia problema. Întrucât astfel de situații crează un grad 
+mare de disconfort, trebuie să alegem erorile care generează acest tip alerte cu grijă,
+întrucât dacă sunt prea multe e posibil ca acestea să fie ignorate. Studii create
+pentru a studia motivele pentru care unele accidente apar pot să concluzioneze
+că din cauza numărului mare de alerte raportate care nu au gradul corespunzător pot genera
+pentru cei care le urmăresc o oboseală, din acest motiv aceștia pot să nu urmeze procedurile
+corespunzătoare. Steven Shorrock menționează în articolul „Alarm Design: From Nuclear
+Power to WebOps” (Humanistic Systems (blog), October 16, 2015) că motivul alertelor
+este de a direcționa atenția utilizatorlui către aspecte ale operației ce au nevoie
+de atenție într-un timp scurt. („The purpose of [alerts] is to direct the user's attention towards 
+significant aspects of the operation or equipment that require timely attention.”). Din acest motiv
+ne putem inspira din reguli vizează comportamente ce necesită utilaje complexe.
+Asociația utilizatorilor de echipament și materiale (Engineering Equipment and Materials Users Association - EEMUA)
+a creat o descriere pentru crearea alertelor într-un mod corect. Acestea trebuie să fie relevante,
+să ilustreze o caracteristică importantă a sistemului, unice, pentru a evita repetiția, să ajungă 
+într-un timp util în care acțiuniiile utilizatorilor mai pot crea un impact, sa conțină
+suficiente informații pentru ca acesta să le poată prioritiza, informația ce provine din alerte
+să fie clară și ușor de înteles, să conțină informațiile necesare pentru a începe o acțiune cu scopul
+de fixare, dacă este posibil să ofere sfaturi pentru rezolvare, și să fie concentrate pe 
+problema pe care o raportează.
+
+Monitorizarea unui sistem este dificilă, însă aceasta poate să fie introdusă treptat însă 
+putem începe cu agregare fișierelor de jurnalizare dar și notarea parametrilor în care rulează
+mașinile de lucru și raportarea acestuia într-un loc central.

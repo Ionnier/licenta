@@ -95,8 +95,16 @@ are ca scop verificarea funcțiilor de bază, de multe ori aceasta ar trebui să
 manuală întrucât căderea acestuia ar însemna lipsa funcționalităților de care am avea nevoie 
 în mod normal, însă ca o ultimă măsură putem să îl rulăm alături de un test de Sanity ce conține
 o gamă mai largă de de teste înainte unei posibile lansări. De asemenea, alte
-teste în producție pot fi cele de A/B sau feature toggles sau Canary releases însă acestea
-sunt mai mult tipuri de lansări de produs. Alte tipuri de teste pot fi cele care simulează
+teste în producție pot fi cele de A/B sau feature toggles ce includ lansarea unei funcționalități
+în două variante pentru a fi mai ușor de decis care dintre variante putem să o alegem (un caz 
+recent a fost unul făcut de eMAG în care au testat performanța vânzărilor încercând 
+să ascundă recenzille asupra acestora) sau Canary releases în care utilizatorii se pot 
+întregistra pentru a primi varianta mai nouă a produsului, aceștia sunt limitați iar în cazul 
+în care apar erori, doar o parte mică din utilizatori a fost afectată. O rulare în paralel 
+se referă la lansarea unei funcționalități și păstrarea versiunii anterioare, orice cerere este
+trecută prin alte servicii și sunt evaluate anumite metrici. Ingineria haosului se referă la adăugarea 
+de greșeli intenționat în produs și testarea acestuia dacă poate să își revină. Acestea
+pot fi considerate și metode de lansări de produs. Alte tipuri de teste pot fi cele care simulează
 un utilizator normal în timp ce produsul este în piață pentru a verifica dacă funcționalitățile rămân 
 la fel și nu există probleme de configurări ale mediilor de lucru.
 
