@@ -20,3 +20,159 @@ ce pot proveni de la terți (Eventbus, load-balancers, log tools) cresc și treb
 regulat pentru vulnerabilități, astfel numărul de sisteme ce trebuie să fie luate în considerare 
 atunci când construim metodele de protejare ale sistemului.
 
+La baza securității pot sta anumite gânduri ce au ca scop restricționarea și controlarea
+accesului. Anumite elemente le-am menționat până să ajungem aici, principiul ascunderii
+al informației se referea la limitarea numărului de date pe care le expunem, în cadrul
+securității ne putem gândii la limitarea privilegilor, astfel, ar trebui să oferim
+drepturi fiecărui microserviciu cu care comunicăm numai cât are nevoie pentru a funcționa normal,
+dacă el folosește doar câteva funcționalități atunci acesta ar trebui să aibă vizibilitate
+numai asupra lor, motivul fiind, dacă acesta este compromis atunci atacatorul nu poate să
+acceseze mai mult decât microserviciul avea nevoie. Atunci când construim o soluție de securitate
+pentru sistemul nostru, este indicat să conțină mai multe nivele și moduri ce oferă protecție.
+Există atacuri ce s-au produs iar în timpul lor nu a existat vreo metodă de alertare.
+Astfel, putem să facem distincția între modurile preventive de securizare, acestea au scopul
+de a preveni apariția unui atac, iar dacă se întâmplă să se limiteze daunele ce pot fi produse,
+printre acestea includ acțiuni precum securizarea variabilelor secrete, crearea unui sistem
+de autentificare și criptarea datelor. Putem spori detecția prin setarea aplicațiilor de firewall
+sau alerte atunci când se accesează anumite date. Pentru a mitiga atacul putem folosi
+diferite procedee însă cel mai important este comunicarea eficientă între echipe iar ulterior
+metode de a recupera sistemul. Implementarea automatizării este o metodă de a crește securitatea
+întrucât forțează gândirea metodelor de acces dar și eliminarea greșelilor umane iar
+adăugarea unor metode de analizare a securității în pipeline ce pot investiga erorile simple
+la nivel de cod.
+
+Tot de la bazele securității provine crearea unui model de amenințare. Procesul creării
+acestuia include mai multe etape ce au ca scop cunoașterea sistemului și identificarea atacatorilor.
+Prima etapă se referă la identificarea elementelor de valoare din componența sistemului, modul în care
+acestea ar putea fi abuzate și identificarea posibililor atacatori ce ar putea apărea pentru a
+cauza probleme în interiorul sistemului. În urma acestuia, putem să ne gândim la modul în care
+o să protejăm datele și accesul la acestea. Întrucât nu putem preveni inevitabilul
+de fiecare dată următorul pas este creșterea metodelor de detecție, în general prin folosirea
+de unelte dedicate la nivel de rețea și infrastructură. Capacitatea de răspuns în fața
+unui atac nu se referă doar la metodele de oprire ale atacului dar și alte elemente precum
+comunicarea problemelor către clienți și parteneri. Metodele de recuperare se referă la
+revenirea la normal și aplicarea elementeleor descoperite în cadrul atacului pentru a preveni
+astfel de incidente.
+
+Întrucât dezvoltarea pornește de la aplicație, de aici putem începe și cu crearea de
+practici bune pentru a crește securitatea sistemului. În general, o aplicație va avea
+cel puțin câteva date sensibile ce au de a face cu autentificarea, fie a microserviciilui în sine
+către baze de date sau alte microservicii sau alte utilizatorilor. Întrucât numărul de conexiuni
+poate fi ridicat, am putea încerca crearea unor date generale și distribuirea acestora însă ar
+încălca unul din princiipile menționate anterior. Microserviciile sunt create pentru a oferi
+un serviciu către utilizatori, în general aceștia pot să nu fie experimentați și să ignore
+sfaturi precum folosirea parolelor unice, lungi și administrare de programe speciale, iar
+în cazul de față se poate ajunge ca dauna provocată să nu se producă doar în cadrul
+seriviciului nostru ci prin refolosirea datelor chiar și către alte servicii pe care nu le administrăm.
+Pe lângă sfaturile simple precum securizarea parolele prin folosirea salt-ului și a algoritmilor
+siguri într-un timp ridicat (pentru a preveni atacurile de tip brute force) și folosirea de 2FA, putem extrage
+din articolul \cite{troy_hunt2017} al lui Troy Hunt în care a prelucrat recomandări de la NIST.
+Poate exista o limită la dimensiunea parolelor însă restricția ar trebui să fie mai mare
+de 64 de caractere suportând și caracterele UNICODE nerestricționate de reguli precum
+o anumită compoziție permițând folosirea de unelte de memorare a unor parole ce nu exipră
+ce sunt verificate pentru a preveni prezența acestora într-o bază de date de parolă existente
+și oferirea utilizatorului unei pagini în care își poate observa activitățile și dispozitivele.
+Pe lângă acestea, pot exista secrete, adică date senzitive care au ca scop funcționarea
+microserviciului într-un anumit mediu, acestea pot fi perechi de chei asimetrice publice/private
+dar și de API. Diferența dintre acestea și parolele sunt faptul că noi administrăm modul lor
+de viață, controlând crearea, distribuirea, stocarea, monitorizarea și schimbările. În acest context,
+în funcție de modul deployment-ului putem folosi caracteisticile acestora, Kubernetes prezintă
+o formă simplificată de secret management, acestea sunt memorate în memorie RAM și definite prin
+perechi chei-valoare iar în interiorul pod-ului sunt accesate sub forma de fișiere montate local,
+limitarea lor este că orice schimbare a secretului nu va avea efect decât atunci când pod-ul este
+restartat sau putem folosi platforme specializate precum Hashicorp Vault ce oferă o soluție
+complexă în acest domeniu. Implementând o metodă de rotație ne permite să generăm chei atunci
+când avem nevoie pentru o perioadă scurtă de timp, astfel dacă acesta este compromisă
+atunci putem limita pagubele ce pot fi produse, în același timp revocarea ne ajută
+în cazul conștientizării unei expuneri iar acestea ar trebui să ofere acces doar la
+resursele de care avem nevoie.
+
+Securitatea aplicației nu se referă strict la ea ci și la modul cum interacționăm cu ea,
+adică prin infrastructură. Trebuie să fim la zi cu actualizările sistemului pe care
+aplicația rulează, dacă folosim infrastructură din cloud probabil acestea sunt făcute deja.
+Alte servicii pe care operatorii cloud le oferă sunt opțiunile de backup și encriptare a
+datelor la idle. Backup-urile ne permit să ne întoarcem la versiuni anterioare ale aplicației,
+astfel nu avem nevoie de backup-ul unei mașini propriu zise ci doar a modului de a ajunge în aceași stare.
+Codul și imaginile proceselor sunt deja track-uite prin VCS, folosind infrastructură ca și cod sau
+GitOps atunci avem și configurarea sistemului, rămând doar datele utilizatorilor ce în general
+se fac prin baze de date ce probabil vin cu versiunile proprii de backup în funcție de
+tehnologia aleasă. Pentru ca back-up-urile să fie eficiente, trebuie să avem încredere că acestea
+funcționează astfel putem să creăm un proces în care frecvent facem restaurare a backup-ului
+pentru a fi testat.
+
+Microserviciile funcționează prin comunicarea la distanță prin diferite rețele, astfel se disting două
+cazuri, întrucât microserviciile sunt lansate într-un loc în care avem control total și
+putem identifica orice neregularitate, putem avea încredere deplină că atunci când vine
+o cerere din interior, aceasta vine de la un serviciu de încredere. În partea opusă apare
+conceptul de zero încredere, în care toate serviciile care încearcă să ne acceseze sunt deja
+compromise, în acest caz trebuie să luăm precauții. Acesta este un mod de gândire specific
+securității, astfel cererile trebuie inspectate iar datele ce sunt comunicate trebuie să fie criptate.
+Atunci când construim un sistem, ar fi dicil ca acesta sa fie descris ca cel din ultimul caz,
+iar siguranța ar putea fi afectată dacă ar fi ca în cel din primul, astfel putem să le
+folosim pe amândouă în funcție de datele pe care le folosim.
+
+Microserviciile vor face mereu schimb de date, fie ele către un singur alt microserviciu,
+fie către mai multe. Din acest motiv am vrea ca aceste date să nu fie interceptate
+de către un terț. Dacă comunicarea este făcută prin HTTP putem folosi TLS pentru a securiza traficul,
+iar dacă comunicarea se face printr-o aplicație de comunicare de evenimente atunci
+putem consulta documentația platformei și să găsim modalități de securizare. Atunci când
+dorim să securizăm o comunicare, sunt câteva puncte pe care le urmăm. Una din ele este
+stabilirea autenticității server-ului, astfel serviciul care face cererea vrea să știe dacă
+cel către care face cererea este chiar cel căruia vrea să îi facă cererea. Astfel de cazuri
+au făcut probleme pe Internet, astfel s-a dezvoltat HTTPS pe care îl putem folosi sub diferite
+forme. În același sens, serverul ar vrea să cunoască dacă clientul este chiar cel care încearcă
+să facă cererea. Astfel de cazuri nu prea există pe Internet-ul public întrucât serverele sunt accesibile,
+iar autentificarea clientului nu este o prioritare, mai ales când utilizatorii folosesc
+lucruri precum combinații de autentificare ce cuprind parole. În cazul microserviciilor
+putem folosi protocoale precum Mutual TLS pentru a stabili autenticitatea clientului. Implementarea
+acestuia ar fi fost dificilă în trecut fiind o problemă distribuirea certificatelor însă
+datorită uneltelor precum Hashicorp Vault acestea devin mai ușoare. După ce participanții
+la comunicare sunt autentificați aceștia își doresc ca mesajele lor să fie securizate.
+În acest sens ne interesează dacă mesajul poate să fie văzut de un terț, însă folosind
+HTTPS acesta va cripta datele folosind cheile publice iar cel care le decriptează va folosi cheia
+sa privată, în același mod ne interesează dacă datele au fost modificate, pentru asta putem folosi
+HMAC-ul prin calcularea un hash asupra datelor trimise pe care recipientul le poate calcula
+pentru și să vadă dacă acestea au fost modificate.
+
+După ce securizăm comunicarea, a doua prioritate este securizarea stocării, pentru asta putem folosi
+o varietate de unelte, în general majoritate distribuitorilor de infrastructură cloud
+oferă modalități de encriptare iar majoritatea bazelor de date oferă același lucru. Însă această
+criptare poate deveni costisitoare, și din privința procesorului ce ar trebui constant să lucreze
+dar și a spațiului de stocare necesare, din acest motiv ar trebui să ne limităm datele salvate
+și să encriptăm orice dată primim și să decriptăm doar atunci când fără aceasta nu am putea să continuăm
+operațiunile.
+
+O altă problemă a microserviciilor este modul de autentificare și autorizare. Într-o aplicație monolitică,
+aceasta nu era o problemă la fel de mare întrucât o dată autentificat toate cererile erau rezolvate
+de aceași entitate, însă în cadrul unei arhitecturi decuplate acest lucru devine mai delicat.
+Prima necesitate de autentificare este cea a microserviciilor, pentru a valida componentele
+ce participă la comunicare, în acest sens putem folosi cheile pentru mutual TLS sau
+chei de API pentru a cripta cererea și server-ul ar valida că acel client chiar există.
+Însă dificultatea mai mare este autentificarea utilizatorilor. Întrucât aceștia folosesc mai multe
+microservicii, ar trebui să se autentifice către fiecare, iar acestea ar primi informația despre utilizator.
+Însă acest lucru este un inconvenient pe care vrem să îl evităm. Soluția ar fi crearea unui loc
+central în care utilizatorul se autentifică iar după cererea este redirecționată către cererea
+inițială căreia îi lipsea autorizația. Acest lucru este întâlnit la companiile ce oferă mai multe
+servicii precum Microsoft la care avem Outlook, OneDrive, Teams, acestea au o pagină comună
+de conectare, iar conectarea la una îți oferă posibilitatea de a te conecta la toate celelalte
+cu ușurință. Acest sistem ar funcția prin intermediul unui intermediar care ar căuta dacă
+utilizatorul este autentificat și dacă cererea pe care încearcă să o facă necesită autentificare și
+este fie lăsat să își termine cererea fie către pagina de autentificare. O astfel de abordare
+ar avea probleme întrucât doar prima cererea ar primi informații despre utilizator, iar
+următoarele ar trebui să aibă încredere că microserviciul cu care comunică nu este compromis.
+Pentru a rezolva această problemă am putea încerca să facem autentificarea în cadrul fiecărui microserviciu,
+însă ar trebui să reutilizăm cod și deși am putea folosi librării nu ar fi sustenabil. O metodă
+de autentificare poate fi folosira de JSON Web Tokens, aceștia pot fi semnați de către
+sistemul de autentificare central, pasați către utilizator care de fiecare dată când va face un request
+își va trimite token-ul, iar autentificarea de la un microserviciu la alt microserviciu s-ar putea
+face cu ușurință întrucât ar consta doar în trimiterea token-ului. În componența token-ului
+avem un header (ce conține informații despre algoritmul de semnare), datele și semnătura
+propriu zisă. Deși JWT-urile sunt ușor de folosit, acestea nu sunt perfecte. O primă problemă
+este setarea unui timp bun de expirare. Fiecare token are o dată de expirare setată de noi,
+după trecerea acestui timp, Token-ul ar trebui să fie considerat invalid, astfel pot apărea
+probleme în tranzacțiile de lungă durată, însă dacă timpul de expirare este mai ridicat
+atunci dacă este compromis se pot provoca mai multe daune întrucât nu există o metodă ușoară
+de a invalida un JWT. De asemenea, folosirea JWT-ului include administrarea informațiilor
+necesare pentru criptare, adică cheile și timpul de expirare ce poate fi greu de sincronizat
+între toate microserviciile care ar avea nevoie, însă unelte precum Vault ne poate ușura munca
+în acest context.
