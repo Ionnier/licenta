@@ -1,0 +1,121 @@
+\subsection{Stabilitate}
+Într-un proces clasic de dezvoltare a software-ului în stilul Waterfall, după ce aplicația
+este construită, testată și trece de audit-ul echipei de securitate aceasta va fi lansată și
+se va ajunge în starea de mentenanță. Însă modern, dezvoltarea aplicației nu se termină
+aici ci se va dori extinderea, consumul aplicației de către diferite interfețe, scăderea
+numărului de erori și tratarea acestora dar și eficientizarea sistemului.
+
+Fiind implicată conexiunea prin Internet dar și globalizarea, utilizatorii se așteaptă
+ca serviciile pe care le oferim să fie disponibile 24/7. O arhitectură distribuită ne
+permite să creștem această disponibilitate întrucât poate să se întâmplă ca un serviciu
+pe care îl creăm să fie căzut, celelalte fie nu ar fi afectatate sau ar rula într-o variantă
+mai limitată.
+
+Pentru a crește reziliența sistemului putem definii anumite arii în care aceasta acționează.
+Când aplicația poate să trateze erori pe care le anticipăm, precum tratarea erorilor sau
+reîncercarea cererilor căzute. Din această cauză putem să construim soluții ce devin mai complicate,
+de exemplu adoptarea Kubernetes pentru a beneficia de facilitățile acestuia precum
+menținerea constantă a stării, introducem complexitate și un efort ce poate să creeze mai multe
+probleme. Capacitatea de a absorbi atunci când se produce o anomalitate sporește stabilitatea
+sistemului, concentrarea pe îmbunătățirea metodelor de prevenire al cazurilor de acest
+tip ne poate lăsă vulenaribili, astfel putem crea metode de recuperare sau metode alternative
+de funcționare atunci când apar probleme în sistem. Creșterea rezilienței ar trebui să
+fie făcută constant și să ne adaptăm la evoluția sistemului.
+
+Deși putem încerca să reducem șansele de apariție ale unei probleme, acestea nu pot fi evitate,
+iar acestea pot apărea la orice nivel al aplicației inclusiv în afara ei la partea de infrastructură.
+Însă tratarea tuturor evenimentelor care ar apărea ar fi obositor și nu ar da randament,
+întrucât pot fi microservicii în sistemul nostru la care ne putem aștepta să cadă și să
+nu creeze perturbări la fel de mari. Astfel putem să testăm monitorizăm sistemul și
+să calculăm timpi de răspuns, dacă aceștia nu sunt în parametrii pe care îi dorim
+putem folosi sisteme de scalare, sau a timpului în care sistemul este căzut și stabilirea
+dacă aceasta este acceptabilă la fel și cât de multe date putem să pierdem.
+
+Pentru a continua funcționalitatea sistemului în procent cât mai mare, uneori e nevoie
+să facem compromisuri, astfel dacă cunoaștem că un microserviciu de care suntem
+dependenți este căzut, putem să îl ascundem, astfel utilizatorul are o experiență mai proastă,
+însă sistemul încă este disponibil. Metode de menținere a stabilității sistemului pentru
+astfel de situații pot fi, introducerea de time-out-uri în cereri, astfel clienții nu așteaptă
+mai mult decât trebuie. Durata după care se introduce un timeout poate fi calculată
+după rularea testelor și adjustată conform telemetriei. Însă unele erori pot să fie
+doar temporare, iar o reîncercare probabil ar fixa problema, în acest caz putem
+introduce un sistem de reîncercare în funcție de eroare pe care o primim. Aceste două metode
+de tratare a eșecului totuși sunt costisitoare din punctul de vedere al timpului. Întrucât
+conexiunile încete și un număr ridicat de reîncercări ar face ca clientul să trebuiască
+să aștepte foarte mult, chiar și pentru o eroare. În acest caz putem crea un fel de siguranță
+ce are scopul ca atunci când avem funcționalitatea normală aceasta să continue, iar atunci
+când avem probleme în sistem, clienții care ar încerca să acceseze resursele afectate ar primi
+un răspuns cât mai rapid, astfel nu ar cauza frustrări pentru aceștia. Erorile se pot
+propaga, astfel crearea unei izolări între microservicii ar cauza ca acestea își afectează
+starea reciproc. În acest sens putem crea separări logice în care comunicare între microservicii
+se face printr-un intermediar care în absența unuia dintre participanți va salva lucrurile
+ce trebuie să le trimită și le va trimite atunci când va fi disponibil, sau izolare
+fizică, astfel să ne asigurăm că bazele de date ale microserviciilor dar și aplicațiile în sine
+sunt separate între ele, astfel dacă un server cade, nu ar afecta mai multe servicii în același timp.
+Deși acest lucru este mai costisitor putem să folosim asta și să coordonăm metodele
+de eșec, astfel dacă știm că funcționalitate unui serviciu este puternic afectată
+de un altul, atunci acestea pot fi grupate și dacă inevitabilul se întâmplă cele două
+vor cădea împreună. În același stil putem să creștem numărul de apariții ale unui microserviciu,
+astfel dacă unul din ele este căzut, avem alte clone ce îi pot lua locul. Platforme precum
+Kubernetes ne permite să facem acest lucru cu ușurință. În același stil, putem să trimitem
+mai multe cereri de mai multe ori, acest lucru funcționează dacă cererile create și modul
+lor de prelucrare este idempotent, adică de oricât de multe ori este aplicat, acesta
+va da mereu același rezultat oricât de multe rulări am face.
+
+În construirea unui sistem bazat pe microservicii stabil am discutat despre metode de
+eficientizare și de îmbunătățire a rezilienței în care folosim mai multe baze de date sau
+multiple instanțe ale unui microserviciu. Există o teoremă ce a fost demonstrată și matematic ce
+spune că putem avea consistență, disponibilitate (avalability) și tolerare a separărilor
+(partition tolerance) însă dintre acestea putem să alegem în sistemul nostru doar două dintre ele,
+a treia neputând fi atinsă. Consistența reprezintă ca oricare din instanțele ale unui microserviciu,
+toate ar oferi același răspuns pentru aceași cerere. Disponibilitatea reprezintă capacitatea
+unui microserviciu de a primi un răspuns iar toleranța separării reprezintă capacitatea
+sistemului de a manevra incapacitatea serviciilor de a comunica între ele.
+
+Renunțând la consistență ar însemna ca atunci când avem mai multe microservicii de același tip ce comunică
+cu o bază de dată, dacă nimerim la noduri diferite am primi răspuns diferit. Acest lucru se
+poate întâmpla atunci când baza de date este formată din mai multe baze de date, unele
+destinate doar citirii iar una doar pentru scriere. În acest context, sincronizarea
+dintre cele două tipuri de baze de date este pe moment întreruptă. În general putem
+sacrifica un pic din consistență în funcție de importanța datelor cu care lucrăm, însă
+ne așteptăm ca sincornizarea să se facă la un moment dat, cu cât aceasta întârzie cu atât
+va fi mai dificil de executat, iar dacă refuzăm scrieri atunci când sincronizarea
+este lentă o să menținem consistența ridicată dar disponibilitatea scăzută.
+
+Consistența este greu de atins întrucât necesită mulți pași pentru menținerea ei, iar interogarea
+datelor se face inițiind tranzacții pentru a ne asigura că datele pe care vrem să
+le accesăm sunt cu adevărat la fel, iar dacă aceste noduri nu sunt disponibile, atunci pentru a
+nu sacrifica consistența vom refuza cererea, astfel scăzând disponibilitatea. Crearea unui mod
+de partajare a datelor între mai multe noduri este dificilă, astfel ar fi bine să folosim
+soluții deja implementate, Consul oferă astfel de servicii pentru disitribuirea elementelor
+de configurare.
+
+Negarea tolerării separări este imposibilă în cadrul unui sistem distribuit, întrucât aceasta
+ar însemna să renunțăm la microservicii și să revenim la o arhitectură monoliticăm în care
+nu există separare. Astfel singurele tipuri de sisteme pot fi CP sau AP, adică cele care
+renunță la disponibilitate, respectiv la consistență, însă în lumea reală acesta nu
+este neapărat aplicabil. Putem în cadrul unui singur sistem să avem mai multe tipuri de alegeri,
+în funcție de datele și tehnologia cu care lucrăm.
+
+Testarea stabilității unui sistem distribuit este destul de complicat și s-ar face la mai multe nivele.
+Un termen popular, original provenit de la Netflix, este „chaos engineering” (ingineria haousului)
+acesta are ca rol testarea rezilienței sistemului. În general, poate fi considerat
+ca doar rularea unor unor unelte și interpretarea acestora, ceea ce nu e greșit, însă
+aceasta are ca scop îmbunătățirea încrederii atunci când apar probleme ce nu pot fi
+prevăzute, ceea ce se poate întâmpla în orice moment. Netflix se bazează într-o proporție
+foarte mare de infrastructura ce provine de la AWS, însă la un moment dat aceștia au fost
+forțați să efectueze lucrări de mentenanță asupra unei întregi zone de serviciu, astfel
+se putea crea o gaură mare de down-time pentru clienții Netflix (dar și pentru ceilalți ce se
+bazează pe AWS). Ei au creat un serviciu numit Chaos Monkey ce are ca scop testarea sistemului
+la apariția unor probleme neprevăzute în cadrul infrastructurii. În cadrul serviciului
+putem întâlnii mai multe stagii precum, Chaos Gorilla ce are ca scop căderea unei zone de disponibilitate,
+adică a unei regiuni mai mici (Europe Central), Chaos Kong, simulează căderea unei regiuni întregi,
+de exemplu Europa, Latency Monkey are ca scop creșterea latenței în cererile executate
+de clienți pentru a simula încetiniri în trafic, Conformity Monkey are ca scop
+închiderea instanțelor ce nu sunt în conformitate cu practicile cerute de sistem,
+Doctor Monkey monitorizează starea fiecărei instanțe și oprește sistemele ce nu sunt tratate în timp util,
+Janitor Monkey observă infrastructura ce nu este utilizată și o oprește după un anumit timp,
+Security Monkey are ca scop închiderea serverelor ce nu au toate practicile de securitate
+necesare.
+
+\subsection{Scalare}
