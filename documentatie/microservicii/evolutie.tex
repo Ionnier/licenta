@@ -119,3 +119,107 @@ Security Monkey are ca scop închiderea serverelor ce nu au toate practicile de 
 necesare.
 
 \subsection{Scalare}
+
+În timpul prezentării microserviciilor, un avantaj al acestora a fost mereu flexibilitatea,
+în același stil am menționat posibilitatea îmbunătățirii sistemului prin replicarea unor
+anumite funcții ale acestuia, fie pentru administrarea a mai mult trafic, fie pentru
+îmbunătățirea disponibilității și eliminarea timpilor în care serviciul este inaccesibil.
+Scalarea poate fi făcută în mai multe moduri, în funcție de necesitățile și de problemele
+pe care le-am rezolva.
+
+Scalarea verticală se referă la îmbunătățirea sistemului de calcul
+prin aducerea mai multor resurse de calcul, fie prin îmbunătățirea sistemelor de I/O,
+adică folosirea unor SSD-uri rapide față de HDD-uri clasice, fie de calcul prin
+îmbunătățirea procesorului și a memoriei RAM. În cazurile clasice, când noi suntem
+cei care hostăm aplicația, aceasta poate fi mai de lungă durată întrucât sunt mai multe
+echipe implicate, însă având în vedere sistemele cloud, scalarea verticală se face foarte rapid
+și nu necesită configurări adiționale. Însă acest tip de scalare nu este o soluție ce va
+funcționa la nesfârșit, se observă că legea lui Moore nu se mai aplică, astfel îmbunătățirile
+tehnologice nu sunt la fel de drastice în fiecare an. Nu ar trebui să ne bazăm că putem
+schimba mașina de calcul, mai ales că folosirea tehnologiilor foarte puternice ar deveni
+costisitor. În acest scop, putem folosi algoritmi mai eficienți sau alte tipuri de scalare.
+
+Scalarea orizontală se referă la multiplicarea instanțelor ale unui serviciu, în acest
+stil putem crește numărul de procesări ce se pot face în același timp. Implementarea
+cea mai simplă se poate face folosind un balansator de încărcătură (load balancer) ce va
+dirija traficul asigurând că traficul este egal pe fiecare dintre microservicii. Acest lucru
+este posibil atunci când putem să distribuim o acțiune către mai multe locuri,
+însă putem avea situația în care distribuim sarcinile din interiorul unei cereri,
+astfel o altă implementare ar fi separarea unor cerințe din interiorul unei cereri
+către mai multe microservicii ce au unic, de procesare, iar scalarea s-ar face asupra acestora.
+Am mai menționat și scalarea bazei de date prin folosirea de replici de citire ce sunt sincornizate
+cu baza de date destinată scrierilor. Limitările acestui tip de scalare se rezumă la dificultățile de
+implementare, astfel putem întâmpina mai multe probleme de rețelistică sau de sincronizare a datelor
+sau chiar recrearea unui nou mod de desfășurare destinat acestui stil distribuit de lucru.
+
+Partiționarea datelor se referă la distribuirea cererilor către un anumit set de microservicii
+în funcție de natura cererii. Astfel, putem avea microservicii de același fel, cu funcționalitate
+identică însă care se ocupă de date diferite. Aceasta poate să fie o îmbunătățire întrucât
+am avea sisteme de procesare dedicate unor anumite cereri, astfel dacă am întâlnii mai mult
+trafic într-un anumit loc, am putea planifica o partiționare din nou, iar dacă nu avem
+atunci să regrupăm anumite date. Implementarea se poate face în funcție de tehnologie, astfel,
+dacă baza de date pe care noi o folosim oferă asistență în acest loc (de exemplu Cassandra)
+atunci putem să o facem la nivelul acesteia, sau să implementăm servicii de proxy ce redirecționează
+traficul către microserviciile ce ne oferă funcționalitatea de care avem nevoie. Acest tip
+de scalare este eficient când avem suntem constrânși din punct de vedere al scrierilor,
+întrucât acestea nu pot fi eficient distribuite în alt mod. Limitările pot fi
+faptul că nu se aduce o îmbunătățire la fel de mare și în funcție de modul în care ne facem
+grupările ne poate duce să avem un grup de persoane afectat, astfel putem grupa
+acest tip de scalare cu cele precedente pentru efectivitate mai bună. În același stil,
+stabilirea modului de grupare și dimensiunile partițiilor pot fi dificil de stabilit.
+
+Majoritatea formelor de scalare încercau să nu modifice structura aplicației prea mult,
+însă după ce epuizăm aceste forme, putem încerca extinderea aplicației prin decuplarea
+funcționalității în alte microsisteme. Beneficiul acestui tip ar fi posibila eficientizare
+a procesului întrucât s-ar putea parta încărcătura însă ar crește complexitatea sistemului
+și poate cauza degradări ale perfomanței întrucât s-ar introduce o cerere pe rețea nouă,
+astfel trebuie să ne asigurăm că implementarea acestui tip de funcționalitate ar avea
+sens.
+
+Sunt multe cazuri în care soluțiile pe care le creăm sunt mult mai complicate decât ceea ce
+ne cere sistemul. Toate implementările de scalare sunt incluse în această frază, astfel
+nu ar trebui să adăugam complixate fără să fie dovedit că am avea nevoie. În general,
+există multe caracteristici introduse de dezvoltatori însă care nu sunt folosite mai niciodată
+de către utilizator, însă atunci când aceste funcționalități au șansa să strice aplicația
+ar trebui să fie evitate și aplicate doar la nevoie. Iar în acest context, întrucât microserviciile
+ne oferă o flexibilitate ridicată putem să aplicăm la un anumit nivel toate tipurile de scalare
+în loc să alegem doar una din ele.
+
+Există și conceptul de auto scalare, în general ne putem gândii ca sistemul să fie mai puternic
+accesat într-un anumit interval, astfel putem să creștem instasnțele de microservicii
+în această perioadă. Ofertanții de infrastructură cloud ne oferă diferite metode
+de autoscalare deja în platformă și sub diferite forme, de exemplu atunci când ajungem
+la un anumită încărcătură pe un anumit nod pe o anumită perioadă putem să mai creăm o
+instanță automat. Astfel autoscalarea poate fi reactivă sau predictivă, ambele aducând
+îmbunătățiri însă trebuie să analizăm datele, ce poate fi făcut cu algoritmi complecși
+precum cei de Inteligența Artificială / ML.
+
+\subsection{Caching}
+
+Caching este o metodă de a salva informația cerută la un moment dat de către un utilizator
+și prevenirea recalculării modului de a ajunge la date și doar servirea aceluiași răspuns.
+Atunci când putem să oferim același răspund întrucât l-am salvat putem spune că avem
+un „cache hit” și când nu, un „cache miss”
+
+Există multe motive pentru care am adopta această tactică, întrucât sistemul de cachare
+are ca rost prevenirea recalculărilor inutile, putem îmbunătății performanța sistemului
+întrucât unele dintre aceste calcule pot include cereri pe Internet ce adaugă latență.
+În același stil putem eficientiza traficul dacă avem cachate anumite răspunsuri
+pe care doar le livrăm de mai multe ori, astfel întrucât nu aduc complexitate pot fi
+scalate cu ușurință. Deși ar scădea consistența, existența unui sistem de cache ne-ar putea
+permite să rulăm o anumită perioadă de timp fără ca sursa obținerii datelor să fie disponibilă,
+în acest stil putem ascunde problemele de puțină durată întrucât avem deja o sursă de date
+introdusă.
+
+Această tehnică poate fi aplicată la mai multe nivele, la nivelul clientului, putem salva
+în interfață datele, de exemplu pe telefoane mobile putem face o dată o cerere către baza
+de date, salvăm rezultatul și acesta va fi disponibil chiar și atunci când nu avem Internet,
+acest lucru este vizibil în rețelele de socializare care atunci când deschidem aplicația
+mereu au anumite postări preîncărcate, această interacțiune ne permite să salvăm baterie
+și să nu creăm prea multe cereri, în același stil conținutul pe care îl afișăm utilizatorului
+este mai greu de controlat și poate diferi de la unul la altul. Cacharea la nivel de server
+ne permite să evităm anumite operațiunii de lungă durată pe care ne așteptăm să nu se întâmple
+foarte des, astfel putem să trimitem un răspuns salvat. Această operațiune ne permite să
+avem un control mai mare asupra datelor pe care le salvăm, însă clientul tot ar trebui să consume
+resurse făcând cererea. În acest stil putem să salvăm informații ale unei cereri specifice,
+iar dacă aceasta este repetată atunci se va trimite răspunsul vechi.
