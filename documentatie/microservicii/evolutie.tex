@@ -223,3 +223,28 @@ foarte des, astfel putem să trimitem un răspuns salvat. Această operațiune n
 avem un control mai mare asupra datelor pe care le salvăm, însă clientul tot ar trebui să consume
 resurse făcând cererea. În acest stil putem să salvăm informații ale unei cereri specifice,
 iar dacă aceasta este repetată atunci se va trimite răspunsul vechi.
+
+Atunci când vorbim despre salvarea unei informații prin caching, trebuie să luam în
+vedere modul în care ștergem această salvare. Dacă nu am luat asta în considerare atunci clientul
+ar vedea informații destul de vechi ce nu ar fi actualizate. Cel mai simplu mod de implementare
+este specificarea unui timp la care informația din cache expiră. Intervalul poate fi dificil
+de ales iar în același timp pot exista cazuri în care datele se actualizează fix după ce
+clientul le înregistrează ca find cele mai recente iar în cazul în care TTL (Time To Live) este
+setat mare ar putea cauza probleme. În același fel putem eticheta fiecare cerere cu un ID,
+iar dacă ID-ul nu se schimbă atunci putem trimite un răspuns mult mai mic. Dacă avem o resursă
+ce este disponibilă la un anumit URI, dacă am face cerere pentru aceași resursă putem trimite
+un identificator al datelor pe care le avem iar server-ul ne poate trimite fie date noi,
+fie faptul că datele nu s-au schimbat. O altă metodă de invalidare a cache-ului poate
+fi folosirea de notificări, astfel server-ul va trimite fiecărui client care a cache-uit
+un anumit mesaj, fie cu date noi fie doar faptul că au fost invalidate. Aceasta implementare
+ar aduce avantajul că nu ar exista date vechi pentru clienți însă implementarea unui astfel
+de mecanism este complexă și poate consumă destul de multe resurse. De asemenea, cache-ul
+poate fi modificat fix după ce resursa se schimbă, o astfel de abordare ar avea sens
+dacă am face cache-ing pe un server, sau să îl folosim ca un buffer în care scriem mai întâi
+în cache și după acesta se va sincroniza cu serverul.
+
+Caching-ul este o metodă de optimizare a traficului, astfel ar trebui să fie folosit
+doar acolo unde am considera că ar crea o îmbunătățire a sistemului, la fel ca la scalare
+acesta poate fi introdus treptat, deși poate face parte încă din arhitectura originală
+însă putem să învestim resurse în ceva în care nu ar fi necesar și am aduce complexitate
+într-un loc în care poate nu e nevoie.
