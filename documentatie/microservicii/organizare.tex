@@ -19,3 +19,52 @@ metode de schimbări la orice nivel, astfel atunci când avem o inițiativă, ac
 de implementat și nu depindem de echipe exterioare pentru care trebuie șă așteptăm 
 o implementare.
 
+Construirea unei interfețe grafice poate devenii dificilă. În cadrul unei companii
+ce oferă mai multe produse putem fi tentați să creăm o echipă dedicată pentru aplicațiile
+pe care utilizatorii le-ar folosi, astfel aceasta ar fi consistentă tuturor. Această abordare poate
+crea probleme atunci când vrem să lansăm caracteristici noi, de aceea o idee mai bună ar fi
+crearea unei echipe ce va lucra în cadrul mai multor echipe, având posibilitatea să schimbe
+proiectele.
+
+Organizarea construirii interfețelor grafice poate fi făcută în mai multe moduri.
+Cea mai simplă variantă presupune existența unei aplicații monolitice, în cadrul
+acesteia consumăm API-urile propriu zise fără a face vreo optimizare modului cum
+sunt făcute. Dezavantajul unei astfel de abordări este decuplarea între backend și frontend
+dezvoltarea caracteristiciilor acestora nu poate fi la fel de bine coordonată. În același stil,
+crearea multor cereri poate să cauzeze probleme legate de memorie, astfel acestea nu sunt
+efectuate eficient.
+
+O versiune mai avansată bazată pe framework-urile noi de dezvoltare este microfront-end-uri,
+în cazul acesteia echipele furnizează un UI ce poate fi lansat independent de UI-urile
+existente. O astfel de abordare le permite echipelor să își creeze UI-ul independent de celelalte
+și acestea rămânând să se lanseze aproape independent, dar uneori tot combinat.
+
+Această abordare poate fi implementată în mai multe moduri. Una dintre acestea este decompoziția
+site-ului pe pagini, fiecare echipă fiind responsabilă de un anumit endpoint de pagini pe
+site-ul mare. Aceasta le permite să fie independente întrucât livrarea paginilor este
+independentă de paginile existente pe care server-ul trebuie să le arate.
+
+O abordare mai dificlă de implementat, este separarea unei pagini în funcție de secțiile
+pe care vrem ca acestea să le cuprindă, astfel fiecare echipă ar fi responsabilă de o componentă
+ce apare pe o pagină la un anumit moment. Implementarea unei astfel de soluții ar fi ca
+fiecare echipă să își construiască elementele ce vor să fie disponibile pe website și crearea
+unei metode de agregare ale tuturor elementelor create. Din acest motiv, deși elementele sunt
+separate acestea tot trebuie să fie integrate, iar crearea unui comportament împărțit
+în cadrul mai multor elemente poate fi dificilă.
+
+Unul din dezavantajele a unui front-end monolitic era numărul mare de cereri ce ar fi trebuit să
+fie făcute către mai multe microservicii pentru o singură pagină. Pentru a rezolva problema aceasta
+putem să folosim un intermediar ce are ca rol această agregare a datelor, astfel de pe dispozitiv
+facem un singur call însă în spate sunt făcute mai multe. Dificultățile implementarii ar consta în
+coordonarea echipelor, întrucât acest intermediar nu ar avea o echipă directă ci toți ar contribui la el.
+În același stil ar exista dificultăți de tratare al numărului de informații pe care tipuri
+de dispozitive le-ar folosi dar și de autentificare, întrucât totul devine agregat de un intermediar ce
+ar trebui să aibă acces la toate resursele pe care le oferim.
+
+Oferirea de asistență pentru diferitele platforme ne-a dus la crearea conceptului de Backend for Frontend,
+astfel pentru fiecare tip de dispozitiv ce ar avea nevoie să ne acceseze sistemul,
+am crea un backend specializat ce s-ar ocupa doar de o anumită experiență. Această abordare poate
+avea sens dacă se fac multe apeluri peste rețea și dacă echipele de front end sunt decuplate de cele de backend.
+Implementarea poate fi făcută de exemplu folosind GraphQL.
+
+\subsection{Structură}
