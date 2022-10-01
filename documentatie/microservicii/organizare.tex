@@ -68,3 +68,66 @@ avea sens dacă se fac multe apeluri peste rețea și dacă echipele de front en
 Implementarea poate fi făcută de exemplu folosind GraphQL.
 
 \subsection{Structură}
+
+Nu este ceva nou faptul că aplicațiile mari sunt sunt create de mai multe persoane. Acestea pot fi
+organizate în mai multe feluri și în același timp, fac parte din mai multe echipe și dintr-o
+organizație ierarhică în cadrul companiei. Toate acestea au efect asupra modului în care
+software-ul este dezvoltat.
+
+În „How Do Committees Invent” publicat în Datamation în Aprilie 1968, Melvin Conway afirmă
+că „Orice organizație ce crează un sistem, inevitabil va crea un design în care structura
+va copia structura de comunicare a companiei” („Any organization that designs a system (defined more broadly here than
+just information systems) will inevitably produce a design whose structure is a copy of the organization's
+communication structure.”). Această „lege” practic afirăm că dacă am avea mai multe echipe ce ar
+trebui să se ocupe de un sistem, atunci acestea își vor repartiza părțile astfe încât să lucreze fiecare,
+deci se va ajunge asemănător la structura companiei.
+
+Modul de organizare în companie dar și al echipelor influențează evoluția sistemului. Astfel,
+unul din obiectivele pe care le putem crea este crearea independenței echipelor, acesta duce
+la crearea unor organizații decuplate ce poate duce la eficientizarea modului de lucru.
+
+Există probleme al căror eficientizare se poate face prin creșterea numărului de persoane,
+în acest caz există multe exemple atunci când era prezentată regula de trei simplă, precum 
+muncitorii pe șantier, aceștia au anumite cerințe ce pot să se desfășoare în paralel, astfel
+adăugarea de mai multe persoane ar apropia data finalizării. Însă unele probleme nu se 
+rezolvă în același stil, în absența capacității de paralelizare a task-urilor s-ar putea să 
+înrăutățim situația. 
+
+În acest context, alegerea unui număr potrivit de persoane într-o echipă poate fi dificlă.
+Aceasta trebuie să aibă suficiente persoane în cât să fie independente. În cadrul Amazon,
+s-a format conceptul de „Two-Pizza Team”, astfel în mod colocvial o echipă ar trebui să poată
+fi suficient de mare încât să nu exite probleme în împărtășirea a două pizza în cadrul lor, 
+și să fie suficient. Comunicarea ar trebui să fie eficientă în cadrul echipei iar între echipe
+să fie limitată pentru a se preveni co-dependența în cazuri mari pentru că scopul 
+este crearea unor echipe autonome.
+
+Crearea unor echipe autonome duce la crearea unor deținători asupra microserviciilor create
+de aceștia. Aceasta se numește o deținere puternică asupra acestuia, astfel doar echipa 
+care deține microserviciul poate să dețină ce elemente intră în cod. Acest lucru se face
+prin intermediul pull request-urilor, avantajul fiind crearea unui microserviciu stabil 
+întrucât singurele modificări aduse sunt evaluate de persoane ce cunosc foarte bine proiectul.
+
+În mod opus, putem avea microservicii ce au scop comun, astfel nu sunt deținute de nimeni și 
+oricine poate aduce modificări acestuia. Acest mod de organizare ne poate aduce posibilitatea
+să aducem modificări mult mai rapide, însă necesită ca echipele ce lucrează asupra acestuia
+să se coordoneze mai bine, mai ales când intră în discuție tehnologiile utilizate.
+
+Scopul final al organizării este de a eficientiza procesul de dezvoltare. Pentru a face asta, 
+pot exista situații ce pot necesita acțiuni hibride.
+
+De exemplu, combinând cele două abordări, putem avea un microserviciu deținut de mai multe echipe.
+Acest lucru se poate întâmăla atunci când coeziunea este ridicată și decuplarea poate cauza
+mai multe probleme decât ne dorim. Însă având mai multe echipe se pot cauza probleme în modurile de lansare
+și introducerea schimbărilor ce pot strica anumite părți din alte microservicii, astfel 
+aducem câteva din probleme unei arhitecturi monolitice însă la un nivel mai mic.
+
+Pentru a crea o colaborare mai eficientă asupra codului comun, putem crea un mediu de lucru in 
+stilul open-source intern, astfel toate echipele pot contribuii însă există anumite persoane mai implicate
+în proiect care pot să aprobe shimbările. Acest mod poate avea sens și poate avea destul de eficient 
+pe termen lung însă ar trebui ca proiectul să aibă un anumite de nivel de maturitate, astfel 
+încât să existe o anumită arhitectură ce trebuie să fie urmată.
+
+Un alt concept ce poate apărea este posibilitatea creării unui microserviciu dintr-unul existent.
+Astfel putem avea o bază ce este liberă pentru toți și pentru funcționalitățile specifice 
+se poate crea un synced fork al acestuia, asemănător moștenirii din OOP. Însă adoptarea unor 
+astfel de schimbări trebuie să fie suportată de microserviciile cu care comunică.
