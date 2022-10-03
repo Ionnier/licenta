@@ -1,0 +1,126 @@
+\subsection{Mașină fizică}
+Cel mai simplu mod din punct de vedere conceptual, achiziționarea unui sistem de calcul,
+configurarea acestuia pentru a avea un sistem de operare, crearea unor conexiuni
+cu rolul de a ne face sistemul accesibil către locurile în care ar avea nevoie, descărcarea
+programului pe care vrem să îl rulăm și executarea acestuia.
+
+Această metodă are foarte multe constrângeri pe care în lumea microserviicilor sunt greu de
+tolerat. Întrucât pe această mașină rulăm o singură aplicație, resursele consumate
+vor fi doar provenite de aici, dacă sistemul nu este utilizat atunci am putea considera
+că pierdem resurse.
+
+În același stil nu avem metode ușoare de scalare, întrucât putem vedea că hardware-ul ales
+nu este potrivit pentru aplicație și am dori să le schimbăm, acest lucru este ceva complex
+ce necesită reconfigurări, migrări și cmoplexități de up-time ce sunt sezibabile.
+
+Întrucât noi suntem cei care furnizăm platforma de calcul, atunci tot noi trebuie să îi
+facem mentenață, acestea incluzând actualizări ale sistemului de operare, back-up de date
+și audit-uri de securitatea, iar acestea pot consuma mult timp.
+
+Deoarece sunt așa de multe limitări cu acest mod, în general preferăm să alegem unul din celelalte,
+însă acest mod de deployment va fi mereu valabil pentru cazurile în care este nevoie de el.
+
+\subsection{Mașină virtuală}
+
+Întrucât lansarea direct pe hardware poate fi considerată costisitoare, am putea încerca
+partajarea resurselor disponibile putând să rulăm mai multe microservicii pe aceași
+mașină. Dacă am face acest lucru direct, atunci am încălca multe din bunele practici menționate
+anterior, printre care izolarea rulării și lansării, adăugând complexitate configurăriilor.
+
+Virtualizarea ne permite să eficientizăm resursele prin partajarea acestora între mai mulți
+utilizatori. Aceasta este făcută prin crearea unor unelte ce încearcă să mimice elemtenele
+unui calculator pentru fiecare mașină virtuală, astfel aceasta nu face diferența între
+ce e fizic și ce e virtual și nu necesită o rescriere a unui sistem de operare pentru a-l
+face compatibil cu virutalizarea, astfel acestea sunt independente între ele dar și de sistemul
+gazdă putând să ruleze aproximativ orice.
+
+Fiecare mașină virtuală poate să își configureze spațiul pentru microserviciul deținut,
+acestea pot rula concomitent, astfel cantitate de resurse care este irosită este minimizată.
+Aceste mașini virtuale pot fi limitate și le putem extinde în funcție de necesități. însă
+crearea mai multor instanțe în cadrul aceleieași mașini nu va extinde posibilitățile fizice ale
+acestuia și putem să ajungem într-un caz în care pe aceași mașină rulează prea multe mașini virtuale.
+În lumea microserviciilor, astfel de grupări ar trebui evitate întrucât dacă mașina fizică
+ar cădea, atunci tot ce e în interior ar fi căzut, însă dacă ar fi mai grupate am putea
+crește viteza de răspuns dintre ele.
+
+O altă considerentă este modul în care facem rost de mașini virtuale și modul în care acestea
+sunt configurate. Furnizorii de infrastructură ne oferă API-uri detaliate, astfel sunt ușor
+de adoptat cerințelor noastre, de asemenea ne oferă facilități de auto-scalare, back-up
+și recuperare pe care în mod tradițional ar trebui să le configurăm. În mod clasic, companiile
+pot folosi platforme precum VM Ware care deși îndeplinesc nevoile din punctul de vedere
+al API-ului pe care il oferă poate fi considerat limitat.
+
+\subsection{Container}
+
+Problema mașinilor virtualizate era că atunci când le cream, fiecare dintre
+acestea devenea o mașină independentă, asta ducea la duplicare de resurse, spațiu și procesare,
+necesare pentru rularea sistemului de operare și ulterior a aplicației. Containerele
+încearcă să rezolve această problemă prin partajarea mai multor lucruri, nu doar resursele
+fizice dar și a nucelului, astfel în cadrul unui container putem rula orice sistem de operare
+însă acesta rulează ca parte a ceva comun.
+
+Procesele care rulează în container sunt suficient de bine izolate, acestea nu pot fi accesate
+din exterior și nu pot comunica cu acesta decât dacă le permitem, aceasta se aplică și între ele,
+sistemul de operare pe care rulează văzându-le ca niște simple procese.
+
+Elementul care a continuat evoluția containerelor este Docker, acesta aduce beneficiile containerelor
+însă aduce contribuțiile proprii asupra modul acestora de organizare. Acesta ne oferă asistență
+în rețelistica între containere, aduce conceptul de imagine, astfel putem abstractiza implementarea
+microserviciului și să folosim ceva generic indeferent de tehnologia folosită și ne permite
+stocare și reutilizare la fel cum am face cu o librărie. De asemenea ne oferă un API pentru
+administrarea containerelor indiferent de ce e în interior.
+
+\subsection{Aplicație în container}
+
+Crearea unor multiple containere care funcționează ca un grup poate consuma destul de multe
+resurse. Construirea unui simplu proiect în Ktor Server, bazat pe JVM îmi ia aproximativ 2 minute,
+astfel dacă am avea o colecție de programe asemănătoare ce se bazează toate pe JVM ar include
+rularea a multiplor instanțe de JVM. În acest caz am încerca să optimizăm această structură
+și să facem ca să avem un singur contianer cu scopul de a rula întreaga aplicație.
+
+Deși limităm consumul de resurse, anulăm toate eficientizarea ce ar apărea în urma
+containerizării. Rulând mai multe aplicații ce ar putea fi rulate independent introducem
+probleme în ciclul de viață al aplicației, limităm scalarea și izolarea.
+
+\subsection{Platform as a Service}
+
+Pentru a ușura experiența de lansare există servicii ce ne oferă să ne ia codul, să il
+compileze și să creeze un mediu în care să se execute. Acestea abstractizează procesul de deployment
+prin crearea unei legături între cod și platformă, pe Heroku aceasta se face prin conectarea
+repository-ul sau ca imagine de Docker.
+
+Când nu există probleme ce țin de sistem, nu apare nicio problemă în folosirea unor astfel
+de soluții, însă dacă avem nevoie de investigarea la un nivel mai adânc atunci am putea
+să vedem cum suntem constranși de aceasta.
+
+Platformele acestea ne pot fi de folos pentru a lansa un serviciu rapid însă putem deveni
+constrânși de rigiditatea și de integrarea lor în sisteme complexe. De asemenea, există
+mai multe astfel de servicii precum Heroku, Netlify sau Vercel și deși acestea fac același
+lucru e posibil ca acestea să ofere facilități diferite.
+
+\subsection{Function as a Service}
+
+O tehnologie ce încearcă se revoluționeze modul de deployment este serverless. Unul din principalele
+dificultăți în lansarea codului este provizionarea cu un server pe care acesta rulează,
+însă cu tehnologia serverless concentrarea devine asupra scrierii codului iar platforma
+pe care o lansăm se va ocupa de rularea și scalarea acestora.
+
+Diferențerea între aceste moduri de deployment este necesitatea de a avea un server
+ce lucrează constant în spate pentru a putea prelucra cereri. Cu serverless, codul rulează
+doar atunci când e invocat și acest lucru se poate face prin diferite evenimente, fie ele
+cereri în browser sau fișiere uploadate în funcție de facilitățile pe care ni le oferă platforma.
+
+Limitările acestei adaptări sunt lipsa de control asupra sistemului, întrucât funcțiile
+acestea sunt la interior containere care sunt executate la cerere asta înseamnă ca nu
+putem pregăti un mediu pentru acestea. De asemenea acestea nu pot rula la infinit pe toate platformele
+existând o limită maximă, acest lucru însemnând că nu putem rula task-uri de lungă durată pe ele.
+În domeniul serverless există noțiunea de cold start și warm start. Întrucât funcțiile nu rulează
+în continuu, la prima rulare acestea au nevoie de timp de inițializare. O dată inițializate
+acestea pot rula mult mai rapid. De asemenea, nu există conceptul de stare, funcțiile
+de acest tip nu pot accesa date ale unor rulări anterioare ci doar ce e în instanța curentă.
+
+Cu toate acestea, funcțiile de acest tip ne oferă o flexibilitate în rulare. Dacă în cazurile
+precedente, un microserviciu era asociat unei singure instanțe de mașină virtuală sau
+de container, la funcții nu e neaparat așa. Putem avea căte o funcție pentru fiecare
+serviciu sau un microserviciu format din mai multe microservicii însă pot apărea dificultăți
+în partajarea datelor din baza de date.
