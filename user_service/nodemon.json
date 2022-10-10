@@ -1,0 +1,6 @@
+{
+    "watch": ["*.go"],
+    "ext": "go graphql",
+    "ignore": ["*gen*.go"],
+    "exec": "(taskkill /IM user_service.exe /F || echo \"Not started\") && go run ."
+  }
