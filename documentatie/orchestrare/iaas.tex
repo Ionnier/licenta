@@ -1,0 +1,88 @@
+\subsection{General}
+Conceptul de închiriere de echipament nu ar trebui să surprindă pe nimeni. În general, echipamentele
+ce ar necesita o investiție semnificativă pentru o folosire extrem de rară ar permite ca împrumutarea
+acestora să nu fie o alegere proastă, de exemplu închirierea unei pereche de schiuri în contextul
+în care mergem o pentru prima dată sau o dată la o perioadă îndelungată. Compania ce închiriază schiurile
+trebuie să se asigure de buna funcționalitatea acestora iar noi plătim prețul pe care l-am negociat.
+
+Însă atunci când vorbim de infrastructură, aceasta este posibil folosită în fiecare moment pe Internet,
+rentarea închirierii ar putea provenii strict de la serviciile pe care distribuitorul le-ar oferi, astfel
+unul din motivele pentru care ai opta pentru o astfel de opțiune nu este doar pentru componenta fizică
+ci și pentru bonusurile care provin cu acestea.
+
+În lumea infrastructurii cloud, serviciile oferite pot fi variate începând de la resurse de calcul sub formă
+de platforme de procesare scalabile și actualizabile în orice moment, spațiu de stocare hostat cu servicii suplimentare
+precum criptare la rest sau redundanță, rețelistică ușor definită, sisteme de monitorizare și observare până la sisteme 
+de Machine Learning deja antrenate alături de alte servicii precum Text-to-Speech sau servicii de traducere în timp real.
+
+Prin implementarea unui serviciu de infrastructură cloud, complexitatea procurării de echipament este abstractizată
+prin adăugarea unor resurse noi virtuale, mentenanța la nivel fizic este asigurată de către provider iar în funcție
+de serviciul ales chiar mai mult din administrarea acestora, astfel ne putem concentra doar pe dezvoltarea și simplificând
+lansarea.
+
+\subsection{Extinderea limitelor}
+
+În comerțul obiectelor cu amănântul, conceptul de cumpărare în masă la un preț mai avantajos sună ușor nedrept
+însă furnizorilor să ofere servicii la prețuri foarte accesibile, din acest motiv uneori poate să fie mai 
+rentabil să folosim această abordare.
+
+Aceștia pot să creeze ferme de servere pe care să le ofere spre folosire, care deși nu sunt nelimitate, 
+ar acoperi suficiente neajunsuri, astfel putem crea aplicații ce beneficiază de această resursă nelimitată în calcul.
+
+În martie 2014, Titanfall a apărut pentru PC, Xbox One și Xbox 360. Consolele noi apărând în 2013, nu este 
+neașteptat ca să existe jocuri disponibile pentru ambele, însă în general acestea sunt dezvoltate
+ca țintă consolele vechi. În acest caz, dezvoltatorul Respawn Entertainment lucra asupra versiunii de PC și
+Xbox One în timp ce un studio extern, Bluepoint, lucra asupra versiunii vechi.
+
+Portarea unui joc ce vizează o platformă mult mai puternică către una mai slabă vine cu dificultățile ei,
+mai ales în cazul acestui joc ce este destul de complex (12 jucători iar fiecare dintre ei poate avea 
+un titan pe care îl controlează, alături de aceștia existând și entități necontrolabile ce sunt de ambele părți).
+
+În interviul dat pentru Digital Foundry \cite{leadbetter_2014} aceștia menționează dificultățile portării
+incluzând reducerea materialelor (asset) și îmbunătățirea modurilor de randare și procesare întrucât 
+Xbox 360-ul este mult mai limitat decât Xbox One-ul.
+
+Însă, un lucru special al acestui joc este faptul că este disponibil doar cu o conexiune activă la Internet,
+mai mult decât atât, acesta are doar o componentă ce conține mai mulți jucători (fără o poveste), lucru 
+ce în absența anumitor cunoștințe ar face să privesc o astfel de abordare ca o lăcomie din partea
+distribuitolui.
+
+Chiar și cu o consolă mai puternică, la începutul unei generații dezvoltatorii nu pot să fructifice
+toată această putere, astfel aceștia au creat un parteneriat cu cei de la Microsoft ca pentru toate 
+versiunile să se folosească servere ce provin din Microsoft Azure pentru a îmbunătății experiența.
+
+Cel mai simplu mod prin îmbunătățirea performanței a fost trecerea la servere dedicate, în general 
+jocurile pentru a economisi prețul infrastructurii foloseau o arhitectură de tip peer-to-peer însă 
+în cazul Titanfall acesta nu ar fi fost articol, din interviul \cite{leadbetter_2014} am extras:
+"The server performance requirements for Titanfall are pretty high, so you can't run peer-to-peer. 
+This also means you can't have a many virtual machines per physical server, 
+meaning if you've got a popular game, then you're going to need a pretty big investment in 
+server hardware.".
+
+În interviul \cite{seppala_2014} se menționează mai multe detalii în acest aspect,
+"We have all of this AI and things flying around in the world; that has obviously let us build a 
+different game than we would have if we'd have gone with player-hosted", astfel dispozitivele se pot ocupa doar de procesarea informațiilor primite
+și să nu se ocupe și de obținerea acestora
+"Because Titanfall's advanced AI is handled by the Azure servers, your Xbox's or PC's innards can be used to achieve more detailed graphics 
+and the game's silky-smooth frame rate. The Titan bodyguards, 
+dropships and legions of AI-controlled combatants are essentially free 
+from a processing-power standpoint.".
+În același articol se menționează cum serverele disponibile în mai multe regiuni, capacitatea de scalare 
+au putut duce proiectul la bun sfârșit.
+
+În articolul precedent \cite{leadbetter_2014} aceste informați despre avantajele cloud-ului se extind,
+întrucât pentru a face performanța suficient de bună a trebuit să calculeze anumite elemente direct în cloud.
+"Respawn wrote a new PVS system that worked dynamically, likely because that's much better for iteration but it need additional CPU performance we haven't got on 
+Xbox 360. We took a different approach and pre-calculated static visibility using a 
+big farm of Xbox 360s; these ran multi-hour visibility calculations which reduced the 
+amount of stuff the 360 had to draw without requiring runtime computation and allowed us 
+to use mostly the same geometry as the Xbox One version.
+Same deal for shadows, pre-calculate. Also creating occlusion geometry to reduce 
+pixels shaded, tech art to the rescue there getting those built!"
+
+Exemplul precedent acoperă doar resursele de calcul, însă furnizorii de cloud nu se limitează doar la atât,
+aceștia oferă servicii mult mai complexe astfel putem să extindem capacitățile unui dispozitiv folosind 
+resursele provenite de pe servere la distanță al căror disponibilitate este mai ridicată făță de ce
+am putea aduce pe cont propriu.
+
+
