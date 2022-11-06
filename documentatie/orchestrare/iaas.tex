@@ -86,3 +86,206 @@ resursele provenite de pe servere la distanță al căror disponibilitate este m
 am putea aduce pe cont propriu.
 
 
+\subsection{Microsoft Azure}
+
+Principalul furnizor de elemente de cloud este Amazon prin Amazon Web Services, aceștia domină piața întrucât la
+început aceștia erau singurii care oferau servicii în care companiile doreau să investească, însă recent,
+avantajul lor pe piață este în scădere datorită avansurilor competiției \cite{kumar_2022}, mai ales în lumea
+furnizorilor cloud nu este suficient să oferi servicii de hostare întrucât acestea permit o ușoară migrare
+către alți competitori în funcție de preț. Din acest motiv, aceștia oferă multe servicii prin care
+trecerea devine mai dificilă, sau chiar imposibilă întrucât serviciul este disponibil doar
+pe acea platformă, însă în general aceștia oferă servicii asemănătoare, cel puțin la
+un nivel de bază.
+
+Am ales să analizez Azure pentru că avem credite ca și studenți. Această platformă
+a pornit sub numele de Windows Azure anunțat în 2008. Pe parcursul timpului, acesta
+nu a prins atracția publicului larg întrucât era destul de limitată și
+tinde să se schimbe foarte des. În perioada aceea Microsoft se baza pe Windows și tehnologii
+proprii însă începând cu 2014 Microsoft a început să folosească și să ofere servicii
+ce provin din software open-source și își schimbă numele în Microsoft Azure pentru
+a reflecta acest lucru.
+
+\subsubsection{Elemente de bază}
+
+Atunci când vrem să folosim un serviciu de cloud, este necesară crearea unui cont,
+în general putem folosi un cont Microsoft, fie el personal sau unul administrat de o
+organizație.
+
+După crearea unui cont acestuia trebuie să îi se asocieze o sursă de plată, întrucât
+acest tip de servicii o să creeze facturi doar pentru cât consumi, astfel administrarea
+serviciilor devin mult mai ușoară.
+
+Însă Azure oferă mai multe tipuri de abonamente și modalități de organizare ale acestora
+incluzând acces pe bază de rol, destinat companiilor.
+
+Toate elementele create în Azure sunt administrare printr-o interfață REST, Azure
+Resource Manager. Acesta poate fi accesat creând cereri HTTP alături de verbele
+frecvent utilizate, comunicând prin JSON. Însă pentru a spori eficiența, au fost dezvoltate
+SDK-uri de administrare folosite ca librării pentru diferite limbaje de programare
+precum Python sau Java, dar și executable-uri făcute pentru a fi rulate direct
+dintr-un terminal prin intermediul Azure PowerShell (mai vechi, cu o sintaxă
+asemănătoare comenzilor de Windows) sau Azure CLI (mai rapid și cross-platform)
+
+Scopul folosirii serviciilor cloud este eliminarea necesități de organizare
+a serverelor, și administrarea acestora printr-un terț ce se oferă să le întrețină.
+Un avantaj al acestora este faptul că putem alege locul în care aceste servere
+sunt amplasate, nu suntem constranși de locul fizic al acestora, astfel putem definii
+Azure Regions.
+
+Acestea reprezintă locul în care cei de la Microsoft au fizic centrele de operare
+ale serverelor. În cadrul acestora există mai multe centre de disponibilitate, astfel
+aceași zonă prezintă mai multe servere separate ce stau în spatele unui load balancer.
+Putem folosi aceste zone pentru a crea replici ca un back-up.
+
+De multe ori avem regiuni pereche, acestea fiind situate într-un loc aproximativ
+aproape, de exemplu UK South - UK West, acestea pot fi folosite pentru backup.
+
+Alegerea unei regiuni poate fi ușor dificilă, în primul rând contează locul în
+care o amplasăm pentru a scade latența către utilizatori, prezența zonelor de
+disponibilitate sau a unei regiuni pereche ca și backup însă datorită modului
+cum acestea apar, nu toate caracteristicile sunt disponibile în toate regiunile,
+mai mult, toate caracteristiciile oferite de Azure pot să aibă preț diferit
+în funcție de regiune, astfel atunci când facem o alegere avem mulți factori
+ce ar trebui să îi luăm în considerare.
+
+\subsubsection{Stocare}
+
+În general, tipurile de date cu care interacționăm pot fi de mai multe feluri,
+nestructurate, în general obiecte de mari dimensiuni ce reprezintă executabile sau
+fișiere de variate tipuri, date semi-structurate, acestea nu au o formă impusă însă
+tot au anumite similiratiăți sau moduri de indexare, și date structurate ce reprezintă
+date asemănătoare cu cele pe care le-am găsii în bazele de date relaționale.
+
+Modul de interacționare cu stocare se face prin crearea unui cont de administrare
+a stocării ce poate fi de mai multe tiprui și are ca scop păstrarea unor anumite setări
+de configurare. Acesta poate fi de mai multe tipuri general v2, v1 sau blob
+și ne poate limita la tipurile de date pe care le putem folosi. De asemenea,
+putem alege modul de stocare al datelor, acestea putând să fie pe hard disk-uri
+ce sunt mai lente sau stocare mai scumpă însă mai rapidă prin SSD-uri. În final,
+putem selecta modalități de replicare, local (LRS), în care se crează 3 copii în
+interiorul unui centru de date din aceași zonă, regional (ZRS), în care se crează
+3 copii dar distribuite în mai multe centre de date din aceași zonă, georegional (GRS)
+3 copii în mai multe centre din aceași zonă și altele 3 copii într-o regiune secundară pereche
+sau georegional doar citire (RA-GRS) în care se primește acces doar pe citire în conturile secundare
+din stilul GRS.
+
+Cel mai folosit mod de stocare al datelor este Azure Blob Storage, acesta este un tip
+de stocare de date nestructurate, astfel putem sa îl folosim asupra oricarui tip de date,
+neavând optimiări specifice. Încărcarea de date prin acest serviciu se poate face grafic
+sau prin diferite API-uri. Atunci când folosim acest serviciu, costurile vin din
+mai multe categorii: volumul de date, numărul de tranzacții prin interfața REST și
+traficul de descărcare. Pentru optimizarea acestor prețuri putem alege între trei categorii,
+unul pentru date frecvent accesate, pentru date accesate mai putin frecvente si stocate pentru o perioada
+de cel putin 30 de zile și cel de arhivare pentru date accesate foarte rar (mai mult de 180 de zile).
+
+Pe lângă Blob Storage, avem File Storage ce poate să stocheze date sub forma unui drive montabil pe Internet,
+Table Service ce reprezintă o bază de date NoSQL de tipul cheie / valoare, fiind o variantă
+mai limitată a unei baze de date de acest tip întrucât nu are georeplicare sau scalare, și Queue Service
+ce reprezintă o platformă de transmitere de mesaje de tipul Event Bus în arhitectura
+microserviciilor.
+
+De asemenea, putem crea Azure Virtual Hard Disks, acestea fiind necesare pentru a
+fi montate către mașinile virtuale create.
+
+\subsubsection{Mașini virtuale}
+
+Reprezintă cea mai simplă metodă de a face rost de o platformă de procesare a datelor.
+Fiecare mașină virtuală are repartizat o anumită putere de procesare și o anumită
+cantiate de RAM, asociat unei unități de stocare și conectat la o anumită rețea.
+Toate aceste elemente sunt configurate atunci când creăm mașina virtuală însă pot fi
+modificate și dupa ce este lansată.
+
+Putem folosi diferitele metode de acces ale API-ului Azure pentru a modifica aceste date
+și putem folosi diferite strategii de migrare precum încărcarea unui .vhd pentru a urca
+o mașina virtuală deja existentă.
+
+Modul de monetizare ale mașinilor virtuale este că plătim pentru fiecare secundă
+în care aceasta are resurse alocate. În funcție de nevoile noastre putem folosi
+diferite tipuri de procesoare în funcțiile de nevoile noastre, fiecare având
+optimizările proprii, în același timp putem selecta tipul de stocare de care avem nevoie,
+pornind de la HDD-uri standard către SSD-uri ultra rapide, opțiunile mai performante
+necesitând o investiție mai mare. Fiecare mașină virtuală necesită cel puțin
+o interfață de rețea virtuală și opțional adrese IP publice sau setări de firewall.
+
+Un considerent asupra mașinilor virtuale este modul în care acestea sunt lansate.
+Cele mai importante aspecte sunt disponibilitatea și scalarea. Implicit, nu avem
+nicio astfel de garanție, din acest moment putem să încercăm fie seturi de disponibilitate
+în care mașinile virtuale sunt puse în același centru de date dar în zone fizice diferite
+sau o zonă de disponibilitate în care mașinile virtuale sunt puse în regiuni diferite.
+Scalarea mașinilor virtuale este mai dificilă, însă există scalare orizontală prin
+intermediul Azure Virtual Machine Scale Sets, sunt dificil de implementat necesitând un load balancer, scumpe
+deoarece plătim pentru fiecare mașină și necesită configurări și sincronizări manuale.
+
+\subsubsection{Containere}
+
+Întrucât VM-urile au dezavantajele proprii ale consumului de resurse sau al modului
+de configurare, putem lansa containere în Azure prin Azure Container Instances.
+Acestea sunt configurate aproximativ la fel ca mașinile virtuale, singura diferență
+find necesitate specificării numele imaginii containerelui și repository-ul de unde
+acestea să provină însoțit de detaliile de autentificare dacă acestea sunt necesare.
+
+Pentru a facilita lucrul cu containere, avem la dispoziție Azure Container Registry
+ce ne permite să creăm propriul registru de imagini, putând să adăugăm imaginile proprii
+pe el ca după să putem să le consumăm atunci când vrem să lansăm o aplicație sub formă
+de container.
+
+Pentru a abstractiza management-ul stării produslui, avem Azure Kubernetes Service
+prin care Microsoft abstractizează nodurile de management iar conținutul acestuia
+poate fi administrat printr-o interfață similară a lui kubectl, prin az aks.
+
+
+\subsubsection{Azure App Service}
+
+Reprezentând un PaaS, App Service este o modalitate de a lansare a codului fără
+întreținerea explicită a infrastructurii din spatele acesteia, astfel nu e necesar
+configurarea unei mașini virtuale și după încărcarea aplicației pe aceasta.
+
+Avantajul renunțării la aceste configurări nu este doar ușurința modului de
+lansare ci și posibilitatea unor facilități care nu sunt disponibile mașinilor
+virtuale clasice, incluzând replicare și disponibilitate globală, autoscalare dinamică,
+integrare nativă în pipeline-uri.
+
+Acest serviciu permite lansare prin intermediul încărcării codului unei aplicații
+în mod direct sau prin intermediul unui container. Configurarea se face asemănător
+cu o mașină virtuală
+
+Prin intermediul interfeței putem să facem configurări minimale asupra aplicației,
+însă acestea sunt limitate și au ca scop mai mult moduri de rulare precum
+setări de mediu, porturi sau de SSL.
+
+Monitorizarea unui astfel de serviciu se poate face prin Application Insights
+ce se face integrând SDK-ul în codul client, ulterior putem face rost de date
+precum timpi de răspuns, performanțe sau telemetrie. Toate aceste date fiind disponibile
+în interiorul unui Dashboard central.
+
+\subsubsection{Serverless}
+
+Un concept ce este promovat de către furnizorii de cloud este capacitatea de a lansa
+cod fără să ne intereseze locul și modul în care acestea rulează. Deosebirea față
+de mașinile virtuale sau App Service este că putem plătii doar cât consumăm, adică
+doar timpul în care codul rulează.
+
+Există două tipuri în care putem lansa cod prin această metodă, însă este important
+să facem diferențierea de rulare. Tehnologia serverless rulează doar atunci când este rulată,
+în spate acestea pot fi sub formă de containere Docker care sunt rulate în momentul
+în care e necesar, din acest motiv apare fenomenul de cold-start, atunci când
+containerul trebuie să fie inițializat, însemnând că prima rulare a funcției este mai înceată.
+În timpurile recente, furnizorii au optimizat acest timp iar rularea unui cold start este mai rară,
+acestea fiind păstrare într-o stare în care pot fi rulate aproape instantaneu.
+
+Un alt concept important este faptul că nu avem acces la o stare implicit, fiecare
+rulare a funcției vine cu propriile reinițializări, astfel nu putem să accesăm
+datele unei rulări anterioare fără să o salvăm conștient într-un anumit loc, precum într-o bază de
+date externă.
+
+Azure Functions rulează atunci când sunt invocate, și acesta poate fi configurat
+în funcție de necesități precum atunci când sunt invocate prin intermediul unui endpoint HTTP,
+la un anumit interval sau la evenimente precum încărcarea unui blob.
+
+Acest tip de execuție, deși abstractizează aplicație, crearea unei funcții
+necesită scriere de cod în anumite limbaje compatibile. Acest proces poate fi
+simplificat și mai mult folosind Logic Apps, acestea sunt create aproape fără cod
+și printr-o interfață grafică. Componentele unui Logic App sunt predefinite prin diferiți conectori
+ce integrați împreună vor crea un flux de lucru ce vor fi executate la anumite evenimente.
+
+\subsubsection{Serverless}
