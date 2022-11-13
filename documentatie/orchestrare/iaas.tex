@@ -288,4 +288,33 @@ simplificat și mai mult folosind Logic Apps, acestea sunt create aproape fără
 și printr-o interfață grafică. Componentele unui Logic App sunt predefinite prin diferiți conectori
 ce integrați împreună vor crea un flux de lucru ce vor fi executate la anumite evenimente.
 
-\subsubsection{Serverless}
+\subsubsection{Baze de date}
+
+Un alt serviciu pe care îl folosim în crearea unei platforme este o bază de date.
+Atunci când avem infrastructură în cloud putem aveam mai multe opțiuni de abordare al
+acestei probleme.
+
+Una dintre ele este crearea unei mașini virtuale și în stil clasic crearea serverului
+de bază de date și configurarea setărilor de securitate necesare conectării. În acest 
+stil putem folosi orice versiune și tip de bază de date însă vom fi forțați să 
+ne ocupăm de mașină, astfel va trebui să ne ocupăm de mentenanța software-ului ce
+funcționează pe aceasta.
+
+O altă alternativă este folosirea unei opțiuni de tip PaaS pentru baze de date, în 
+acest tip toată mentenanța pe care ar trebui să o facem este ascunsă, la fel și 
+backup-urile și georeplicarea. Deși pierdem din configurări, avem o metodă de 
+folosire a bazei de date mult mai ușoară.
+
+Pentru bazele de date relaționale avem SQL Database ce are suport pentru MySQL, MariaDB
+sau Postgres, al cărui tip de monetizare poate fi bazat pe Database Transaction Unit
+ce calculează folosința în funcție de CPU, I/O și memorie, vCore ce se face specificând 
+un număr de instanțe de mașini virtuale iar numărul acestora va determina consumul și dacă
+avem mai multe baze de date avem modelul elastic ce vor cupla mai multe baze de date atunci 
+când este înregistrat consumul.
+
+De asemenea, avem opțiunea pentru baze de date nerelaționale prin Azure Cosmos DB
+ce are suport pentru multe variante precum MongoDB sau Cassandra ce vor putea avea 
+avantajele unei baze de date de acest tip precum georeplicare și flexibilitatea în consistența acestora.
+
+\subsubsection{Monitorizare}
+
