@@ -318,3 +318,38 @@ avantajele unei baze de date de acest tip precum georeplicare și flexibilitatea
 
 \subsubsection{Monitorizare}
 
+Furnizorii de infrastructură cloud ne permit să creăm un număr nelimitat de echipamente
+pe care să le folosim în proiectele noastre, din acest motiv devine mai dificil să
+observăm capacitățile acestora, astfel în absența unor erori care să cauzeze ca 
+serviciile să fie inaccesibile, nu le vom putea depista.
+
+În orice caz, chiar și atunci când știm că avem o problemă și vrem să o investigăm,
+tot avem nevoie de o modalitate de a afla ce s-a întâmplat în trecut. Din acest motiv,
+Azure ne oferă câteva unelte pe care le putem folosi pentru a ne ușura procesul.
+
+Azure Monitor este serviciul de bază de monitorizare ce colectează date fundamentale
+din resursele create, metrici ce sunt valori numerice ale resursei dar și fișiere de 
+jurnalizare ce descriu evenimente ce se produc în cadrul sistemului.
+
+Azure Monitor Activity Log memorează informații legate evenimente de control ce se
+declanșează în jurul resursei, acestea pot include informații despre orele de 
+restart a unei mașini virtuale sau accesarea spațiilor de stocare.
+
+Tot cu acesta putem să folosim metricile colectate pentru a crea grafice informative,
+de a crea alerte în cazuri specifice pe care le putem configura și putem 
+colecta mai multe informații diferite în funcție de tipurile de resurse pe care le folosim,
+precum informații ce ar putea fi utile în diagnoza unei probleme cu o mașină virtuală,
+însă în acest caz trebuie instalată pe acea mașină extensia Azure Diagnostics.
+
+Azure Application Insights este versiunea îmbunătățită a lui Azure Monitor însă aceasta
+necesită achiziție separată însă este o unealtă mult mai complexă ce ne permite să 
+monitorizăm și să jurnalizăm starea unui sistem ci și performanța acestuia, astfel
+ne permite să colectăm date detaliate și să o prelucrăm într-un mod mult mai eficient.
+
+Azure Log Analytics este o unealtă de centralizare a fișierelor de jurnalizare create 
+pe Azure, acesta pot include resurse ce provin din mai multe subscribții dar și alte 
+produse din afara infrastructurii precum DNS Resolver sau Office 365.
+
+Log Analytics ne oferă o interfață în care toate aceste informații pot fi accesate
+prin intermediul unui limbaj specializat, KQL (Kusto Query Language) similar cu SQL.
+
