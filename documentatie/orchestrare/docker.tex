@@ -107,11 +107,55 @@ serviciilor ci doar celor strict necesare.
 de la o imagine de bază asupra căreia se adaugă diferite configurări precum comenzi sau specificare
 de argumente de build sau environment. Comanda este \verb|docker image build .| ce va 
 construii imaginea din Dockerfile din directorul curent. Putem taga imaginea folosind directiva 
--t.
+\verb|-t|.
     \item Încărcarea unei imagini într-un repository se poate face folosind \verb|docker image push|.
 \end{itemize}
 
 \subsection{Simpla orchestrare}
 
-% docker-compose
-% consul
+O metodă ușoară de a crea un sistem format din mai multe containere este de a folosi
+Docker Compose. Întrucât Docker nu a fost făcut pentru a administra mai multe containere
+în același timp și în același timp acesta susține ca unui singur serviciu să îi corespundă
+un container, putem avea dificultăți atunci când am vrea să avem un sistem mai complex,
+de exemplu un server web și baza de dată asociată acestuia.
+
+Docker Compose este o metodă de orchestrare, astfel acesta crează metode de rulare de containere,
+astfel dacă vrem să avem o aplicație în Compose, acesta trebuie să fie deja 
+sub forma unei imagini.
+
+Pentru a începe, avem nevoie de un fișier .yml. În acesta putem definii diferite
+servicii ce reprezintă defapt containerele pe care vrem să le rulăm. Pentru fiecare
+acest serviciu putem definii în acest fișier toate proprietățile pe care le-am putea
+definii atunci când am rula \verb|docker container run|, precum volume, rețele, porturi.
+De asemenea putem definii (pornind din imagine) health check-uri, comenzi care ar fi rulate
+în interiorul containerelui și diferite proprietăți care ar definii starea unui serviciu, astfel
+în funcțiile de setările făcute, dacă un serviciu de care depindem nu este disponibil, am putea
+închide toate serviciile care depind de acesta, sau să încercăm resetarea serverului afectat.
+
+Docker Compose ne permite să avem o imagine mai per ansamblu asupra sistemului pe care vrem să îl creăm.
+Însă acesta are limitările proprii ce îi oferă imaginea de o metodă simplă, una dintre acestea
+fiind faptul că nu avem asistență pentru replicare sau metode de actualizare ale versiunii unei imagini ce
+pot fi găsite în versiuni mai avansate ale sistemului.
+
+O metodă de a face rost de replicare într-un mod simplu este folosirea unui serviciu
+de service discovery precum Hashicorp Consul, astfel putem avea un cluster pe care
+să rulăm diferite containere replicate, însă nu am cunoaște exact locația acestora. În același 
+stil, locația acestora ar putea să se schimbe etc. O astfel de unealtă folosește metode 
+asemănătoare cu un DNS pentru a crea comunicare în cadrul unui cluster, astfel 
+am putea să avem un load balancer și prin intermediul Consul să se ruteze 
+către replica cea mai avantajoasă. Specific acestui servicii putem să beneficiem de 
+mutual TLS pentru a securiza rețeaua.
+
+O altă metodă de orchestrare simpla reprezintă Docker Swarm, aceasta vine la pachet 
+cu Docker Engine, având un mod special pentru acest tip de operații. În acest mod, 
+un Docker Engine se poate alătura(sau crea) unui cluster de alte noduri care rulează
+în acest mod. Fiecare nod va fi fie Manager sau Worker, având minim un master(inițial,
+primul nod este nodul manager). Nodurile manager au rolul de a distribuii task-urile primite
+către nodurile worker, însă acestea pot efectua task-uri la fel ca un nod obișnuit,
+însă aceasta nu este o prioritate pentru ele sau poate fi dezactivată în totalitate.
+Un avantaj al acestui serviciu este posibilitatea de a rula replici ale aceluiași serviciu,
+astfel putem ca un singur container (serviciu) să ruleze simultan în mai multe locuri, 
+astfel dacă un loc este afectat le putem accesa pe celelalte, funcționând ca un load balancer.
+O limitare al acestui sistem este faptul că această scalare nu este automată și că
+sunt metode limitate de monitorizare implicit însă este extrem de ușor de configurat și de rulat,
+astfel pentru unele sisteme reprezintă o alternativă suficient de bună a unor soluții mai complicate.
