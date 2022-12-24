@@ -1,0 +1,117 @@
+\subsection{General}
+
+Docker este una dintre tehnologiile ce a ajutat la revoluția DevOps de a eficientiza
+modul de lucru în dezvoltarea software. Acesta a aparut în 2013, și a început să fie
+viabil și cunoscut începând cu 2015 însă la momentul de față consider că este o 
+unealtă necesară ce nu mai este o noutate și și-a găsit locul în piață.
+
+Containerizarea nu a era o tehnologie noua iar Docker nu este primul și nici singurul
+care a contribuit în acest spațiu, totuși aceștia sunt unii dintre cei mai populari 
+fapt datorat de ușurința anumitor sisteme noi pe care aceștia l-au adus în favoarea
+competiției, aceștia începând trend-ul chiar încă din 2008 prin LXC.
+
+Docker a apărut ca o alternativă la lansarea aplicațiilor în mașini virtuale. Deoarece 
+acestea rulau efectiv pe hypervisor și necesitau anumite resurse alocate alături de rularea
+întregului sistem ceea ce le făceau greu de configurat. Docker a îmbunătățit acest proces,
+aplicațiile care rulează în container sunt mult mai eficiente din punctul de vedere
+al consumului de resurse și pot fi lansate mult mai rapid.
+
+Docker permite abstractizarea naturii aplicației, astfel indiferent de ce rulează în ea,
+o altă persoană poate să interacționeze cu ea foarte rapid știind doar
+un număr limitat de potențiale elemente de configurare. Acest lucru permite separarea 
+responsabilitățiilor în procesul de creere. Dezvoltatorii cunosc faptul că aplicația lor va 
+rula într-un container, astfel aceștia au responsabilitatea de a containeriza aplicația.
+Operatorii cunosc modul de operare cu Docker, astfel aceștia pot administra containerele, 
+fără a avea vreo cunoștiințe ce e în ele ci doar de resursele la care acestea ar trebui să 
+aibă acces.
+
+Datorită modului în care funcționează, Docker permite modularizarea aplicațiilor, 
+astfel fiecare container și-ar rula propria aplicație, astfel poate fi lansat independent, 
+fiind susținută o arhitectură bazată pe servicii dar și microserviciile.
+
+\subsection{Componente}
+
+Docker face parte din proiectul Moby, și la mod general reprezintă o aplicație modelată
+de arhitectura client-server, în care un executabil Docker va reprezenta un client ce 
+comunică cu un server ce reprezintă Docker Engine-ul sau Docker daemon-ul ce are 
+responsabilitatea de a rula containerele în funcție de comenziile primite de la clienți.
+
+Nu este necesar ca această aplicație să ruleze asupra aceleiași mașini, astfel putem rula
+clientul Docker independent și să folosim Docker Engine-ul pe o altă unitate pe care îl putem 
+controla și prin API RESTful.
+
+Componenta de bază reprezintă imaginea. Acestea reprezintă modul în care aplicația noastră
+este construită conținând instrucțiiunile de formare. Acestea pornesc de la o imagine de bază 
+iar fiecare instrucțiune crează imagini intermediare ce se suprapun sub diferite layere
+până se creează complet o imagine.
+
+Registriile reprezintă locul în care imaginile sunt stocate. De aici putem descărca 
+imaginile create și să le rulăm. Aceste locuri pot fi publice, precum Docker Hub,
+dar și private putând să fie rulate independent. Atunci când le folosim acestea pot 
+necesita autentificare, de exemplu pe Docker Hub putem să avem imagini publice 
+ce pot fi văzute și accesate de orice utilizator dar și imagini private ale căror 
+drepturi de citire sunt restricționate.
+
+Containerele reprezintă o imagine construită ce este rulată, la fel cum un obiect este 
+instanțiarea unei clase. Acesta poate avea diferite stări externe precum dacă este creată,
+lansată sau distrusă, dar și interne, astfel acestea pot evolua în funcție de modul
+cum se interacționează cu ele. Acestea sunt izolate unul de celălalt, astfel chiar dacă
+o mașina are mai multe containere acestea nu pot accesa datele unui alt container 
+fără să intervenim noi.
+
+Extinderea conceptului de folosire de containere cu Docker reprezintă orchestrarea.
+Rularea a unui număr limitat poate fi făcută cu ușurință manual, însă atunci când
+avem mai multe aplicații, dependințe (precum baze de date) și alte configurări de rularea 
+poate devenii destul de haotic, astfel s-ar pierde multe dintre beneficiile pe care Docker le aducea.
+Din acest motiv putem folosii aplicații specifice menite pentru extinderea Docker-ului precum
+Docker Compose, Docker Swarm sau Kubernetes pentru a administra sisteme mai complexe.
+
+\subsection{Utilizare}
+
+Din punctul de vedere al unui dezvoltator, folosirea Docker-ului se rezumă
+doar la câteva instrucțiuni de bază ce pot fi cuprinse pe o listă foarte 
+\href{https://dockerlabs.collabnix.com/docker/cheatsheet/}{scurtă}, din acest 
+motiv o prezentare în detaliu al fiecărei comenzi nu ar fi eficientă.
+
+Însă, pot sublinia câteva utilizări generale după instalare.
+
+\begin{itemize}
+    \item Pornirea oricărei aplicații ce are o imagine publicată pe Docker Hub,
+precum Ubuntu, \verb|docker container run ubuntu| va încerca să lanseze un container 
+ce rulează din imaginea ubuntu. Dacă nu găsește imaginea ubuntu acesta va încercă să
+găsească imaginea ubuntu cea mai recentă (latest) de pe repository-ul implicit (Docker Hub),
+dacă o va găsi acesta o descarcă și o să ruleze
+    \item Atunci când o imagine este rulată, acesta este executată cât timp are un proces în execuție,
+din acest motiv, containerul anterior de Ubuntu se va închide imediat ce va porni. Putem accesa 
+și prelungii viața containerului prin preluarea STDIN-ului și atașarea unui pseudo tty folosind
+\verb|docker container run -it ubuntu bash|, acesta va rula alt container, și ne vom găsii
+în interiorul unui terminal cu root@containerid.
+    \item Când lansăm o imagine, implicit acesta primește o rețea de tipul bridge, astfel 
+aceasta poate fi conectată la rețeaua computerului principal. Putem schimba acest aspect
+prin directivele din -network ale comenzi \verb|docker container run|.
+    \item Containere diferite nu pot implicit să folosească datele altui container. Din acest motiv,
+Docker ne permite să configurăm Volumes, acestea au rolul de a salva anumite date și să fie accesibile
+sub diferite forme. Putem lăsa Docker să le administreze sau putem crea bind-mounts care pot să facă 
+ca fișierele sau un director de pe mașina gazdă să fie sincronizate cu un director din interiorul mașinii.
+Acestea se fac folosind directivele -v ale comenzi \verb|docker container run|.
+    \item În general am vrea ca aplicația din interiorul containerelui să fie accesibilă din exterior. Acest lucru
+se poate face sub diferite forme, însă în general vrem să configurăm un port de acces. Astfel aplicația
+din interior comunică pe un anumit port (de exemplu 3000), însă Docker nu o să deschidă implicit aceste 
+porturi. Pentru a face asta, trebuie să folosim directiva -p care va asocia port-ul mașinii gazdă cu port-ul
+din interiorul containerului. De exemplu \verb|docker container run -p 3001:3000|, port-ul 3001 pe gazdă va accesa aplicația din container
+care rulează pe portul 3000.
+    \item Containerele sunt puse într-o rețea generală de către Docker, însă putem crea rețele proprii 
+și să agregăm mai multe containere în el, astfel nu este nevoie să oferim acces către exterior tuturor 
+serviciilor ci doar celor strict necesare.
+    \item Construirea unei imagini se face, în general, folosind un Dockerfile, acesta pornește
+de la o imagine de bază asupra căreia se adaugă diferite configurări precum comenzi sau specificare
+de argumente de build sau environment. Comanda este \verb|docker image build .| ce va 
+construii imaginea din Dockerfile din directorul curent. Putem taga imaginea folosind directiva 
+-t.
+    \item Încărcarea unei imagini într-un repository se poate face folosind \verb|docker image push|.
+\end{itemize}
+
+\subsection{Simpla orchestrare}
+
+% docker-compose
+% consul
