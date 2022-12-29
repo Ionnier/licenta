@@ -1,0 +1,44 @@
+\subsection{General}
+
+Containerele au reprezentat o soluție pentru problema comună privind modul de rulare și
+lansare pe diverse mașini diferite ale căror sisteme, dependințe, versiuni de rulare și 
+librării pot fi diferite (frecventa „But it works on my machine”), astfe un dezvoltator poate să
+construiască și să lucreze la aplicație, acesta fiind atent să creeze imaginea, imediat după
+un tester nu e nevoit să interacționeze direct cu sursa ci exclusiv cu imaginea, putând să 
+verifice că nu a apărut nicio problemă și pe mașinile de build să ruleze testele automate direct pe imagine.
+Ulterior, dacă imaginea reprezintă ceva ce trimitem în piață poate fi trimisă către operatori și
+planificat pentru lansare.
+
+Utilitatea Docker-ului și a containerelor fără nimic suplimentar s-ar termina totuși în acest punct.
+Chiar dacă un operator nu ar trebui să instaleze dependințele aplicațiilor în fiecare loc unde ar rula,
+acesta fiind înlocuit cu instalarea runtime-ului de Docker, acesta trebuie să se preocupe 
+cu dificultățile lansării, adică unde este lansat, în cât timp, replicare, dacă sistemele
+sunt în stare bună și alte detalii ce pot oglindii starea sistemului.
+
+În acest scop, Docker nu ajută, la fel și itemii de care am discutat la simpla orchestrare a containerelor,
+fiind o soluție în regulă pentru sisteme mici, atunci când vorbim la scală avem nevoie de unelte diferite.
+Aici continuam folosind Kubernetes, o unealtă ce a apărut în 2014 devenită open-source 
+care are ca scop orchestrarea unui cluster pe care rulează sub diferite forme și organizate
+în moduri diferite containere
+
+În dezvoltarea și crearea modului de interacționare folosind Kubernetes au fost folosite experiențele 
+dobândite prin lucrul manual cu acestea, astfel s-a urmărit diferite puncte ce 
+contribuie la avantajele în folosirea acestei tehnologii, incluzând creșterea vitezii de deployment
+prin crearea unor sisteme imutabile bazate pe stări și nu pe modificări punctuale asupra sistemului
+activ (configurare declarativă), prin crearea capacității de auto-reglare creat pornind
+de la acest mod de configurare, astfel Kubernetes la cel mai simplu nivel, 
+va aserta starea curentă și va încerca să o aducă la starea pe care este configurat să o aibă
+
+În același timp, Kubernetes permite abstractizarea infrastructurii, astfel nu mai este 
+necesar să cunoaștem mașinile virtuale sau sistemele ce rulează în interiorul clusterului,
+suntem interesați doar de modul de interacționare cu clusterul, astfel creăm aplicații
+care să ruleze pe acesta cu anumite configurări. Astfel, Kubernetes poate să mențină
+mașinile virtuale mai încărcate întrucât acesta va încerca să eficientizeze consumul de resurse.
+
+Soluțiile de lansare ce includ Kubernetes ne permit să fim foarte flexibili în modul
+cum interacționăm cu acesta, și avem multe oportunități de rulare, însă „prețul”
+plătit pentru toate opțiuniile pe care le avem este o creștere foarte mare 
+de dificultate în crearea șo administrarea unui astfel de cluster, însă 
+recent această dificultate poate fi eliminată prin folosirea de infrastructură 
+în cloud precum Azure ce oferă Kubernetes as a Service, astfel administrarea clusterului
+nu mai este o problemă ci doar creăm resursele de care avem nevoie.
