@@ -42,3 +42,35 @@ de dificultate în crearea șo administrarea unui astfel de cluster, însă
 recent această dificultate poate fi eliminată prin folosirea de infrastructură 
 în cloud precum Azure ce oferă Kubernetes as a Service, astfel administrarea clusterului
 nu mai este o problemă ci doar creăm resursele de care avem nevoie.
+
+\subsection{Obiecte de bază}
+
+Atunci când folosim Kubernetes, deși putem folosi și comenzi manuale, ar trebui să 
+abordăm o modalitate de gândire delcarativă. Kubernetes folosește obiecte la diferite 
+nivele ce administrează obiecte la nivel inferior pentru a-și obține starea pe care 
+este setat să o păstreze. Toate acestea se fac prin intermediul unor fișisere, 
+în general de format YAML în care stabilim lucrurile de care avem nevoie. 
+
+\subsubsection{Etichete și adnotări}
+
+Întrucât administrarea unui cluster Kubernetes include administrarea de foarte multe obiecte,
+fiecaruia dintre acestea pot să îi se adauge etichete ce sunt o pereche cheie-valoare,
+în format de String-uri. După aplicarea unei etichete atunci asupra obiectului,
+acestea se pot vedea atunci când inspectăm elementul. Aplicarea unei etichete se poate face
+atunci când creăm un obiect, prin adăugarea lor asupra comenzi run, \verb|kubectl run ... --labels="ver=1"|
+sau separata folosind \verb|kubectl label [selector] "ver=1"|. O dată aplicat un label, 
+acesta poate fi folosit pentru a selecta resursele cu acel label în cadrul altor comenzi 
+precum cele de inspectare sau stergere \verb|kubectl get pods --selector "ver=1"| iar 
+multiple etichete pot fi combinate cu operatii logice, \verb|kubectl get pods -l 'ver=1,canary'| ->
+Pods-urile cu label-ul versiunii 1 si care au definit label-ul canary. Etichetele pot fi aplicate și de către alte obiecte 
+pentru a identifica resursele pe care acestea le au în administrare. De exemplu, un ReplicaSet va aplica
+etichete specificie asupra pod-urilor pe care acestea le administrează pentru a cunoaște ce schimbări
+ar trebui să facă.
+
+Întrucât etichetele au rol în modul de administrare al cluster-ului, adnotările au ca rol
+adăugarea de metadata asupra unui obiect, sub forma tot de o pereche cheie-valoare ce pot 
+folosi caractere mai variate ca etichetele. Aceasta poate fi preluate de alte librării
+încercând să le oferim diferite informații precum versiunea sau să îmbunătățim 
+vizibilitatea în cadrul unei interfețe de aministrarea a cluster-ului. 
+
+\subsubsection{Pods}
