@@ -57,7 +57,7 @@ este setat să o păstreze. Toate acestea se fac prin intermediul unor fișisere
 fiecaruia dintre acestea pot să îi se adauge etichete ce sunt o pereche cheie-valoare,
 în format de String-uri. După aplicarea unei etichete atunci asupra obiectului,
 acestea se pot vedea atunci când inspectăm elementul. Aplicarea unei etichete se poate face
-atunci când creăm un obiect, prin adăugarea lor asupra comenzi run, \verb|kubectl run ... --labels="ver=1"|
+atunci când creăm un obiect, prin adăugarea lor asupra comenzi run,\\ \verb|kubectl run ... --labels="ver=1"|
 sau separata folosind \verb|kubectl label [selector] "ver=1"|. O dată aplicat un label, 
 acesta poate fi folosit pentru a selecta resursele cu acel label în cadrul altor comenzi 
 precum cele de inspectare sau stergere \verb|kubectl get pods --selector "ver=1"| iar 
@@ -74,3 +74,97 @@ folosi caractere mai variate ca etichetele. Aceasta poate fi preluate de alte li
 vizibilitatea în cadrul unei interfețe de aministrarea a cluster-ului. 
 
 \subsubsection{Pods}
+
+Elementele Kubernetes pornesc de la Pods, acestea reprezintă corespondentul unui container
+din lumea Docker, însă extins, astfel dacă vrem să rulăm un container în Kubernetes trebuie 
+să folosim un pod.
+
+Reprezintă o colecție de containere ce rulează împreună, astfel acestea partajează
+metodele de acces (IP-uri, hostname-uri), astfel este garantat că rulează în interiorul
+aceluiași nod, putând să comunice local prin metode de comunicare interproces, însă
+două pod-uri identice pot să ajungă să ruleze pe noduri diferite prin replicare.
+
+Reprezentând o colecție de containere, în interiorul unui pod ar trebui să 
+avem programe ce comunică des împreună și care au nevoie să beneficieze de avantajele rulării
+în acelaș mediu, de exemplu un server și o metodă de sincronizare cu un sistem central.
+
+Crearea unui pod se poate face imperativ prin folosirea comenzii \verb|run|,
+astfel putem crea un pod cu diferite proprietăți
+pe care obișnuiam să le specificăm și la containere
+\verb|kubectl run NAME --image=image|. Însă modul de creare recomandat 
+pentru pod-uri este prin intermediul unor fișiere manifest, cel mai popular fiind scrise in YAML.
+Rulând comanda de aplicare a modificarilor \verb|kubectl apply -f pod.yaml|, considerând
+că în fișierul indicat avem un template pentru un pod și este valid, acesta va fi 
+rulat pe un nod din cadrul clusterului Kubernetes pe care îl administrăm.
+
+Pentru a vizualiza detalii despre pod-urile în executie folosim comenzi precum\\
+\verb|kubectl get pods| ce ne dă o listă de pod-uri și detalii succinte despre acestea
+și\\ \verb|kubectl describe pods NAME| unde primim mai multe detalii despre pod însă nu 
+neapărat complet. Pentru a șterge un pod putem folosi comanda \verb|kubectl delete pods/NAME| sau
+prin fișierul de configurare \verb|kubectl delete -f pod.yaml| iar după acesta, după o anumită
+perioadă pod-ul va fi șters după o perioadă de grație.
+
+O dată creat, serviciile dintr-un pod pot fi accesate direct prin intermediul\\
+comenzii \verb|kubectl port-forward NAME port:port|, însă aceasta reprezintă o
+metodă simplistă de accesare și nu poate fi recomandată. Pentru a prelua fișiere 
+de logare din pod putem folosi comanda \verb|kubectl logs NAME|, pentru a rula comenzi în 
+interiorul unui pod folosim \verb|kubectl exec -it NAME bash| și de asemenea putem copia fișiere
+prin \verb|kubectl cp <pod-name>:/fisier ./fisier.txt|.
+
+Pentru a facilita elementele de un nivel mai înalt, pod-urile trebuie să aibă 
+definite o comandă ce indică starea acestora, de exemplu dacă un server web este activ. Astfel,
+clusterul Kubernetes sau responsabilul acelui pod vor rula acele comenzi pentru a afla statusul 
+pod-ului, dacă acesta nu este pozitiv atunci pod-ul poate să fie recreat. În același fel,
+putem defini o comandă ce indică dacă un pod a fost pornit corespunzător și poate servi trafic, 
+un readiness check, ce sunt create asemănător unui healthines check.
+
+Prin fișierul de configurare al unui pod putem specifica un set de resurse minime și maxime pe care
+un pod le poate avea, astfel putem să ne asigurăm că clusterul va rula pod-ul într-un mod eficient și
+în același stil ca la containere stocarea pod-urilor nu este persistentă, astfel la fiecare rulare
+datele pe care le avem pe acel pod sunt scrict cele de pe imagine și nu cele ale unor rulări anterioare.
+Pentru a adăuga această caracteristică folosim volume ce sunt indicate în fișierul de template.
+
+\subsubsection{Services}
+
+Elementele administrate de Kubernetes pot apărea și dispărea în orice moment, fie datorită
+unor scalări sau restrângeri de pods-uri în funcție de traficul care se desfășoară în cluster.
+Din acest motiv, dacă avem replici a unor mai multe pods-uri, accesarea acestora devine dificilă 
+atunci când punem in context scalarea. Pe Internet folosim DNS pentru a avea acces la 
+servere fără a memora adrese IP exacte ce oricum se pot schimba, însă în Kubernetes
+aceasta activitate este chiar și mai dinamică. Din acest motiv, nu putem folosi 
+un DNS tradițional întrucât acesta poate cacha elementele mult mai mult decât ne dorim.
+
+În Kubernetes putem crea servicii, astfel atunci când creăm niște pods ce rulează pe un port
+putem crea un serviciu pentru acel port, astfel nativ vom avea un singur IP si un port
+pe care alte pod-uri le pot folosi pentru a accesa asemănător unui DNS.
+
+Însă acest trafic poate fi creat doar din cluster, pentru a permite elemente din afara 
+pentru a accesa serviciul și implicit serviciul putem folosi NodePort în fișierul de 
+configurare iar Kubernetes ne va oferi un IP prin care putem accesa serviciul.
+
+\subsubsection{Ingress}
+
+Definirea serviciilor se bazează doar pe IP și pe un port, astfel el rulează la 
+Layer 4, din acest motiv nu putem să creăm redirecționare bazată pe ce conține 
+calea căutate.
+
+Pentru a rezolva acestă lipsă, putem adăuga un layer suplimentar care pentru 
+aplicațiile ce se bazează pe HTTP poate funcția ca și load balancer sau ca reverse proxy
+și în Kubernetes au numele de Ingress.
+
+Deși avem acces la obiectul de tip Ingress direct din Kubernetes, 
+nu există implementarea acestuia astfel aceasta trebuie să fie adăugată ca separat,
+însă modalitățile de configurare și diferitele fișiere de care am avea nevoie pentru
+a configura din punct de vedere Kubernetes sunt standardizate.
+
+După ce configurăm Ingress-ul, vom putea avea acces la mai multe servicii din cadrul
+clusterului și vom putea să redirecționăm către acestea prin intermediul controllerului
+în funcție de configurările noastre, de exemplu după hostname sau căi și să rescriem
+căile de acces sau să folosim TLS.
+
+\subsubsection{Replica Sets}
+
+\subsubsection{Deployments}
+
+\subsubsection{DaemonSets}
+
