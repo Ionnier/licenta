@@ -164,7 +164,63 @@ căile de acces sau să folosim TLS.
 
 \subsubsection{Replica Sets}
 
+Am observat că există multe avantaje pe care le putem avea rulând același server
+de mai multe ori creând redundanță, astfel dacă un nod ar fi afectat ar exista un alt nod
+deja pregătit pentru a servi trafic. În același timp putem face ca acest nod 
+să fie mai apropiat de anumiți clienți în funcție de zona serverului și în același mod
+folosind metodele de rutare din Ingress să partajăm traficul în funcție de conținutul
+pe care vrem să îl servim (sharding).
+
+Modalitatea principală de a interacționa Kubernetes este declarativ stabilind 
+o anumită stare ideală pe care vrem ca sistemul să o aibă, astfel acesta s-ar ocupa
+de a menține această stare, fie prin crearea mai multor resurse pentru a ajunge la 
+acea stare inițială sau să scadă din resursele deja create.
+
+În acest mod de operare, Replica Sets reprezintă fix acest lucru, acesta funcționează 
+la un nivel mai înalt de Pod-uri, astfel specificând numărul de replici pe care ni-l dorim
+din template-ul unui specific Pod, Replica Set-ul va avea responsabilitatea de a menține
+acel număr. Pentru a face asta, el va aplica anumite etichete astfel va cunoaște 
+asupra căror Pod-uri poate să actționeze.
+
+Crearea de Replica Sets se face creând un fișier de configurare specific și aplicat folosind
+comanda \verb|kubectl apply -f NAME.yaml|
+
 \subsubsection{Deployments}
+
+O altă problemă frecvent apărută este modalitatea de aducere a modificărilor în piață.
+Atunci când avem un server sau o colecție de servere pornite atunci când vrem 
+să adăugăm anumite schimbări asupra funcționalităților oferite inevitabil vom avea
+un timp în care nu vom putea servi clienți, o perioadă necesară de mentenanță, în 
+același fel putem întâlnii problema în care există două servere în același timp ce
+ar face același lucru însă datorită existenței a două versiuni diferite, practic
+clienții pot apela oricare dintre versiuni.
+
+Pentru a rezolva aceste probleme în Kubernetes avem obiectul de Deployements
+ce are ca rol să administreze un set de Replica Sets și poate să aducă actualizări 
+în diferite moduri, recrearea tuturor pod-urile curente prin strategia de Recreate,
+aceasta crează o perioadă de down-time și prin RollingUpdate în care pod-urile sunt
+create pas cu pas, iar numărul de câte pod-uri necesare să fie disponibile sau alți 
+parametrii pot fi configurate. Kubernetes face asta schimbând parametrii obiectelor
+de Replica Sets pe care acesta le crează și terminând activitatea pod-urilor pe care 
+acestea le au în supervizare.
+
+Pentru a păstra stabilitatea sistemului, la fel ca în cazul Replica Sets, se vor
+urmării parametrii de healthiness și se vor aștepta ca acestea să fie ready și 
+healthy.
 
 \subsubsection{DaemonSets}
 
+Atunci când configurăm un Deployment o facem pentru a avea un număr specific de 
+replici ale unui serviciu, scalate în funcție de setări și ar fi preferabil 
+ca poziționarea acestora să fie pe cât mai multe moduri distincte.
+
+Însă existând necesitatea de a avea nevoie să avem servicii care rulează pe toate
+nodurile pe care le avem apare conceptul de DaemonSets, acestea au ca scop rularea unui container
+pe toate nodurile însă funcționalitatea acestuia are strict legătură cu rularea o singură dată pe acel nod
+iar replicarea acestuia nu ar aduce vreun beneficiu.
+
+Crearea unui astfel de obiect se face tot prin intermediul unui fișier de configurare 
+pe care îl aplicăm folosind comanda \verb|apply|, și putem specifica anumite etichete 
+pentru a specifica doar anumite noduri pe care vrem să ruleze serviciul.
+
+\subsubsection{Jobs}
