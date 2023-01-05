@@ -224,3 +224,44 @@ pe care îl aplicăm folosind comanda \verb|apply|, și putem specifica anumite 
 pentru a specifica doar anumite noduri pe care vrem să ruleze serviciul.
 
 \subsubsection{Jobs}
+
+Kubernetes este creat pentru a orchestra rularea unor pod-uri care rulează 
+pe o durată nedeterminată, însă folosind obiecte de tip Job putem orchestra și 
+rularea unor pod-uri a căror durată de execuție este egală cu durata de execuție
+a programului din interior.
+
+Astfel, prin API-ul disponibil avem acces la trei tipuri, \emph{One Shot}, tipul de Job 
+care este rulat o singura dată până când este executat de către un singur pod, 
+iar în funcție de modul în care executăm comanda se poate restarta atunci când eșuează 
+până când se execută cu succes. \emph{Parallel} în care avem ami multe pod-uri care
+fiecare se execută independent iar rezultatul total este agregat și formează mai multe răspunsuri 
+și prin pattern-ul de coadă, putem distribuii un singur task să fie completat
+de către mai multe pod-uri.
+
+De asemenea, avem acces la CronJobs ce sunt un tip special de Job care se execută
+la un interval de timp, acesta se declară printr-un template și va fi organizat
+de Kubernetes.
+
+\subsubsection{Config Maps & Secrets}
+
+Crearea unor imagini care pot fi rulate oriunde cu ușurință vine din standarul Docker,
+ce ofera suport pentru argumente de construire dar și de mediu într-un mod convenabil.
+
+Astfel, în Kubernetes Config Map-urile sunt folosite ca un obiect ce poate să fie creat
+fie dintr-un template YAML sau imperativ prin comanda \verb|kubectl create configmap|
+și ulterior poate fi folosit fie prin montarea acestuia ca pe un fișier în configurarea
+unui Pod, ca argument de mediu sau ca argument de comandă adăugând aceste detalii
+în fișierul template (fie montarea volumului sau specificarea de unde să își ia valorile
+specificând că acestea trebuie luate din config map-ul creat anterior)
+
+Întrucât aceste date sunt vizibile în procesul de build, pentru detaliile 
+mai confindețiale putem folosi Secrete, astfel acestea vor fi adăugate către Pod-uri 
+printr-o declarație specifică și nu sunt la fel de expuse. Secretele pot fi create
+strict prin comanda \verb|kubectl create secret| și vor fi expuse Pod-urilor care 
+au acces la acestea ca la un fișier însă acestea sunt stocate defapt în memoria RAM 
+pentru a evita scrierea acestora pe disc.
+
+Pentru aceste tipuri de obiecte avem operațiuniile uzuale de create, read și delete
+iar în cazul operațiuniilor de actualizare, pod-urile vor fi notificate de schimbarea
+acestora însă rămâne la latiduniea aplicațiilor ce rulează în interior dacă beneficiază
+de această actualizare.
