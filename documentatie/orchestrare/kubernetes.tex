@@ -265,3 +265,82 @@ Pentru aceste tipuri de obiecte avem operațiuniile uzuale de create, read și d
 iar în cazul operațiuniilor de actualizare, pod-urile vor fi notificate de schimbarea
 acestora însă rămâne la latiduniea aplicațiilor ce rulează în interior dacă beneficiază
 de această actualizare.
+
+\subsubsection{Securitate bazată pe rol (RBAC)}
+
+Securitatea în interiorul clusterului poate fi dificil de obținut iar unul 
+din mijloacele prin care putem să întărim aceasta proprietate este RBAC, astfel
+de fiecare dată când creăm o cerere către cluster prin intermediul oricărui client
+aceasta este auntetificată și ulterior verificată dacă conține autorizațiile necesare
+pentru a fi executată.
+
+În Kubernetes avem mai multe obiecte pe care le putem declara, Role și RoleBinding 
+ce se referă la namespace-ul în care sunt activate și ClusterRole și ClusterRoleBinding
+ce se aplică pe tot clusterul.
+
+Printr-un obiect de tip Role putem declara resursele, la tipul și la operațiuniile asupra lor, 
+la care un utilizator are acces. Printr-un obiect de tip RoleBinding putem să asociem 
+un utilizator cu un rol, astfel oferindui anumite drepturi.
+
+În cazul în care vrem să agregăm aceste tipuri de roluri, putem să folosim
+opțiunea de aggregationRule din interiorul template-ului de creare a unui rol
+pentru a crea un rol ce conține mai multe roluri deja existente.
+
+De asemenea, dacă metoda folosită de autentificare suportă grupuri, putem crea
+binding-uri care să facă referire la acestea, astfel putem administra permisiunile
+mai multor utilizatori în același timp.
+
+\subsubsection{Stocarea în Kubernetes}
+
+Migrarea către Kubernetes poate să fie dificilă și nu poate fi făcută din start 
+total, astfel putem să avem servicii pe care vrem să le apelăm din exteriorul 
+clusterului dar care să beneficieze de avantajele cluster-ului precum DNS resolver-ul intern.
+Astfel, putem definii Servicii fără Pods-uri dar care au ca spceficație
+un \verb|externalName| astfel atunci când o resursă va încerca să acceseze serviciul
+va fi redirecționat către resursa externă. O limitare a acestui mod este faptul că
+nu beneficiem de alte părți ale Kubernetes precum verificarea stării curente.
+
+Cea mai simplă metodă de a rula un container nereplicabil (de exemplu o bază de date)
+este să fie rulată ca în mod actual, pe o singură mașină, astfel nu vom beneficia 
+de avantaje precum replicare sau auto scalare însă nu este mai rău decât soluțiile existente.
+Pentru a obține asta, creăm un volum pe care îl asociem unui pod creat printr-un ReplicaSet 
+în care avem o singură replică în orice moment, astfel dacă pică nod-ul curent atunci acesta va fi recreat
+însă datele acestuia vor fi păstrate prin interiorul volumului.
+
+Însă multe baze de date nerelaționale precum MongoDB sau Cassandra ar beneficia de replicare,
+astfel acestea pot să ruleze pe mai multe instanțe bazânduse pe sharding, adică împărțirea
+datelor pe mai multe replici. Din acest motiv, avem o metodă nativă Kubernetes de a crea
+o soluție de stocare prin intermediul StatefulSets.
+
+StatefulSets sunt asemănătoare cu ReplicaSets însă există diferențe la modul 
+în care pod-urile sunt administrate, astfel fiecare pod din interior va avea 
+un hostname dedicat, fiecare replică este creată iterativ, de la cel mai mic index 
+la cel mai mare, iar crearea unei replici superioare nu poate fi creată până când 
+cea inferioară nu este declarată pregătită iar atunci când este șters, replicile sunt șterse
+de la cea cu index-ul cel mai mare descrescător, una câte una. Beneficiul unei astfel de creări ne 
+permite să accesăm doar prima instanță a unui astfel de serviciu pentru a descoperi dacă 
+acesta este disponibil.
+
+\subsection{Extinderea}
+
+Kubernetes este făcut pentru administrarea unui cluster, care este creat
+oameni și aceștia au anumite necesități. Pentru a putea fi utilizat de un număr 
+cât mai mare de oameni, acesta a fost făcut extensibil astfel putem adăuga
+funcționalitate sau să schimbăm modul în care interacționăm cu API-ul prin intermediul
+unor plugin-uri pe care le putem instala.
+
+Prin acest lucru putem crea resurse proprii sau să creăm modificări asupra diferitelor 
+interfețe prin care resursele comunică între ele.
+
+Atunci când facem o cerere într-un cluster de Kubernetes aceasta este autentificată și autorizată 
+și după trece printr-un controller de admisie ce are posibilitatea de a refuza sau să modifice
+cererile făcute către API, acestea pot fi ca cele implicite ce pun limite asupra Pods-urilor
+fără să le punem noi, astfel putem să adăugăm funcționalități pe care le dorim fără 
+a fi necesare să le punem manual în definiția oricărei resurse.
+
+Există mai multe tipuri de resurse proprii pe care le putem crea, precum cele care 
+memoreze doar date, astfel din acele obiecte ne așteptăm doar pentru a salva și a interoga anumite
+informații, crearea de compilatoare astfel atunci când creăm anumite resurse acestea pot fi compilate 
+pentru a obține o resursă finală ce va fi executată în locul celeia pe care o trimisesem iar 
+extinderile prin intermediul operatoriilor ne permite să adăugăm moduri în care Kubernetes 
+administrează automatizarea lansărilor și execuțiilor.
