@@ -1,0 +1,95 @@
+Eșecurile în proiectele software sunt scumpe, întrucât acestea necesită investiții
+semnificative. De aceea optimizarea modului în care acestea sunt create este esențial,
+din acest motiv s-a ajuns la coneperea și adaptarea a diferite metodologii
+și framework-uri ce au ca scop oferirea unei baze de inspirație
+a unui mod de organizare ce poate fi considerat că ar crește șansele
+ca proiectul să fie un succes.
+
+\subsection{Waterfall}
+
+Orice obiect destinat consumului, de exemplu diferite unelte sau alimente,
+au un proces standard de dezvoltare care cuprinde într-un mod foarte simplist
+o linie de ansamblare în care se introduc materialele necesare producerii
+iar multe persoane contribuie pentru ca în final să se obțină un singur produs final.
+
+Aplicațiile software sunt diferite întrucât acestea funcționează mai asemănător
+cu un serviciu, acesta este creat o singură dată iar apoi este distribuit
+către consumatori. Astfel, munca efectivă este creată o singură dată pentru
+ansamblarea acestuia.
+
+Însă de-a lungul timpului, modalitatea de distribuție a fost cea care a evoluat,
+dacă la început livrarea produselor era foarte asemănătoare cu livrarea
+produselor obișnuite, în care exista un produs declarat final și care
+era livrat sub formă imutabilă, de exemplu pe CD-uri, acum livrarea se
+face doar încărcând produsul într-un anumit loc, sau lansând direct
+într-o platformă cloud.
+
+Observăm faptul că o dată ce lansăm produsul, modificarea unor eventuale
+probleme este complexă, necesită retrimiterea prin formatul inițial și eventual
+chemarea înapoi a lucrurilor deja livrate, acest proces este complex și costisitor.
+
+Din acest motiv este necesar ca produsul dorit să fie descris clar
+pentru a elimina eventualele modificări ce ar putea apărea și trebuie să fie
+bine testat întrucât corectarea unor greșeli dupa livrare devine imposibilă,
+astfel metodologia Waterfall este liniară, are un stagiu de start și unul
+de final și se axează pe documentație ce descrie produsul și pe validarea acestora.
+
+Etapele metodologiei Waterfall:
+
+\begin{enumerate}
+    \item Crearea specificațiilor, include comunicarea între client și echipă
+          a condițiilor ce proiectul ar trebui să le îndeplinească. Acestea trebuie să
+          fie foarte clare și să nu lase aspecte ce pot fi interpretate întrucât
+          acestea teoretic nu pot fi schimbate în perioada dezvoltării
+    \item Crearea arhitecturii, include interpretarea cerințelor clientului
+          în vederea creării design-ului proiectului și alcătuirea specificațiilor tehnice ale
+          produsului
+    \item Implementare
+    \item Validare
+    \item Mentenanță, după validare proiectul este trimis către client iar acesta
+          este considerat final, însă clientul poate revenii pentru a aduce îmbunătățiri
+          produsului.
+\end{enumerate}
+
+\subsection{Agile}
+
+Metodologia Waterfall este rigidă și nu permite modificări în timpul dezvoltării,
+însă acest aspect nu este compatibil cu dezvoltarea software întrucât cerințele
+clienților în general nu sunt clare sau se schimbă. În același timp unele
+caracteristici trebuie să fie livrate la un anumit timp pentru a avea efectul dorit,
+astfel dacă perioada este depășită nu pot să aibă același impact.
+
+Însă în același timp, nevoia de livrare a unui produs complet a scăzut,
+întrucât costul de livrare nu mai este imutabil a scăzut necesitatea
+verificărilor intense și alcătuirea documentației din Waterfall întrucât
+acestea se pot schimba.
+
+Agile se bazează pe crearea unui Minimum Viable Product (MVP) cât mai rapid,
+astfel clientul poate să aprecieze modul cum arată produsului.
+
+Pentru a capta aceste schimbări, dezvoltarea în agile se face prin intermediul
+unui set de principii și valori ce se axează pe crearea unui mediu în care schimbările
+sunt acceptate în orice moment iar părerea clientului este importantă, de aceea
+livrarea către acesta trebuie să fie cât mai desă iar produsul trebuie să fie
+mereu într-o stare în care poate să fie livrat.
+
+Agile scrum este un framework ce aduce adăugări precum ședințele de planificare,
+retrospectivă, ședințe zilnicie în care echipa comunică la ce lucrează și
+eventualele probleme pe care le au dar și diferite roluri din cadrul echipelor.
+
+\subsection{DevOps}
+
+Deși nu ar trebui să fie încadrată ca o metodologie, DevOps este în primul
+rând o mișcare culturală ce încearcă să rezolve unele probleme de natură
+socială ce apar în dezvoltarea aplicațiilor software.
+
+Poate fi considerată un super-set al Agile întrucât majoritatea principiilor
+declarate se pot aplica și atunci când încercăm să ne orientăm spre adaptarea
+la o astfel de acțiune.
+
+Întrucât nu există o definiție clară, poate fi deficil de estimat dacă
+adoptăm DevOps corect, în general putem considera că dacă folosem anumite
+practici precum CI/CD sau încercarea optimizării modurilor de lansare am putea
+să considerăm că este suficient, însă este incomplet întrucât DevOps
+promovează mai mult cultul organizațional și armonizarea relațiilor dintre
+persoane care duc la îmbunătățirea perfomanțelor.
