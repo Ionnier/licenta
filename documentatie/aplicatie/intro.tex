@@ -1,0 +1,100 @@
+\section{Scopul aplicației}
+
+Chiar dacă o aplicație de tipul acesta nu ilustrează capabilitățile unui sistem
+bazat pe microservicii, în urma documentației putem spune că din punct de
+vedere arhitectural, folosirea unei acestui tip nu ar aduce
+aproape niciun avantaj întrucât există un singur dezvoltator deci segmentarea
+ar duce complexitate inutilă iar populația
+care va folosi aplicația va fi aproape zero, astfel nu avem nevoie de scalarea
+independentă a unor componente. În același timp, deoarece suntem constrânși de resurse
+cea mai bună metodă este să delegăm cât mai multă administrare către cloud,
+astfel să putem să ne concentrăm cât mai mult pe dezvoltare.
+
+Cu toate acestea, aplicația pe care vreau să o dezvolt are ca scop rezolvarea
+unei probleme personale, crearea unei aplicații de administrat task-uri cu diferite
+capabilități precum jurnalizarea. În mod mai simplu, vreau să fac o clonă
+de Atlassian Jira însă mai simplistă, dedicată oamenilor obișnuiți ce nu au nevoie
+de complexitatea unui program de administrare de proiecte.
+
+Ceea ce m-a atras la această idee reprezintă ideea de „Log work”, prima oară
+când am interacționat cu această mecanică mi s-a părut interesantă întrucât
+se crează un istoric al tuturor activităților pe care le fac, putând
+să îmi creez o imagine atunci când mă uit în retrospectivă și să planific mai
+ușor în viitor. Alături de aceasta, faptul că am task-uri împărțite sub diferite forme mă ajută
+să îmi organizez ziua mult mai eficient.
+
+Jurnalizarea este individuală iar modul în care fiecare vrea să își organizeze
+task-urile reprezintă o preferință personală, din acest motiv este dificil să
+găsești o aplicație care să se potrivească, din acest motiv nu prea am folosit aplicații
+deja create întrucât mi s-a părut că sunt ușor influențat de modul cum ar trebui să
+îmi administrez cerințele.
+
+Prin această aplicație vreau să îmi organizez ziua mai ușor, să creez o soluție
+de aministrare a lucrurilor care vreau să le fac zilnic ce poate să le aranjeze
+automat într-un mod inteligent pentru a-mi oferi o perspectivă asupra zilei.
+
+\section{Aplicatii asemanatoare}
+
+\subsection{Jira}
+
+Jira este una dintre aplicațiile pe care trebuie să le folosesc zilnic
+la muncă și din experiența proprie, nu mi se pare că ar îmbunătății colaborarea,
+însă personal mă ajută să îmi dau seama de task-urile mai importante, să adaug
+notițe pe acestea prin comentarii și să înregistrez numărul de ore cât am lucrat la ele.
+
+Elementele de colaborare sunt de asemenea destul de bune, pot să văd cu ușurință
+la ce lucrează alte persoane. Însă Jira încearcă să rezolve problemele administrării
+de proiecte, astfel are multe funcții dedicate pentru asta, de exemplu Sprint-uri sau
+board-urile Kanban. Din acest motiv, singurul lucru care iesă în evidență atunci
+când mă gândesc la Jira sunt sistemul de log work și dashboard-urile customizabile.
+
+\subsection{Google Keep}
+
+O aplicație de mementouri și notițe sub diferite forme. Aceasta este foarte simplistă,
+la fel cum sunt majoritatea aplicațiilor de acest tip. Un lucru important la aceasta
+este faptul că este accesibilă pe majoritatea dispozitivelor întrucât se prezintă
+ca aplicație web dar și nativă de mobil, iar atunci când vorbim de o aplicație de notițe
+am vrea să putem să o accesăm oriunde.
+
+Aceasta se concentrează strict pe notițe simple, din acest motiv este limitată. În interiorul
+notițelor este dificil să navigăm iar gruparea notițelor se poate face prin adăugarea
+unor etichete simple, ceea ce funcționează însă nu este ideal într-o aplicație complexă,
+iar posibilitatea de a împărții un task în mai multe sub-task-uri din Jira este lipsită.
+
+\subsection{Todoist}
+
+O aplicație aparent simplă de organizare însă care încearcă să se plaseze ca fiind folositoare
+și pentru echipe. Din acest motiv, task-urile pot fi împărțite pe proiecte și ulterior partajate.
+Aplicația fie are un design de complex sau nu am petrecut suficient de mult timp cu ea,
+însă este dificil de navigat în interiorul ei, iar pentru o aplicație de acest tip este
+esențial un design minimalist.
+
+Aceasta are mai multe funcționalități ce o apropie de Jira, precum posibilitatea de a avea
+subtask-uri la task-uri, asignarea de priorități, remindere, gruparea pe proiecte
+și etichete, existența unui jurnal de activitate ce descrie activitățile pe care le-am făcut
+în cadrul aplicației și posiblitatea de distribuire. Prezintă un calendar în interior,
+ceea ce e esențial pentru a vedea modul de distribuție a task-urilor.
+
+\section{Cerințe}
+
+Proiectele software urmează o analiză detaliată a specificațiilor pentru a ne
+asigura că soluția pe care o implementăm rezolvă problema, însă prefer ca aceasta
+să fie cât mai simplă.
+
+Astfel, aplicația trebuie să poată să îndeplinească următoarele cerințe:
+
+\begin{itemize}
+    \item Ca și utilizator pot să am posibilititatea de a crea un task pe care vreau să îl completez
+    \item Ca și utilizator pot să adaug un subtask la un task creat
+    \item Ca și utilizator am posibilitatea de a-mi organiza task-urile sub alte obiective
+          generale (asemănător Epic-urilor din Jira)
+    \item Ca și utilizator pot să adaug timp petrecut asupra unui task în orice moment
+    \item Aplicația va fi minimalistă și adaptabilă, astfel utilizatorul poate să
+          își creeze un mod propriu în care aceasta să fie
+    \item Aplicația va fi disponibilă pe mai multe dispozitive și va permite sincronizarea
+          între dispozitive
+    \item Aplicația permite să încardrăm task-urile într-un anumit interval și să vedem asta pe calendar
+    \item Aplicația va funcționa integral fără conexiune la Internet și implicit fără niciun server
+    \item Aplicația va avea o funcționalitate de planificare automată a zilei inteligentă, în funcție de tipul task-ului însă
+          care nu e necesar să respecte condiția legată de conexiunea de Internet
+\end{itemize}
