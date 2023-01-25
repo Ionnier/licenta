@@ -1,0 +1,92 @@
+Un aspect pe care se concentrează majoritatea persoanelor atunci când vorbesc
+despre DevOps reprezintă uneltele sau aspectele practice pe care urmarea
+acestei mișcări o susține, însă nu este suficient mai ales că folosirea
+unor unelte nu garantează o creștere a eficienței.
+
+Însă un lucru este cert, pentru a crește eficiența din cadrul unei echipe este
+necesar să automatizăm cât mai multe aspecte, de aceea microserviciile nu pot fi
+folosite eficient fără a avea o bază formată ce automatizează aspecte precum
+testarea și lansările.
+
+Pornind de la nivelul cel mai jos, folosirea unei metode de versionare a codului
+reprezintă un standard, aceasta se face prin intermediul Git, iar hostarea repository-urilor
+poate să fie făcută pe o platformă precum GitHub, GitLab sau BitBucket. Toate acestea
+ar trebui să fie accesibile de orice persoană ce are ca responsabilitate un produs.
+Aceasta ne poate ajuta să cunoaștem alte produse și să aducem modificări, chiar și din
+exterior atunci când e nevoie prin intermediul pull request-urilor.
+
+Pentru a elimina probleme ce apar datorită compilării pe un dispozitiv local,
+putem folosii Maven pentru a automatiza procesul de build, astfel putem să fim siguri
+că programul este lipsit de dependințe locale.
+
+Stocarea și versionarea produselor rezultate după build, poate fi făcută
+cu un program asemănător cu Nexus Artifact Management, acesta poate fi folosit
+pentru fișiere jar, war sau pachete npm și oferă suport pentru controlarea
+accesului. Acesta ne permite să reutilizăm rezultatele pasului de build în mai multe locuri.
+
+Un alt aspect pe care putem să îl automatizăm conturează integrarea continuă, o astfel
+de unealtă reprezintă Jenkins ce este folosit pentru a sincroniza branch-urile,
+rularea de teste automate asupra lor și eventual construirea artefactului și trimiterea
+acestuia spre stocare.
+
+Automatizarea infrastructurii și menținerea acesteia sub formă de cod reprezintă
+un alt proces ce poate să fie automatizat. Menținerea sub această formă ne aduce
+avantaje precum notificarea tuturor personalor implicate prin intermediul pull request-urilor
+dar și crearea unui istoric ce poate fi folosit în cazul unui audit. Pentru a automatiza
+modul în care procurăm infrastructură putem folosii Terraform, o unealtă folosită
+pentru a crea resurse în cloud prin intermediul codului oferind starea pe
+care vrem să o avem. Acesta poate fi folosit pentru majoritatea platformelor cloud dar și
+peste echipament on-premise.
+
+O dată ce echipamentul este procurat, o altă dificultate reprezintă configurarea acestora. În trecut
+acesta reprezenta un lucru manual extrem de repetitiv, însă atunci când avem de a face
+cu un astfel de proces pot exista probleme ce apar din erori umane, astfel
+automatizarea ar ajuta prin evitarea acestora. O altă unealtă pe care putem să o folosim
+în acest scop reprezintă Ansible, ce ne ajută în configurarea automată a infrastructurii
+prin intermediul codului.
+
+Atunci când trebuie să folosim părți de aplicație ce nu au un artefcat clar (de
+exemplu un server în Node.JS) putem folosi containere Docker pentru a le stoca
+sub forma unui container, astfel acesta poate să fie portat dintr-un mediu în altul și
+să fie refolosit la mai multe stagii.
+
+Pentru a orchestra modul în care containerele rulează putem folosii Kubernetes, acesta
+ne permite să administrăm cluster-ul și avem facilitatăți precum DNS în interiorul acestuia,
+posibilități de recuperare și orchestrare a lansărilor.
+
+Monitorizarea reprezintă un alt aspect important pentru a estima starea sistemului,
+de aceea putem folosi ceva asemnănător cu stack-ul ELK. Elasticsearch reprezintă
+o bază de date cu posibilitate de căutare pentru a stoca elementele de jurnalizare.
+Logstash oferă o metodă de procesare a elementelor de jurnalizare pe care le
+preia din diferite surse și pe care le trimite în Elastic. Kibana reprezintă o platformă de vizualizare a
+datelor stocate în Elastic.
+
+Pentru a automatiza testarea putem folosii framework-uri precum Selenium, astfel
+aceste teste vor rula de fiecare dată când se creează un build. În același stil
+putem folosi unelte de analizare a seucrității prin integrarea acestora în interiorul
+ciclului.
+
+Testarea se face la diferite nivele, astfel testarea automată poate să aducă
+un sens de securitate pentru integrarea schimbărilor, acestea fiind vizibile
+pe pull request. În același stil, pentru testarea manuală putem să creăm medii efemere
+ce sunt create strict pentru a testa acel branch. Pentru a face asta putem folosii Vagrant.
+
+Atunci când avem multe sisteme, va exista necesitatea administrării certificatelor,
+parolelor și cheilor de API externe, acestea trebuie să aibă o anumită perioadă de timp
+cât sunt valabile iar în cazul în care sunt compromise trebuie să aibă posibilitatea
+să fie schimbate și să se reflecte acestu lucru în sistemele deja existente. Pentru a rezolva
+această problemă putem folosii HashiCorp Vault ce oferă aceste funcționalități.
+
+Chiar dacă sunt mai puțin vizibile, sistemele de comunicare sunt altă parte importantă a
+DevOps-ului, fie că acestea reprezintă un sistem de Mail sau o platformă de
+comunicare în timp real precum Slack, acestea trebuie să îmbunătățească posibilitatea
+de sincornizare a muncii angajaților dar și de crearea unei căi de alertare în cazul
+apariției erorilor. În același timp, acestea trebuie să fie folosite pentru a păstra
+la curent persoanele care nu pot participa la ședințe sau lucrează de la alte sedii sau de
+acasă.
+
+O bună parte din automatizări se referă la infrastructură și la configurarea
+acesteia, din acest motiv este util dacă folosim servicii administrate
+de către providerii cloud prin platformele acestora. Acestea oferă multe alte
+servicii pe lângă sistemele clasice și pot oferii servicii de notificare și monitorizare complexe
+ce ușurează ciclul de dezvoltare.
