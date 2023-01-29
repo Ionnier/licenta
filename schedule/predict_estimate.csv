@@ -1,0 +1,11 @@
+task_name, day_of_year, day_of_week, time_of_day, total_minutes_estimated, remaining_minutes_estimated, minutes_estimated
+alergat, 10, 1, 8, 999999, 999999, 90
+alergat, 11, 2, 8, 999999, 999999, 90
+alergat, 12, 3, 8, 999999, 999999, 90
+alergat, 13, 4, 8, 999999, 999999, 30
+citit_carte1, 10, 1, 10, 300, 300, 30
+citit_carte1, 10, 1, 16, 300, 270, 60
+citit_carte1, 11, 2, 10, 300, 210, 30
+citit_carte1, 11, 2, 16, 300, 180, 60
+citit_carte1, 12, 3, 10, 300, 120, 60
+citit_carte1, 12, 3, 16, 300, 60, 60
