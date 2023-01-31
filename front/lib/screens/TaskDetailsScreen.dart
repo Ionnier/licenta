@@ -73,6 +73,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     task.totalTimeEstimated!.toDouble(),
               ),
             if (task.totalTimeEstimated != null)
+              const SizedBox(
+                height: 8.0,
+              ),
+            if (task.totalTimeEstimated != null)
               Row(
                 children: [
                   const SizedBox(
@@ -88,10 +92,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   ),
                 ],
               ),
-            const SizedBox(
-              height: 8.0,
-            ),
             Accordion(
+              paddingListTop: 10,
+              paddingListBottom: 10,
               headerBackgroundColor:
                   Theme.of(context).colorScheme.primaryContainer,
               contentBorderColor:
