@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:front/screens/HomeScreen.dart';
@@ -16,9 +18,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    
+    var color = Colors.white;
+    if (AppDb().getRandomColor() == true) {
+      final random = Random();
+      color = Color.fromARGB(random.nextInt(256), random.nextInt(256),
+          random.nextInt(256), random.nextInt(256));
+    }
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(colorSchemeSeed: const Color(0xFF991F3A)),
+        title: 'Scheduler',
+        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: color)),
         home: Builder(
           builder: (context) => const MyWidget(),
         ));

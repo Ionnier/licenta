@@ -1,4 +1,4 @@
-package com.ionnier.scheduler.front
+package com.ionnier.scheduler
 
 import io.flutter.embedding.android.FlutterActivity
 

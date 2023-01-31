@@ -1,3 +1,4 @@
+import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -24,6 +25,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   @override
   void initState() {
     task = widget.task;
+    print(task.toMap());
+
     updateTask();
     super.initState();
   }
@@ -35,8 +38,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         var copy = task;
         task = Task();
         task = copy;
-        task.title = "sdsd";
-        print("DONE");
+        print(task.toMap());
       });
     });
   }
@@ -52,7 +54,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         child: ListView(
           children: [
             const SizedBox(
-              height: 4.0,
+              height: 8.0,
             ),
             Text(
               task.title,
@@ -63,11 +65,80 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               ),
             ),
             const SizedBox(
-              height: 4.0,
+              height: 8.0,
             ),
-            Text(
-              task.description,
-              textAlign: TextAlign.justify,
+            if (task.totalTimeEstimated != null)
+              LinearProgressIndicator(
+                value: (task.getTaskActivitiesDuration().toDouble()) /
+                    task.totalTimeEstimated!.toDouble(),
+              ),
+            if (task.totalTimeEstimated != null)
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 2.0,
+                  ),
+                  const Text("|"),
+                  Text(
+                      "Left ${Duration(milliseconds: task.totalTimeEstimated! - task.getTaskActivitiesDuration()).toString().split(".")[0]}"),
+                  const Spacer(),
+                  Text(
+                      "Total ${Duration(milliseconds: task.totalTimeEstimated!).toString().split(".")[0]}"),
+                  const Text("|"),
+                  const SizedBox(
+                    width: 2.0,
+                  ),
+                ],
+              ),
+            const SizedBox(
+              height: 8.0,
+            ),
+            Accordion(
+              headerBackgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              contentBorderColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              disableScrolling: true,
+              children: [
+                AccordionSection(
+                  header: const Text('Description'),
+                  content: Text(
+                    task.description,
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+                if (!task.isHabit() && task.parentId == null)
+                  AccordionSection(
+                      header: const Text('Subtasks'),
+                      content: Column(children: [
+                        if (task.subTasks == null) const Text("No subtasks"),
+                        if (task.subTasks != null)
+                          for (var subtask in task.subTasks!)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: TaskWidget(
+                                task: subtask,
+                                onTicked: null,
+                              ),
+                            ),
+                      ])),
+                AccordionSection(
+                    header: const Text('History'),
+                    content: Column(
+                      children: [
+                        if (task.activities == null)
+                          const Text("No activities"),
+                        if (task.activities != null)
+                          for (var act in task.activities!)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ActivityWidget(
+                                activity: act,
+                              ),
+                            ),
+                      ],
+                    )),
+              ],
             ),
             Row(
               children: [
@@ -232,36 +303,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           child: const Text("Add subtask"))),
               ],
             ),
-            const SizedBox(
-              height: 4.0,
-            ),
-            if (task.subTasks != null && task.subTasks!.isNotEmpty)
-              const Text(
-                "Subtasks",
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-            if (task.subTasks != null)
-              for (var subtask in task.subTasks!)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TaskWidget(
-                    task: subtask,
-                    onTicked: null,
-                  ),
-                ),
-            if (task.activities != null && task.activities!.isNotEmpty)
-              const Text(
-                "History",
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-            if (task.activities != null)
-              for (var act in task.activities!)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ActivityWidget(
-                    activity: act,
-                  ),
-                )
+            const SizedBox(height: 16.0),
           ],
         ),
       ),

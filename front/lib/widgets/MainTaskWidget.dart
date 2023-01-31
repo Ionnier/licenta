@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:front/screens/TaskDetailsScreen.dart';
 
 import '../models/task_class.dart';
+import '../screens/agenda/widgets/AddPlanWidget.dart';
 
 class TaskWidget extends StatefulWidget {
   final Task task;
@@ -47,7 +48,7 @@ class _TaskWidgetState extends State<TaskWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => TaskDetailsScreen(
-                      task: widget.task,
+                      task: task,
                     )),
           );
           if (widget.refreshTasks != null) {
@@ -56,7 +57,25 @@ class _TaskWidgetState extends State<TaskWidget> {
         },
         child: Row(
           children: [
-            Expanded(child: Text(widget.task.title)),
+            if (task.priority == highPriority)
+              const Icon(
+                Icons.upload,
+                color: Colors.red,
+              )
+            else if (task.priority == mediumPriority)
+              const Icon(
+                Icons.circle,
+                color: Colors.orange,
+              )
+            else
+              const Icon(
+                Icons.download,
+                color: Colors.blue,
+              ),
+            const SizedBox(
+              width: 4.0,
+            ),
+            Expanded(child: Text(task.title)),
             task.isHabit()
                 ? (checkbox ??
                     const SizedBox(
@@ -64,7 +83,16 @@ class _TaskWidgetState extends State<TaskWidget> {
                     ))
                 : (task.isDoable()
                     ? IconButton(
-                        onPressed: () => {},
+                        onPressed: () async {
+                          var result = await showDialog<bool>(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  AddPlanAlertDialog(
+                                    tasks: [task],
+                                    initialSelected: task.localId,
+                                  ));
+                          if (result == true) {}
+                        },
                         icon: const Icon(
                           Icons.add_chart,
                         ))

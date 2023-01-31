@@ -37,7 +37,8 @@ class ActivityListScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold, fontSize: 20.0),
               );
               var hey = Jiffy.unixFromMillisecondsSinceEpoch(
-                  (e.startedAt ?? e.createdAt) + e.timeSpent);
+                  ((e.startedAt ?? (e.createdAt - e.timeSpent)) + e.timeSpent)
+                      .toInt());
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -65,6 +66,9 @@ class ActivityListScreen extends StatelessWidget {
                           .split(".")[0])
                     ],
                   ),
+                  const SizedBox(
+                    height: 10.0,
+                  )
                 ],
               );
             }).toList()));

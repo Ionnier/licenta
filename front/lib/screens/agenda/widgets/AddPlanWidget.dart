@@ -7,6 +7,7 @@ import 'package:front/db/db.dart';
 import 'package:select_form_field/select_form_field.dart';
 
 import '../../../models/plan_class.dart';
+import '../../../models/task_class.dart';
 import '../../InputTask.dart';
 
 class AddPlanAlertDialog extends StatelessWidget {
@@ -16,11 +17,29 @@ class AddPlanAlertDialog extends StatelessWidget {
   final _endDateController = TextEditingController();
   final _taskController = TextEditingController();
 
-  AddPlanAlertDialog({super.key});
+  final List<Task>? tasks;
+  final int? initialSelected;
+
+  AddPlanAlertDialog({super.key, this.tasks, this.initialSelected});
 
   @override
   Widget build(BuildContext context) {
+    if (initialSelected != null) {
+      _taskController.text = initialSelected!.toString();
+    }
+    List<Map<String, dynamic>> items = tasks != null
+        ? List.generate(
+            tasks!.length,
+            (index) => {
+                  "label": tasks![index].title,
+                  "value": tasks![index].localId,
+                })
+        : List.empty(growable: true);
+    items.add(
+      {"label": "None", "value": null},
+    );
     return AlertDialog(
+      scrollable: true,
       title: const Text('Add plan'),
       content: Form(
         key: _formKey,
@@ -76,14 +95,9 @@ class AddPlanAlertDialog extends StatelessWidget {
           SelectFormField(
             type: SelectFormFieldType.dropdown,
             labelText: 'Link to task',
-            items: const [
-              {"label": "None", "value": null},
-              {
-                "label": "asd",
-                "value": "bsd",
-              }
-            ],
+            items: items,
             controller: _taskController,
+            enableSearch: true,
           ),
         ]),
       ),

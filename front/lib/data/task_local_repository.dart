@@ -25,14 +25,18 @@ class LocalTaskDbRepository implements LocalTaskRepository {
     return initialList;
   }
 
-  Future<Task> getTask(int localId) async {
+  Future<Task?> getTask(int localId) async {
     final List<Map<String, dynamic>> maps = await AppDb()
         .db!
         .query(tasksTableName, where: "localId = ?", whereArgs: [localId]);
     var initialList = List.generate(maps.length, (i) {
       return Task.fromMap(maps[i]);
     });
-    return initialList.first;
+    if (initialList.isEmpty) {
+      return null;
+    } else {
+      return initialList.first;
+    }
   }
 
   @override
@@ -81,6 +85,16 @@ class LocalTaskDbRepository implements LocalTaskRepository {
     return;
   }
 
+  Future<void> updateTaskCompletion(Plan plan, int value) async {
+    if (plan.parentId != null) {
+      await AppDb().db!.update(tasksTableName, {"lastCompletedAt": value},
+          where: "localId = ? and totalTimeEstimated is null",
+          whereArgs: [plan.parentId],
+          conflictAlgorithm: ConflictAlgorithm.abort);
+      return;
+    }
+  }
+
   Future<int> _delete(String tableName, dynamic value) async {
     return await AppDb()
         .db!
@@ -89,7 +103,7 @@ class LocalTaskDbRepository implements LocalTaskRepository {
 
   @override
   Future<void> deleteTask(Task task) async {
-    await _delete(tasksTableName, task.localId);
+    await _delete(tasksTableName, task);
     return;
   }
 
@@ -105,7 +119,7 @@ class LocalTaskDbRepository implements LocalTaskRepository {
   }
 
   Future<void> deleteActivity(Activity activity) async {
-    await _delete(activityTableName, activity.localId);
+    await _delete(activityTableName, activity);
     return;
   }
 
@@ -155,7 +169,7 @@ class LocalTaskDbRepository implements LocalTaskRepository {
   }
 
   Future<void> deletePlan(Plan plan) async {
-    await _delete(activityTableName, plan.localId);
+    await _delete(planTableName, plan);
     return;
   }
 
@@ -184,9 +198,11 @@ class LocalTaskDbRepository implements LocalTaskRepository {
         conflictAlgorithm: ConflictAlgorithm.replace);
     if (plan.completed) {
       await insertActivity(plan.getActivity(), setTime: false);
+      await updateTaskCompletion(plan, DateTime.now().millisecondsSinceEpoch);
     } else {
       await AppDb().db!.delete(activityTableName,
           where: "planId = ?", whereArgs: [plan.localId]);
+      await updateTaskCompletion(plan, 0);
     }
     return;
   }

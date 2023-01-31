@@ -1,15 +1,31 @@
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AppDb {
   static final AppDb _singleton = AppDb._internal();
   Database? db;
+  SharedPreferences? sp;
+  // Obtain shared preferences.
 
   factory AppDb() {
     return _singleton;
   }
 
+  bool getRandomColor() {
+    try {
+      return sp!.getBool("randomColor") ?? true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> setRandomColor(bool value) async {
+    await sp!.setBool("randomColor", value);
+  }
+
   Future<void> initDb() async {
+    sp = await SharedPreferences.getInstance();
     db = await openDatabase(
       join(await getDatabasesPath(), 'my_db.db'),
       onCreate: (db, version) async {
@@ -41,7 +57,7 @@ class AppDb {
             "timeSpent INT,"
             "createdAt INT,"
             "modifiedAt INT,"
-            "foreign key(parentId) references $tasksTableName(localId) on delete set null,"
+            "foreign key(parentId) references $tasksTableName(localId) on delete cascade,"
             "foreign key(planId) references $planTableName(localId) on delete cascade"
             ")");
 

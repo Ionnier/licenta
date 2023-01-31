@@ -50,6 +50,32 @@ class Task {
 
   Task({this.title = "", this.description = ""});
 
+  int getTaskActivitiesDuration() {
+    int sum = 0;
+    if (activities == null || activities!.isEmpty) {
+      return sum;
+    }
+    for (var activity in activities!) {
+      sum += activity.timeSpent;
+    }
+    return sum;
+  }
+
+  int getSubTasksTotalTimeSpent() {
+    int sum = 0;
+    try {
+      if (subTasks == null) {
+        return 0;
+      }
+      for (var task2 in subTasks!) {
+        sum += task2.getTaskActivitiesDuration();
+      }
+      return sum;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   static Task fromMap(Map<String, dynamic> map) {
     var task = Task(
       title: map['title'],

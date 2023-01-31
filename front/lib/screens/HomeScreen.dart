@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:front/data/task_local_repository.dart';
+import 'package:front/db/db.dart';
 import 'package:front/screens/AddTask.dart';
 import 'package:front/screens/TasksScreen.dart';
 import 'package:front/screens/activity/ActivityListScreen.dart';
@@ -27,6 +29,7 @@ class _MyWidgetState extends State<MyWidget> {
   @override
   void initState() {
     _updatePlans();
+    _updateTasks();
     super.initState();
   }
 
@@ -42,30 +45,52 @@ class _MyWidgetState extends State<MyWidget> {
   void _updateTasks() {
     LocalTaskDbRepository().getTasks().then((value) {
       setState(() {
-        tasks = List.empty();
         tasks = value;
       });
     });
   }
 
-  final List<String> choices = ["Activity Log"];
+  final List<String> choices = ["Activity Log", "Toggle random color"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SvgPicture.asset(
+            'assets/logo.svg',
+            width: 16.0,
+            height: 16.0,
+            color: Theme.of(context).iconTheme.color,
+          ),
+        ),
         actions: [
           PopupMenuButton(
               onSelected: (value) {
-                if (choices.indexOf(value) == 0) {
-                  LocalTaskDbRepository().getOnlyActivities().then((value) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ActivityListScreen(activities: value),
-                        ));
-                  });
+                switch (choices.indexOf(value)) {
+                  case 0:
+                    {
+                      LocalTaskDbRepository().getOnlyActivities().then((value) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ActivityListScreen(activities: value),
+                            ));
+                      });
+                      break;
+                    }
+                  case 1:
+                    {
+                      final currentValue = AppDb().getRandomColor();
+                      AppDb().setRandomColor(!currentValue).then((value) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(currentValue == true
+                                ? "Disabled random theme."
+                                : "Random color generation activated.")));
+                      });
+                    }
                 }
               },
               icon: const Icon(Icons.settings),
@@ -99,7 +124,9 @@ class _MyWidgetState extends State<MyWidget> {
               onPressed: () async {
                 var result = await showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) => AddPlanAlertDialog());
+                    builder: (BuildContext context) => AddPlanAlertDialog(
+                          tasks: tasks,
+                        ));
                 if (result == true) {
                   _updatePlans();
                 }
@@ -111,6 +138,9 @@ class _MyWidgetState extends State<MyWidget> {
             )
           : AgendaScreen(
               plans: plans,
+              update: () {
+                _updatePlans();
+              },
             ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,

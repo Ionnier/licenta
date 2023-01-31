@@ -24,6 +24,7 @@ class _TasksScreenState extends State<TasksScreen> {
   bool showCompleted = false;
   bool hideHabits = false;
   bool hideActivities = false;
+  bool hideSubtasks = false;
 
   @override
   void initState() {
@@ -31,12 +32,27 @@ class _TasksScreenState extends State<TasksScreen> {
     updateTasks(firstTime: true);
   }
 
-  void updateTasks({bool firstTime = false}) {
+  void updateTasks({bool firstTime = false, bool onlyState = false}) {
+    if (onlyState) {
+      List<Task> aux = List.from(tasks);
+      setState(() {
+        tasks = List.empty();
+        isLoading = true;
+      });
+      Future.delayed(const Duration(milliseconds: 1), () {
+        setState(() {
+          tasks = List.from(aux);
+          isLoading = false;
+          return;
+        });
+        return;
+      });
+      return;
+    }
     if (firstTime && widget.tasks != null) {
       setState(() {
         tasks = widget.tasks!;
       });
-      return;
     }
 
     setState(() {
@@ -57,13 +73,8 @@ class _TasksScreenState extends State<TasksScreen> {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (tasks.isEmpty) {
-      return const Center(child: Text("No tasks."));
-    }
     List<Widget> children = List.empty(growable: true);
-    children.add(SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: [
+    children.add(Wrap(spacing: 8, children: [
           InputChip(
             label: const Text('Show completed'),
             selected: showCompleted,
@@ -71,6 +82,7 @@ class _TasksScreenState extends State<TasksScreen> {
               setState(() {
                 showCompleted = value;
               });
+              updateTasks(onlyState: true);
             },
           ),
           InputChip(
@@ -80,46 +92,75 @@ class _TasksScreenState extends State<TasksScreen> {
               setState(() {
                 hideActivities = value;
               });
+              updateTasks(onlyState: true);
             },
           ),
           InputChip(
+        label: const Text('Hide subtasks'),
+        selected: hideSubtasks,
+        onSelected: (value) {
+          setState(() {
+            hideSubtasks = value;
+          });
+          updateTasks(onlyState: true);
+        },
+      ),
+      InputChip(
             label: const Text('Hide habits'),
             selected: hideHabits,
             onSelected: (value) {
               setState(() {
                 hideHabits = value;
               });
+              updateTasks(onlyState: true);
             },
           )
-        ])));
-    children.addAll(tasks
-        .where((element) {
-          if (hideHabits && element.isHabit()) {
-            return false;
-          }
-          return true;
-        })
-        .where((element) {
-          if (element.isDoneToday() && !showCompleted) {
-            return false;
-          }
-          return true;
-        })
-        .map(
-          (e) => TaskWidget(
-            onTicked: () async {
-              if (!e.isDoneToday()) {
-                await LocalTaskDbRepository().markAsCompleted(e);
-              } else {
-                await LocalTaskDbRepository().deleteCompletion(e);
-              }
-              updateTasks();
-            },
-            refreshTasks: () => {updateTasks()},
-            task: e,
-          ),
-        )
-        .toList());
+    ]));
+    if (tasks.isEmpty) {
+      children.add(const Center(child: Text("No tasks.")));
+    } else {
+      children.addAll(tasks
+          .where((element) {
+            if (hideHabits && element.isHabit()) {
+              return false;
+            }
+            return true;
+          })
+          .where((element) {
+            if (hideActivities && !element.isHabit()) {
+              return false;
+            }
+            return true;
+          })
+          .where((element) {
+            if (hideSubtasks && element.parentId != null) {
+              return false;
+            }
+            return true;
+          })
+          .where((element) {
+            if (element.isDoneToday() && !showCompleted) {
+              return false;
+            }
+            return true;
+          })
+          .sorted((a, b) => b.priority - a.priority)
+          .map(
+            (e) => TaskWidget(
+              onTicked: () async {
+                if (!e.isDoneToday()) {
+                  await LocalTaskDbRepository().markAsCompleted(e);
+                } else {
+                  await LocalTaskDbRepository().deleteCompletion(e);
+                }
+                updateTasks();
+              },
+              refreshTasks: () => {updateTasks()},
+              task: e,
+            ),
+          )
+          .toList());
+    }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       children: children,
