@@ -78,13 +78,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   const SizedBox(
                     width: 2.0,
                   ),
-                  const Text("|"),
                   Text(
                       "Left ${Duration(milliseconds: task.totalTimeEstimated! - task.getTaskActivitiesDuration()).toString().split(".")[0]}"),
                   const Spacer(),
                   Text(
                       "Total ${Duration(milliseconds: task.totalTimeEstimated!).toString().split(".")[0]}"),
-                  const Text("|"),
                   const SizedBox(
                     width: 2.0,
                   ),
