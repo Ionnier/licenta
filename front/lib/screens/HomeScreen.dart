@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -62,12 +64,15 @@ class _MyWidgetState extends State<MyWidget> {
   Widget build(BuildContext context) {
     List<String> choices = ["Activity Log", "Toggle random color"];
 
-    if (!AuthRepository().isLoggedIn()) {
-      choices.add(login);
-    } else {
-      choices.add(logout);
-      choices.add("Manage account");
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (!AuthRepository().isLoggedIn()) {
+        choices.add(login);
+      } else {
+        choices.add(logout);
+        choices.add("Manage account");
+      }
     }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +86,8 @@ class _MyWidgetState extends State<MyWidget> {
           ),
         ),
         actions: [
-          if (AuthRepository().isLoggedIn())
+          if ((Platform.isAndroid || Platform.isIOS) &&
+              AuthRepository().isLoggedIn())
             IconButton(
                 onPressed: () async {
                   await showDialog(
@@ -233,7 +239,8 @@ class _MyWidgetState extends State<MyWidget> {
             icon: Icon(Icons.calendar_today),
             label: 'Agenda',
           ),
-          if (AuthRepository().isLoggedIn())
+          if ((Platform.isAndroid || Platform.isIOS) &&
+              AuthRepository().isLoggedIn())
             const BottomNavigationBarItem(
               icon: Icon(Icons.list),
               label: 'Timeline',
