@@ -24,6 +24,22 @@ class AppDb {
     await sp!.setBool("randomColor", value);
   }
 
+  String? getApiKey() {
+    try {
+      return sp!.getString("apiKey");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> setApiKey(String? value) async {
+    if (value == null) {
+      sp!.remove("apiKey");
+      return;
+    }
+    await sp!.setString("apiKey", value);
+  }
+
   Future<void> initDb() async {
     sp = await SharedPreferences.getInstance();
     db = await openDatabase(
@@ -77,6 +93,12 @@ class AppDb {
       },
       version: 1,
     );
+  }
+
+  Future<void> clearDb() async {
+    await db!.delete(tasksTableName);
+    await db!.delete(planTableName);
+    await db!.delete(activityTableName);
   }
 
   AppDb._internal();

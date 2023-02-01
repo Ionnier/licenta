@@ -44,6 +44,11 @@ dependencies:
   shared_preferences: ^2.0.17
   add_2_calendar: ^2.2.3
   accordion: ^2.5.1
+  webview_flutter: ^4.0.2
+  webview_flutter_android: ^3.2.4
+  webview_flutter_wkwebview: ^3.0.5
+  url_launcher: ^6.1.8
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
