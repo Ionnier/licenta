@@ -6,4 +6,8 @@ class TimelineRepository {
   }
 
   TimelineRepository._internal();
+
+  Future<bool> followUser(String email) async {
+    return true;
+  }
 }

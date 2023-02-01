@@ -30,8 +30,12 @@ class _SyncAlertDiaglogState extends State<SyncAlertDiaglog> {
     if (!isLoading) {
       if (context.mounted) Navigator.pop(context);
     }
-    return const AlertDialog(
-      content: CircularProgressIndicator(),
-    );
+    return const SizedBox(
+        height: 64,
+        width: 64,
+        child: Center(
+            child: CircularProgressIndicator(
+          strokeWidth: 1.5,
+        )));
   }
 }

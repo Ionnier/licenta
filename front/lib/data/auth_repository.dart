@@ -8,6 +8,6 @@ class AuthRepository {
   }
 
   bool isLoggedIn() {
-    return AppDb().getApiKey() == null;
+    return AppDb().getApiKey() != null;
   }
 }
