@@ -27,4 +27,5 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
+        removeArtifacts: true
         artifacts: "front/build/app/outputs/apk/release/*.apk"
