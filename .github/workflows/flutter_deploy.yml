@@ -7,7 +7,7 @@ on:
 name: Test, Build and Release apk
 jobs:
   build:
-    name: Build APK
+    name: Build APKs
     runs-on: ubuntu-latest
     permissions:
       contents: write
