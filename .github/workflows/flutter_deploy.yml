@@ -1,9 +1,9 @@
 on: 
   push:
-      branches: 
-      - 'master'
       paths:
         - "front/*"
+      tags:
+        - "*"
 name: Test, Build and Release apk
 jobs:
   build:
