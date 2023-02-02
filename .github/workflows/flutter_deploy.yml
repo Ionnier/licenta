@@ -2,27 +2,29 @@ on:
   push:
       branches: 
       - 'master'
-      tags:
-      - '*'
+      paths:
+        - "front/*"
 name: Test, Build and Release apk
 jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - uses: subosito/flutter-action@v1
-      with:
-        flutter-version: '3.7.0'
-    - run: flutter pub get
-      working-directory: ./front
-    - run: flutter build apk
-      working-directory: ./front
+    # - uses: actions/setup-java@v1
+    #   with:
+    #     java-version: '12.x'
+    # - uses: subosito/flutter-action@v1
+    #   with:
+    #     flutter-version: '3.7.0'
+    # - run: flutter pub get
+    #   working-directory: ./front
+    # - run: flutter build apk
+    #   working-directory: ./front
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "front/build/app/outputs/apk/debug/*.apk"
+        artifacts: "front/build/app/outputs/apk/release/*.apk"
