@@ -4,8 +4,6 @@ on:
       - 'main'
       paths: 
       - 'front/*'
-      tags:
-      - '*'
 name: Test, Build and Release apk
 jobs:
   build:
@@ -13,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: cd licenta/front
+    - run: ls -l
+    - run: cd licenta || cd front
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
@@ -26,4 +25,5 @@ jobs:
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
       with:
+        allowUpdates: true
         artifacts: "build/app/outputs/apk/debug/*.apk"
