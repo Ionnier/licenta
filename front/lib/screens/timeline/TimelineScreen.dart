@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import 'package:front/data/timeline_repository.dart';
 import 'package:front/screens/timeline/ProfileScreen.dart';
 import 'package:front/screens/timeline/TimelineListElement.dart';

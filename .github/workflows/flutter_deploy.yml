@@ -2,6 +2,8 @@ on:
   push:
       branches: 
       - 'master'
+      paths: 
+      - 'front/*'
 name: Test, Build and Release apk
 jobs:
   build:
@@ -10,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: ls -l
-    - run: cd licenta || cd front
+    - run: cd front
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
