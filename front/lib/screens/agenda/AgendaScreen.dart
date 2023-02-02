@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/main.dart';
 import 'package:front/screens/agenda/widgets/AgendaWidget.dart';
