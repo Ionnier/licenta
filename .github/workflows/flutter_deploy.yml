@@ -9,9 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: ls -l
-    - run: cd front
-    - run: ls -l
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
@@ -19,10 +16,13 @@ jobs:
       with:
         flutter-version: '1.7.8+hotfix.4'
     - run: flutter pub get
+      working-directory: ./front
     - run: flutter test
-    - run: flutter build apk --debug --split-per-abi
+      working-directory: ./front
+    - run: flutter build apk
+      working-directory: ./front
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "build/app/outputs/apk/debug/*.apk"
+        artifacts: "front/build/app/outputs/apk/debug/*.apk"
