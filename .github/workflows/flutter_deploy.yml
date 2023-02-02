@@ -1,4 +1,8 @@
-on: push
+on: 
+  push:
+    paths:
+      branches: ['main']
+      paths: front/*
 name: Test, Build and Release apk
 jobs:
   build:
@@ -6,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: cd front
+    - run: cd licenta/front
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
