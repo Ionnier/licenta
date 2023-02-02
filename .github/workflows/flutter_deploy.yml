@@ -1,9 +1,7 @@
 on: 
   push:
-      paths:
-        - "front/*"
       tags:
-        - "*"
+        - "android/*"
 name: Test, Build and Release apk
 jobs:
   build:
@@ -23,6 +21,9 @@ jobs:
       working-directory: ./front
     - run: flutter build apk
       working-directory: ./front
+    - name: Change APK name
+      working-directory: ./front/build/app/outputs/apk/release
+      run: find . -name "*.apk" -exec mv {} Scheduler.apk \;
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
       with:
