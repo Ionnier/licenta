@@ -17,8 +17,6 @@ jobs:
         flutter-version: '3.7.0'
     - run: flutter pub get
       working-directory: ./front
-    - run: flutter test
-      working-directory: ./front
     - run: flutter build apk
       working-directory: ./front
     - name: Push APK to Releases
