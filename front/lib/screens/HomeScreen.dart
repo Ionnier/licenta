@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:front/data/auth_repository.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/db/db.dart';
-import 'package:front/screens/AddTask.dart';
+
 import 'package:front/screens/TasksScreen.dart';
 import 'package:front/screens/activity/ActivityListScreen.dart';
 import 'package:front/screens/agenda/AgendaScreen.dart';
@@ -20,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/plan_class.dart';
 import '../models/task_class.dart';
+import 'AddTask.dart';
 
 class MyWidget extends StatefulWidget {
   const MyWidget({super.key});
@@ -72,7 +70,6 @@ class _MyWidgetState extends State<MyWidget> {
         choices.add("Manage account");
       }
     }
-
 
     return Scaffold(
       appBar: AppBar(

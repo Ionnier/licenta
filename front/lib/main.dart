@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:front/screens/HomeScreen.dart';
 
 import 'db/db.dart';
@@ -18,7 +17,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
     var color = Colors.white;
     if (AppDb().getRandomColor() == true) {
       final random = Random();

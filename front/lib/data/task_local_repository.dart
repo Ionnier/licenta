@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:front/main.dart';
 import 'package:front/models/activity_log_class.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../models/plan_class.dart';
@@ -39,7 +38,6 @@ class LocalTaskDbRepository implements LocalTaskRepository {
     }
   }
 
-  @override
   Future<List<Activity>> getActivities(Task task) async {
     final List<Map<String, dynamic>> maps = await AppDb().db!.rawQuery(
         "SELECT * from $activityTableName where parentId = ?", [task.localId]);
