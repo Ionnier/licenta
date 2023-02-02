@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:front/data/task_local_repository.dart';
-import 'package:front/db/db.dart';
 import 'package:select_form_field/select_form_field.dart';
 
 import '../../../models/plan_class.dart';
