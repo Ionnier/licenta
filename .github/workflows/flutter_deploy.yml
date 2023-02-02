@@ -2,8 +2,6 @@ on:
   push:
       branches: 
       - 'master'
-      paths: 
-      - 'front/*'
 name: Test, Build and Release apk
 jobs:
   build:
