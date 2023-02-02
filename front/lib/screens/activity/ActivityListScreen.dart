@@ -1,9 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:front/data/task_local_repository.dart';
-import 'package:front/main.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../models/activity_log_class.dart';

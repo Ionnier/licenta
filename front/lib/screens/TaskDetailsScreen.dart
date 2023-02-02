@@ -1,7 +1,5 @@
 import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/widgets/ActivityWidget.dart';

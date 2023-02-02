@@ -1,9 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/basic.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/widgets/MainTaskWidget.dart';
 
@@ -75,27 +71,27 @@ class _TasksScreenState extends State<TasksScreen> {
     }
     List<Widget> children = List.empty(growable: true);
     children.add(Wrap(spacing: 8, children: [
-          InputChip(
-            label: const Text('Show completed'),
-            selected: showCompleted,
-            onSelected: (value) {
-              setState(() {
-                showCompleted = value;
-              });
-              updateTasks(onlyState: true);
-            },
-          ),
-          InputChip(
-            label: const Text('Hide activities'),
-            selected: hideActivities,
-            onSelected: (value) {
-              setState(() {
-                hideActivities = value;
-              });
-              updateTasks(onlyState: true);
-            },
-          ),
-          InputChip(
+      InputChip(
+        label: const Text('Show completed'),
+        selected: showCompleted,
+        onSelected: (value) {
+          setState(() {
+            showCompleted = value;
+          });
+          updateTasks(onlyState: true);
+        },
+      ),
+      InputChip(
+        label: const Text('Hide activities'),
+        selected: hideActivities,
+        onSelected: (value) {
+          setState(() {
+            hideActivities = value;
+          });
+          updateTasks(onlyState: true);
+        },
+      ),
+      InputChip(
         label: const Text('Hide subtasks'),
         selected: hideSubtasks,
         onSelected: (value) {
@@ -106,15 +102,15 @@ class _TasksScreenState extends State<TasksScreen> {
         },
       ),
       InputChip(
-            label: const Text('Hide habits'),
-            selected: hideHabits,
-            onSelected: (value) {
-              setState(() {
-                hideHabits = value;
-              });
-              updateTasks(onlyState: true);
-            },
-          )
+        label: const Text('Hide habits'),
+        selected: hideHabits,
+        onSelected: (value) {
+          setState(() {
+            hideHabits = value;
+          });
+          updateTasks(onlyState: true);
+        },
+      )
     ]));
     if (tasks.isEmpty) {
       children.add(const Center(child: Text("No tasks.")));
