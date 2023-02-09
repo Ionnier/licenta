@@ -15,8 +15,8 @@ var client *mongo.Client = nil
 func getDatabase() *mongo.Client {
 	if client == nil {
 		var err error = nil
-		if client, err = mongo.Connect(context.TODO(),
-			options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s?retryWrites=true&w=majority",
+		if client, err = mongo.Connect(context.Background(),
+			options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s?retryWrites=true&w=majority",
 				os.Getenv("MONGO_USERNAME"),
 				os.Getenv("MONGO_PASSWORD"),
 				os.Getenv("MONGO_HOSTNAME")))); err != nil {
@@ -27,5 +27,7 @@ func getDatabase() *mongo.Client {
 }
 
 func testConnection() {
-	getDatabase()
+	if err := getDatabase().Ping(context.TODO(), nil); err != nil {
+		log.Fatal(err)
+	}
 }

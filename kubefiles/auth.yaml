@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth@sha256:3d6f445c5d8a9609296c4da9c6611fc8c174ac368a5169f149a80a63ff886cb2
+          name: auth
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGO_PASSWORD
+            - name: MONGO_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGO_HOSTNAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authexpose
+spec:
+  selector:
+    app: auth
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000

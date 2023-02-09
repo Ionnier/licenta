@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -45,6 +46,7 @@ func main() {
 	})
 
 	app.Use(logger.New())
+	app.Use(cors.New())
 
 	app.Post("/api/signup", func(c *fiber.Ctx) error {
 		userInfo := new(user)
@@ -144,7 +146,20 @@ func main() {
 		return c.Status(fiber.StatusOK).JSON(newResponse("Password updated."))
 	})
 
-	app.Listen("0.0.0.0:3000")
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).SendString("")
+	})
+
+	connection_port := "0.0.0.0:%s"
+	if data, exists := os.LookupEnv("PORT"); exists {
+		connection_port = fmt.Sprintf(connection_port, data)
+	} else {
+		connection_port = fmt.Sprintf(connection_port, "3000")
+	}
+
+	if err := app.Listen(connection_port); err != nil {
+		log.Fatal(err)
+	}
 }
 
 type response struct {
