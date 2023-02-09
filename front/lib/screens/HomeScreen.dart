@@ -163,7 +163,7 @@ class _MyWidgetState extends State<MyWidget> {
                     }
                   case 3:
                     {
-                      var url = Uri.parse("ionnier.com");
+                      var url = Uri.parse("http://ionnier.com");
                       if (!await launchUrl(url,
                           mode: LaunchMode.externalApplication)) {
                         throw Exception('Could not launch $url');
