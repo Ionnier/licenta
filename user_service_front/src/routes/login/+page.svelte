@@ -13,7 +13,7 @@
 			error = 'Empty';
 			return false;
 		}
-		const loginUrl = import.meta.env.VITE_LOGIN_URL;
+		const loginUrl = import.meta.env.VITE_LOGIN_URL || '';
 		const returnUrl = $page.url.searchParams.has('return_url');
 		const data = {
 			userEmail: username,

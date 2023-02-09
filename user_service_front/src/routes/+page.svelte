@@ -1,6 +1,6 @@
 <script>
 	import { authApiKey } from '../stores/auth';
-	const loginUrl = import.meta.env.VITE_LOGIN_URL;
+	const loginUrl = import.meta.env.VITE_LOGIN_URL || '';
 	let error;
 	let username;
 	let password;
