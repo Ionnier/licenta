@@ -15,11 +15,13 @@ var client *mongo.Client = nil
 func getDatabase() *mongo.Client {
 	if client == nil {
 		var err error = nil
+		database_url := fmt.Sprintf("mongodb+srv://%s:%s@%s?retryWrites=true&w=majority",
+			os.Getenv("MONGO_USERNAME"),
+			os.Getenv("MONGO_PASSWORD"),
+			os.Getenv("MONGO_HOSTNAME"))
+		log.Println(database_url)
 		if client, err = mongo.Connect(context.Background(),
-			options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s?retryWrites=true&w=majority",
-				os.Getenv("MONGO_USERNAME"),
-				os.Getenv("MONGO_PASSWORD"),
-				os.Getenv("MONGO_HOSTNAME")))); err != nil {
+			options.Client().ApplyURI(database_url)); err != nil {
 			log.Fatal(err)
 		}
 	}
