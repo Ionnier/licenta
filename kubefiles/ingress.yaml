@@ -1,0 +1,79 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingresscontroller
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ionnier.com
+      http:
+        paths:
+          - path: /api/signup
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
+          - path: /api/login
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
+          - path: /api/updateSelf
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
+          - path: /api/self
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
+          - path: /api/updatePassword
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: authfrontexpose
+                port:
+                  number: 8080
+          - path: /signup
+            pathType: Prefix
+            backend:
+              service:
+                name: authfrontexpose
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authfrontexpose
+                port:
+                  number: 8080
+# If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+#   apiVersion: v1
+#   kind: Secret
+#   metadata:
+#     name: example-tls
+#     namespace: foo
+#   data:
+#     tls.crt: <base64 encoded cert>
+#     tls.key: <base64 encoded key>
+#   type: kubernetes.io/tls

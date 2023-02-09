@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authfront
+  labels:
+    app: authfront
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authfront
+  template:
+    metadata:
+      labels:
+        app: authfront
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth@sha256:4961957cfb18995cc25fc0955d797b0e6173efd073926d4a71806fa93aa2ae36
+          name: authfront
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authfrontexpose
+spec:
+  selector:
+    app: authfront
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

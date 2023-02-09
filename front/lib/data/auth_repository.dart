@@ -10,4 +10,8 @@ class AuthRepository {
   bool isLoggedIn() {
     return AppDb().getApiKey() != null;
   }
+
+  void login(String key) {
+    AppDb().setApiKey(key);
+  }
 }

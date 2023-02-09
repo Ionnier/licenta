@@ -32,7 +32,11 @@
 				error = json.message;
 				return false;
 			}
-			goto('/login');
+			if (returnUrl) {
+				goto('/login?return_url=asdasd');
+			} else {
+				goto('/login');
+			}
 			return;
 		} catch (e) {
 			error = 'Error';

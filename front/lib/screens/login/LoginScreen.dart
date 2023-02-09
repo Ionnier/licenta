@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:front/data/auth_repository.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -23,7 +24,14 @@ class LoginScreen extends StatelessWidget {
                     onProgress: (int progress) {
                       // Update loading bar.
                     },
-                    onPageStarted: (String url) {},
+                    onPageStarted: (String url) {
+                      var index = url.indexOf("key=");
+                      if (index != -1) {
+                        var help = url.substring(index);
+                        AuthRepository().login(help.split("=")[1]);
+                        Navigator.pop(context, true);
+                      }
+                    },
                     onPageFinished: (String url) {},
                     onWebResourceError: (WebResourceError error) {},
                     onNavigationRequest: (NavigationRequest request) {
@@ -34,7 +42,8 @@ class LoginScreen extends StatelessWidget {
                     },
                   ),
                 )
-                ..loadRequest(Uri.parse('https://flutter.dev'))),
+                ..loadRequest(
+                    Uri.parse('http://ionnier.com/login?return_url=adasdasd'))),
         ));
   }
 }
