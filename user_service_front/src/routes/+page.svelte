@@ -17,7 +17,7 @@
 	</p>
 {:else}
 	{#await fetch(`${loginUrl}/api/self`, { headers: { Authorization: `Bearer ${$authApiKey}` } })}
-		Loading
+		Loading...
 	{:then data}
 		{#await data.json()}
 			Loading
