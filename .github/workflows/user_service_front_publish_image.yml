@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: registry.digitalocean.com/ionnier
-  IMAGE_NAME: authfront
+  IMAGE_NAME: auth
 
 jobs:
   build-and-push-image:
