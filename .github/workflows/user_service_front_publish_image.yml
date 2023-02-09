@@ -1,10 +1,10 @@
-name: Publish Auth image
+name: Publish Auth Front image
 
 on:
   push:
     branches: ['master']
     paths:
-      - user_service_front/*
+      - user_service_front*
 
 
 env:

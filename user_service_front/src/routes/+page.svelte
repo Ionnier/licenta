@@ -49,6 +49,6 @@
 			</div>
 		{/await}
 	{:catch error}
-		asd
+		Error
 	{/await}
 {/if}
