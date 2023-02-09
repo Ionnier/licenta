@@ -15,7 +15,7 @@ spec:
         app: auth
     spec:
       containers:
-        - image: registry.digitalocean.com/ionnier/auth@sha256:3d6f445c5d8a9609296c4da9c6611fc8c174ac368a5169f149a80a63ff886cb2
+        - image: registry.digitalocean.com/ionnier/auth@sha256:14efb768041a6b0f4e375411712ecffe2dd9a770990a69d1accfadb55f5b6e72
           name: auth
           ports:
             - containerPort: 3000

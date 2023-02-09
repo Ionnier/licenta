@@ -19,7 +19,6 @@ func getDatabase() *mongo.Client {
 			os.Getenv("MONGO_USERNAME"),
 			os.Getenv("MONGO_PASSWORD"),
 			os.Getenv("MONGO_HOSTNAME"))
-		log.Println(database_url)
 		if client, err = mongo.Connect(context.Background(),
 			options.Client().ApplyURI(database_url)); err != nil {
 			log.Fatal(err)
