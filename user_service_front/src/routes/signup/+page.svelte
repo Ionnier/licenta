@@ -52,7 +52,6 @@
 					type="email"
 					class="form-control {error == null ? '' : 'is-invalid'}"
 					id="exampleInputEmail1"
-					aria-describedby="emailHelp"
 					placeholder="Enter email"
 					bind:value={username}
 					required
