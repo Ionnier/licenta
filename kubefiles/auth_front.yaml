@@ -20,12 +20,15 @@ spec:
           ports:
             - containerPort: 8080
           resources:
-            requests:
-              memory: "128Mi"
-              cpu: "500m"
             limits:
               memory: "512Mi"
               cpu: "1000m"
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt
 ---
 apiVersion: v1
 kind: Service

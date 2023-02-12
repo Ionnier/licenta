@@ -32,6 +32,12 @@ app.use((error, req: express.Request, res: express.Response, next: express.NextF
     }
 })
 
+process.on('uncaughtException', (err) => {
+    logger.info('whoops! There was an uncaught error', err);
+    console.log(err)
+    process.exit(1);
+});
+
 app.listen('3000', () => {
     logger.info("Server started")
 })
