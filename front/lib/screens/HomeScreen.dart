@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:front/data/auth_repository.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/db/db.dart';
+import 'package:front/main.dart';
 
 import 'package:front/screens/TasksScreen.dart';
 import 'package:front/screens/activity/ActivityListScreen.dart';
@@ -163,7 +164,7 @@ class _MyWidgetState extends State<MyWidget> {
                     }
                   case 3:
                     {
-                      var url = Uri.parse("http://ionnier.com");
+                      var url = Uri.parse("$domainURL");
                       if (!await launchUrl(url,
                           mode: LaunchMode.externalApplication)) {
                         throw Exception('Could not launch $url');

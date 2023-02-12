@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:front/data/auth_repository.dart';
+import 'package:front/main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -44,8 +45,8 @@ class LoginScreen extends StatelessWidget {
                         },
                       ),
                     )
-                    ..loadRequest(Uri.parse(
-                        'http://ionnier.com/login?return_url=adasdasd'))),
+                    ..loadRequest(
+                        Uri.parse('$domainURL/login?return_url=adasdasd'))),
             )));
   }
 }

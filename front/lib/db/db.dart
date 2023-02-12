@@ -40,10 +40,14 @@ class AppDb {
     await sp!.setString("apiKey", value);
   }
 
+  Future<String> getActualDbPath() async {
+    return join(await getDatabasesPath(), 'my_db.db');
+  }
+
   Future<void> initDb() async {
     sp = await SharedPreferences.getInstance();
     db = await openDatabase(
-      join(await getDatabasesPath(), 'my_db.db'),
+      await getActualDbPath(),
       onCreate: (db, version) async {
         await db.execute("create table $tasksTableName("
             "localId INTEGER PRIMARY KEY AUTOINCREMENT,"

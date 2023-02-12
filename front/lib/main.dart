@@ -5,6 +5,8 @@ import 'package:front/screens/HomeScreen.dart';
 
 import 'db/db.dart';
 
+const domainURL = "http://ionnier.com";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppDb().initDb();

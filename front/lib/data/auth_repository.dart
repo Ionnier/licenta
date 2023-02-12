@@ -11,6 +11,10 @@ class AuthRepository {
     return AppDb().getApiKey() != null;
   }
 
+  String getKey() {
+    return AppDb().getApiKey()!;
+  }
+
   void login(String key) {
     AppDb().setApiKey(key);
   }
