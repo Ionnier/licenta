@@ -4,6 +4,7 @@ import { protect } from '../utils/authExtraction'
 import { formidable } from 'formidable'
 import fs from 'fs'
 import path from 'path'
+import mv from 'mv'
 
 export function whatever(app: Express) {
 
@@ -23,7 +24,7 @@ export function whatever(app: Express) {
                 return next(Error("No db file sent"))
             }
 
-            fs.rename(desiredFile.filepath, path.join(process.env.DB_SAVE_LOCATION!, res.locals.id), (err) => {
+            mv(desiredFile.filepath, path.join(process.env.DB_SAVE_LOCATION!, res.locals.id), (err) => {
                 if (err) {
                     return next(err)
                 }
