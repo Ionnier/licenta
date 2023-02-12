@@ -11,9 +11,6 @@ export function extractId(request: Request): string | null {
 }
 
 export function protect(request: Request, response: Response, next: NextFunction) {
-    console.log(request)
-    console.log(request.headers)
-    console.log(request.headers.authorization)
     const id = extractId(request)
     if (id == null) {
         return next(Error("Not authentificated"))
