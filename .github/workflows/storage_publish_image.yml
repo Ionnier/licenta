@@ -41,3 +41,4 @@ jobs:
           context: ./schedule_storage
           push: true
           tags: storage
+          labels: ${{ steps.meta.outputs.labels }}
