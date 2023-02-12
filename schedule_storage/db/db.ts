@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize'
+// import { Sequelize } from 'sequelize'
 import { initModels, activities, plans, tasks } from "../models/init-models";
 
 export let models: {
@@ -8,7 +8,7 @@ export let models: {
 }
 
 export function initDatabase() {
-    const sequelize = new Sequelize(process.env.DATABASE_URL || "");
-    models = initModels(sequelize);
+    // const sequelize = new Sequelize(process.env.DATABASE_URL || "");
+    // models = initModels(sequelize);
 }
 

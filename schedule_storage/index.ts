@@ -9,10 +9,10 @@ const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
 
 
-if (!process.env.DATABASE_URL) {
-    logger.error("No database URL.")
-    process.exit(1)
-}
+// if (!process.env.DATABASE_URL) {
+//     logger.error("No database URL.")
+//     process.exit(1)
+// }
 
 initDatabase()
 const app = express();
