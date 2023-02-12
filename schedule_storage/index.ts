@@ -19,7 +19,7 @@ const app = express();
 
 whatever(app)
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/storage/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 
 app.use((error, req: express.Request, res: express.Response, next: express.NextFunction) => {

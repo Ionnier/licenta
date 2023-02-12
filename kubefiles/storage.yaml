@@ -16,12 +16,13 @@ spec:
     spec:
       containers:
         - image: registry.digitalocean.com/ionnier/auth:storage
+          imagePullPolicy: Always
           name: storage
           ports:
             - containerPort: 3000
           resources:
             limits:
-              memory: "512Mi"
+              memory: "1028Mi"
               cpu: "1000m"
           env:
             - name: JWT_SECRET_KEY
@@ -34,6 +35,8 @@ spec:
           volumeMounts:
             - mountPath: /usr/aaa
               name: mydir
+      imagePullSecrets:
+        - name: regcred
       volumes:
         - name: mydir
           hostPath:

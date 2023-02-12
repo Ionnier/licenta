@@ -4,6 +4,8 @@ metadata:
   name: ingresscontroller
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      proxy_set_header Authorization $http_authorization;
 spec:
   ingressClassName: nginx
   rules:

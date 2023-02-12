@@ -29,6 +29,8 @@ spec:
                 secretKeyRef:
                   name: jwt
                   key: jwt
+      imagePullSecrets:
+        - name: regcred
 ---
 apiVersion: v1
 kind: Service

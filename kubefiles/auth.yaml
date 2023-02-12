@@ -44,6 +44,8 @@ spec:
                 secretKeyRef:
                   name: mongodb
                   key: MONGO_HOSTNAME
+      imagePullSecrets:
+        - name: regcred
 ---
 apiVersion: v1
 kind: Service
