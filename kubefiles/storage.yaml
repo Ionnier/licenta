@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage
+  labels:
+    app: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage
+  template:
+    metadata:
+      labels:
+        app: storage
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth:storage
+          name: storage
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storageexpose
+spec:
+  selector:
+    app: storage
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3000

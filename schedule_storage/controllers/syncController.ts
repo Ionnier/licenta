@@ -7,7 +7,7 @@ import path from 'path'
 
 export function whatever(app: Express) {
 
-    app.patch('/sync/', protect, (req: Request, res: Response, next) => {
+    app.patch('/storage/sync/', protect, (req: Request, res: Response, next) => {
         /* 
             #swagger.security = [{
                 "bearerAuth": []
@@ -33,7 +33,7 @@ export function whatever(app: Express) {
 
     })
 
-    app.get('/db', protect, (req: Request, res: Response, next) => {
+    app.get('/storage/db', protect, (req: Request, res: Response, next) => {
         /* 
             #swagger.security = [{
                 "bearerAuth": []

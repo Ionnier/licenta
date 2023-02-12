@@ -59,6 +59,13 @@ spec:
                 name: authfrontexpose
                 port:
                   number: 8080
+          - path: /storage/*
+            pathType: Prefix
+            backend:
+              service:
+                name: storageexpose
+                port:
+                  number: 3001
           - path: /
             pathType: Prefix
             backend:
