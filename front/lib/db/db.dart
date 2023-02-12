@@ -63,6 +63,19 @@ class AppDb {
             "foreign key(parentId) references tasks(localId) on delete cascade"
             ")");
 
+        await db.execute("create table $planTableName("
+            "localId INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "remoteId INTEGER,"
+            "parentId INTEGER,"
+            "name TEXT,"
+            "startsAt INT,"
+            "endsAt INT,"
+            "createdAt INT,"
+            "modifiedAt INT,"
+            "completed INT,"
+            "foreign key(parentId) references tasks(localId) on delete set null"
+            ")");
+
         await db.execute("create table $activityTableName("
             "localId INTEGER PRIMARY KEY AUTOINCREMENT,"
             "remoteId INTEGER,"
@@ -75,19 +88,6 @@ class AppDb {
             "modifiedAt INT,"
             "foreign key(parentId) references $tasksTableName(localId) on delete cascade,"
             "foreign key(planId) references $planTableName(localId) on delete cascade"
-            ")");
-
-        await db.execute("create table $planTableName("
-            "localId INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "remoteId INTEGER,"
-            "parentId INTEGER,"
-            "name TEXT,"
-            "startsAt INT,"
-            "endsAt INT,"
-            "createdAt INT,"
-            "modifiedAt INT,"
-            "completed INT,"
-            "foreign key(parentId) references tasks(localId) on delete set null"
             ")");
         return;
       },
