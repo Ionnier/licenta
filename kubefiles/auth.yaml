@@ -15,7 +15,7 @@ spec:
         app: auth
     spec:
       containers:
-        - image: registry.digitalocean.com/ionnier/auth@sha256:14efb768041a6b0f4e375411712ecffe2dd9a770990a69d1accfadb55f5b6e72
+        - image: registry.digitalocean.com/ionnier/auth:userservice
           imagePullPolicy: Always
           name: auth
           ports:

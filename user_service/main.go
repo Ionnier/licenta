@@ -154,7 +154,7 @@ func main() {
 	if data, exists := os.LookupEnv("PORT"); exists {
 		connection_port = fmt.Sprintf(connection_port, data)
 	} else {
-		connection_port = fmt.Sprintf(connection_port, "3001")
+		connection_port = fmt.Sprintf(connection_port, "3000")
 	}
 
 	if err := app.Listen(connection_port); err != nil {
