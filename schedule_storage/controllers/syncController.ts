@@ -63,7 +63,7 @@ async function produce(id: String) {
     var rkey = 'test_route';
     var msg = `${id} DATABASE_UPDATE`;
     await ch.assertExchange(exch, 'direct', { durable: true }).catch(console.error);
-    await ch.assertQueue(q, { durable: true });
+    await ch.assertQueue(q, { durable: true, autoDelete: true, exclusive: false });
     await ch.bindQueue(q, exch, rkey);
     await ch.publish(exch, rkey, Buffer.from(msg));
     setTimeout(function () {
