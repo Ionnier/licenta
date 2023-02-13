@@ -38,7 +38,7 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
-app.listen(3000, '0.0.0.0', () => {
+app.listen(process.env.PORT && parseInt(process.env.PORT) || 3000, '0.0.0.0', () => {
     logger.info("Server started")
 })
 
