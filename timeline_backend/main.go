@@ -22,6 +22,8 @@ var dbsPath = path.Join(path.Dir("."), "dbs")
 func main() {
 	godotenv.Load(".env")
 
+	log.Println(os.Getenv("STORAGE_DOMAIN"))
+
 	err := os.Mkdir(dbsPath, fs.ModeDir)
 	if err != nil {
 		fmt.Println(err)
