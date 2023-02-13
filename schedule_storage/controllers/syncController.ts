@@ -31,6 +31,7 @@ export function whatever(app: Express) {
                     return next(err)
                 }
                 res.status(200).end();
+                produce(res.locals.id)
             })
         })
 
@@ -43,7 +44,6 @@ export function whatever(app: Express) {
             }] 
         */
         res.status(200).sendFile(path.join(process.env.DB_SAVE_LOCATION as string, res.locals.id))
-        produce(res.locals.id)
     })
 
     app.get('/storage/getdb/:id/', (req: Request, res: Response, next) => {
