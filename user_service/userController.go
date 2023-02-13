@@ -122,11 +122,18 @@ func createUser(userData user) (*user, error) {
 		UpdatedDate:  time.Now().UTC().Unix(),
 	}
 
+	finalUserData2 := user{
+		UserEmail:    userData.UserEmail,
+		UserPassword: userData.UserPassword,
+		CreatedDate:  time.Now().UTC().Unix(),
+		UpdatedDate:  time.Now().UTC().Unix(),
+	}
+
 	if _, err := coll.InsertOne(context.TODO(), finalUserData); err != nil {
 		return nil, err
 	}
 
-	return &finalUserData, nil
+	return &finalUserData2, nil
 }
 
 func handleLogin(userData user) (*user, error) {
