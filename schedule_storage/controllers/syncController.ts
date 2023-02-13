@@ -25,6 +25,7 @@ export function whatever(app: Express) {
             if (desiredFile == undefined) {
                 return next(Error("No db file sent"))
             }
+            console.log(res.locals.id)
 
             mv(desiredFile.filepath, path.join(process.env.DB_SAVE_LOCATION!, res.locals.id), (err) => {
                 if (err) {

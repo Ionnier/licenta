@@ -6,6 +6,7 @@ export function extractId(request: Request): string | null {
         return null
     }
     const token = request.headers.authorization.split(' ')[1];
+    console.log(token)
     const data = verify(token, process.env.JWT_SECRET_KEY)
     return data.id
 }
@@ -15,6 +16,7 @@ export function protect(request: Request, response: Response, next: NextFunction
     if (id == null) {
         return next(Error("Not authentificated"))
     }
+    console.log(id)
     response.locals.id = id
     next();
 }
