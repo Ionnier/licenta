@@ -27,6 +27,14 @@ type user struct {
 	UpdatedDate  int64  `bson:"updated_date, omitempty" json:"updatedDate"`
 }
 
+type user2 struct {
+	UserName     string `bson:"user_name, omitempty" json:"userName"`
+	UserEmail    string `bson:"user_email, omitempty" json:"userEmail"`
+	UserPassword string `bson:"user_password, omitempty" json:"userPassword"`
+	CreatedDate  int64  `bson:"created_date, omitempty" json:"createdDate"`
+	UpdatedDate  int64  `bson:"updated_date, omitempty" json:"updatedDate"`
+}
+
 func handleSignup(userEmail string, userPassword string) (*user, error) {
 
 	if len(userEmail) == 0 || len(userPassword) == 0 {
@@ -107,7 +115,7 @@ func generatePassword(clearPassword string) (string, error) {
 func createUser(userData user) (*user, error) {
 	coll := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION)
 
-	finalUserData := user{
+	finalUserData := user2{
 		UserEmail:    userData.UserEmail,
 		UserPassword: userData.UserPassword,
 		CreatedDate:  time.Now().UTC().Unix(),
