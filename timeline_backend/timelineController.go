@@ -27,7 +27,19 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 				log.Print(err)
 				continue
 			}
+			if rows, err := originalDb.Query(fmt.Sprintf("select name, email from persons where id_person = %s", data.ID)); err != nil {
+				log.Print(err)
+			} else {
+				var name string
+				var email string
+				for rows.Next() {
+					rows.Scan(&name, &email)
+				}
+				data.Name = name
+				data.Email = name
+			}
 			timelineData = append(timelineData, data)
+
 		}
 		return timelineData, nil
 	}
