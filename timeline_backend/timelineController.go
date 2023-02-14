@@ -37,12 +37,15 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 				var name string
 				var email string
 				for rows.Next() {
-					rows.Scan(&name, &email)
+					if err := rows.Scan(&name, &email); err != nil {
+						log.Println(err)
+					}
 				}
 				log.Println(name, email)
 				data.Name = name
 				data.Email = name
 			}
+			log.Println(data)
 			timelineData = append(timelineData, data)
 
 		}
