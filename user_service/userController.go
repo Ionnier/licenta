@@ -65,6 +65,7 @@ func handleSignup(userEmail string, userPassword string) (*user, error) {
 }
 
 func findUserById(id string) (*user, error) {
+	log.Print(id)
 	coll := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION)
 
 	return processFindResult(coll.FindOne(context.TODO(), bson.M{"user_name": id}))
