@@ -28,8 +28,6 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 				log.Print(err)
 				continue
 			}
-			log.Println("asd")
-			log.Println(strings.Split(data.ID, "\"")[0])
 			if _, err := fmt.Printf("select name, email from persons where id_person = '%v'", data.ID); err != nil {
 				log.Println(err)
 			}
@@ -43,11 +41,9 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 						log.Println(err)
 					}
 				}
-				log.Println(name, email)
 				data.Name = name
-				data.Email = name
+				data.Email = email
 			}
-			log.Println(data)
 			timelineData = append(timelineData, data)
 
 		}
