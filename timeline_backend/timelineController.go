@@ -27,6 +27,8 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 				log.Print(err)
 				continue
 			}
+			log.Println("asd")
+			log.Println(strings.Split(data.ID, "\"")[0])
 			if rows, err := originalDb.Query("select name, email from persons where id_person = ?", strings.Split(data.ID, "\"")[0]); err != nil {
 				log.Print(err)
 			} else {
