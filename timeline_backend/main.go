@@ -23,6 +23,7 @@ func main() {
 	godotenv.Load(".env")
 
 	log.Println(os.Getenv("STORAGE_DOMAIN"))
+	log.Println(os.Getenv("AUTH_DOMAIN"))
 
 	err := os.Mkdir(dbsPath, fs.ModeDir)
 	if err != nil {
