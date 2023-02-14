@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -65,9 +66,13 @@ func handleSignup(userEmail string, userPassword string) (*user, error) {
 }
 
 func findUserById(id string) (*user, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fiber.NewError(fiber.ErrBadRequest.Code, "Invalid id")
+	}
 	coll := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION)
 
-	return processFindResult(coll.FindOne(context.TODO(), bson.M{"_id": id}))
+	return processFindResult(coll.FindOne(context.TODO(), bson.M{"_id": objectId}))
 }
 
 func findUser(userData user) (*user, error) {
