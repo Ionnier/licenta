@@ -64,6 +64,12 @@ func handleSignup(userEmail string, userPassword string) (*user, error) {
 	return userData, nil
 }
 
+func findUserById(id string) (*user, error) {
+	coll := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION)
+
+	return processFindResult(coll.FindOne(context.TODO(), bson.M{"user_name": id}))
+}
+
 func findUser(userData user) (*user, error) {
 	if len(userData.UserEmail) != 0 {
 		return findUserByEmail(userData.UserEmail)

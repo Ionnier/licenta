@@ -119,6 +119,18 @@ func main() {
 		return c.Status(fiber.StatusOK).JSON(newResponse("User info", freshData))
 	})
 
+	app.Get("/api/users/:userid/", func(c *fiber.Ctx) error {
+		userid := c.Params("userid")
+		if len(userid) == 0 {
+			return c.SendStatus(fiber.StatusNotFound)
+		}
+		freshData, err := findUserById(userid)
+		if err != nil {
+			return err
+		}
+		return c.Status(fiber.StatusOK).JSON(newResponse("User info", freshData))
+	})
+
 	app.Post("/api/updatePassword", protect, func(c *fiber.Ctx) error {
 		var b map[string]string
 
