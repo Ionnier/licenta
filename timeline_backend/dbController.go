@@ -79,7 +79,9 @@ func syncUser(originalDb *sql.DB, user string) error {
 			return err
 		} else {
 			log.Println(user, data.Data.UserName)
-			if _, err := originalDb.ExecContext(context.TODO(), "insert into persons values(?, ?, ?, ?)", user, data.Data.UserName, data.Data.UserEmail, time.Now().UTC().Unix()); err != nil {
+			log.Println(data)
+			log.Println(data.Data)
+			if _, err := originalDb.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', %v)", user, data.Data.UserName, data.Data.UserEmail, time.Now().UTC().Unix())); err != nil {
 				log.Print(err)
 				if _, err := originalDb.ExecContext(context.TODO(), "update persons set last_updated = ? where id_user = ?", time.Now().UTC().Unix(), user); err != nil {
 					log.Print(err)
