@@ -1,4 +1,4 @@
-name: Publish Auth image
+name: Publish Timeline Image
 
 on:
   push:

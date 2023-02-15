@@ -1,4 +1,4 @@
-name: Publish Auth image
+name: Publish Storage Image
 
 on:
   push:
