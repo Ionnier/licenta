@@ -48,4 +48,7 @@ extension AsBool on int {
 
   DateTime fromEpoch() =>
       DateTime.fromMillisecondsSinceEpoch(this, isUtc: true);
+
+  DateTime fromUnix() =>
+      DateTime.fromMillisecondsSinceEpoch(this * 1000, isUtc: true);
 }

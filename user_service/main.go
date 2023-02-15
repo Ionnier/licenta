@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
+	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -41,6 +43,40 @@ func assertOsEnvKey(key string) {
 }
 
 func main() {
+	amqpServer := os.Getenv("AMQP_SERVER")
+	if len(strings.TrimSpace(amqpServer)) == 0 {
+		amqpServer = "amqp://localhost:5672"
+	}
+
+	log.Println(amqpServer)
+	conn, err := amqp.Dial(amqpServer)
+	if err != nil {
+		log.Println("Failed Initializing Broker Connection")
+	}
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Printf("Failed Initializing Broker Connection %v", err)
+	}
+	defer ch.Close()
+
+	if err := ch.ExchangeDeclare(
+		"test_exchange", // name
+		"fanout",        // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	); err != nil {
+		log.Println(err)
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	app := fiber.New(fiber.Config{
 		ErrorHandler: customErrorHandler,
 	})
@@ -94,12 +130,12 @@ func main() {
 			return err
 		}
 
-		log.Printf("%s %s", userData.UserName, newUserData.UserName)
 		if userData.UserName == newUserData.UserName {
 			return fiber.NewError(fiber.ErrBadRequest.Code, "No data will be changed")
 		}
 
 		userData.UserName = newUserData.UserName
+		userData.UserEmail = newUserData.UserEmail
 
 		err := updateUser(userData)
 
@@ -107,6 +143,18 @@ func main() {
 			return err
 		}
 
+		err = ch.Publish(
+			"test_exchange", // exchange
+			"",              // routing key
+			false,           // mandatory
+			false,           // immediate
+			amqp.Publishing{
+				ContentType: "text/plain",
+				Body:        []byte(fmt.Sprintf("%v ACCOUNT_UPDATE", userData.ID)),
+			})
+		if err != nil {
+			log.Print(err)
+		}
 		return c.Status(fiber.StatusOK).JSON(newResponse("User updated"))
 	})
 

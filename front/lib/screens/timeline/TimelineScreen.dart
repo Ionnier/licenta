@@ -1,8 +1,15 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:front/data/timeline_repository.dart';
+import 'package:front/main.dart';
 import 'package:front/screens/timeline/ProfileScreen.dart';
 import 'package:front/screens/timeline/TimelineListElement.dart';
+import 'package:jiffy/jiffy.dart';
+
+import '../../data/auth_repository.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({super.key});
@@ -11,16 +18,66 @@ class TimelineScreen extends StatefulWidget {
   State<TimelineScreen> createState() => _TimelineScreenState();
 }
 
+class TimeLineElement {
+  String userId = "";
+  String name = "";
+  String email = "";
+  String comment = "";
+  int startsAt = 0;
+  int endsAt = 0;
+
+  static TimeLineElement fromJson(json) {
+    TimeLineElement p = TimeLineElement();
+    p.userId = json["id"];
+    p.comment = json["comment"];
+    p.startsAt = json["startsAt"];
+    p.endsAt = json["endsAt"];
+    p.name = json["name"];
+    p.email = json["email"];
+    return p;
+  }
+}
+
 class _TimelineScreenState extends State<TimelineScreen> {
   bool isLoading = false;
+  List<TimeLineElement> elements = List.empty();
 
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    setState(() {
+      isLoading = true;
+    });
+    var response = await Dio(BaseOptions(
+      headers: {"Authorization": "Bearer ${AuthRepository().getKey()}"},
+      receiveDataWhenStatusError: true,
+    )).get("$domainURL/timeline/");
+    if (response.statusCode == 200) {
+      List<dynamic> list = response.data["data"];
+      List<TimeLineElement> itemsList =
+          List<TimeLineElement>.from(list.map<TimeLineElement>((dynamic i) {
+        return TimeLineElement.fromJson(i);
+      }));
+      setState(() {
+        elements = itemsList;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
@@ -36,7 +93,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       TextEditingController asd = TextEditingController();
 
                       return AlertDialog(
-                          title: const Text("Insert email"),
+                          title: const Text("Insert friend code"),
                           content: TextFormField(
                             controller: asd,
                             validator: (value) {
@@ -77,20 +134,22 @@ class _TimelineScreenState extends State<TimelineScreen> {
             )
           ],
         ),
-        TimelineElement(onProfileClick: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
-          );
-        }),
-        TimelineElement(
-          onProfileClick: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            );
-          },
-        ),
+        for (var element in elements)
+          TimelineElement(
+            onProfileClick: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen(userId: element.userId)),
+              );
+            },
+            name: element.name,
+            comment: element.comment,
+            startsAt: Jiffy(element.startsAt.fromEpoch()).yMMMMEEEEdjm,
+            duration:
+                Jiffy((element.endsAt - element.startsAt).fromEpoch()).Hms,
+          ),
       ],
     );
   }

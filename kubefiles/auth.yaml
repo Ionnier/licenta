@@ -45,6 +45,8 @@ spec:
                 secretKeyRef:
                   name: mongodb
                   key: MONGO_HOSTNAME
+            - name: AMQP_SERVER
+              value: amqp://rabbit
       imagePullSecrets:
         - name: regcred
 ---

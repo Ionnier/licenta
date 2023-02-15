@@ -3,10 +3,10 @@ import { verify } from 'jsonwebtoken'
 
 export function extractId(request: Request): string | null {
     if (!request.headers.authorization || !request.headers.authorization.startsWith("Bearer")) {
+        console.log("Authorization null")
         return null
     }
     const token = request.headers.authorization.split(' ')[1];
-    console.log(token)
     const data = verify(token, process.env.JWT_SECRET_KEY)
     return data.id
 }

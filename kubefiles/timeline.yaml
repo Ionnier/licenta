@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: storage
+  name: timeline
   labels:
-    app: storage
+    app: timeline
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: storage
+      app: timeline
   template:
     metadata:
       labels:
-        app: storage
+        app: timeline
     spec:
       containers:
-        - image: registry.digitalocean.com/ionnier/auth:storage
+        - image: registry.digitalocean.com/ionnier/auth:timeline
           imagePullPolicy: Always
-          name: storage
+          name: timeline
           ports:
             - containerPort: 3000
           resources:
@@ -30,30 +30,23 @@ spec:
                 secretKeyRef:
                   name: jwt
                   key: jwt
-            - name: DB_SAVE_LOCATION
-              value: /usr/aaa
-            - name: CLOUDAMQP_URL
+            - name: STORAGE_DOMAIN
+              value: http://storageexpose:3001
+            - name: AUTH_DOMAIN
+              value: http://authexpose:3000
+            - name: AMQP_SERVER
               value: amqp://rabbit
-          volumeMounts:
-            - mountPath: /usr/aaa
-              name: mydir
       imagePullSecrets:
         - name: regcred
-      volumes:
-        - name: mydir
-          hostPath:
-            # Ensure the file directory is created.
-            path: /usr/aaa
-            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: storageexpose
+  name: timelineexpose
 spec:
   selector:
-    app: storage
+    app: timeline
   ports:
     - protocol: TCP
-      port: 3001
+      port: 3002
       targetPort: 3000

@@ -22,9 +22,6 @@ var dbsPath = path.Join(path.Dir("."), "dbs")
 func main() {
 	godotenv.Load(".env")
 
-	log.Println(os.Getenv("STORAGE_DOMAIN"))
-	log.Println(os.Getenv("AUTH_DOMAIN"))
-
 	err := os.Mkdir(dbsPath, fs.ModeDir)
 	if err != nil {
 		fmt.Println(err)
@@ -46,39 +43,91 @@ func main() {
 	}
 	defer ch.Close()
 
-	if _, err := ch.QueueDeclare("test_queue", true, true, false, false, nil); err != nil {
-		log.Printf("Failed queue %v", err)
+	if err := ch.ExchangeDeclare(
+		"test_exchange", // name
+		"fanout",        // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	); err != nil {
+		log.Println(err)
+	}
+
+	q, err := ch.QueueDeclare(
+		"",    // name
+		false, // durable
+		false, // delete when unused
+		true,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = ch.QueueBind(
+		q.Name,          // queue name
+		"",              // routing key
+		"test_exchange", // exchange
+		false,
+		nil,
+	)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	msgs, err := ch.Consume(
-		"test_queue",
-		"test_queue",
-		true,
-		false,
-		false,
-		false,
-		nil,
+		q.Name,
+		"",
+		true,  // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
 	)
 
 	if err != nil {
 		log.Printf("Error channel %v", err)
 	}
 
+	db, err := sql.Open("sqlite3", "db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	go func() {
 		for d := range msgs {
 			fmt.Printf("Received Message: %s\n", d.Body)
+			message := string(d.Body)
+
+			splits := strings.Split(message, " ")
+			if len(splits) != 2 {
+				return
+			}
+
+			id := splits[0]
+			action := splits[1]
+
+			if action == "ACCOUNT_UPDATE" {
+				if data, err := getUserInfo(id); err != nil {
+					log.Println(err)
+				} else {
+					if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, id); err != nil {
+						log.Print(err)
+					}
+				}
+			}
 		}
 	}()
 
 	app := fiber.New()
 
 	fmt.Println("Successfully Connected to our RabbitMQ Instance")
-
-	db, err := sql.Open("sqlite3", "db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 
 	_, err = db.ExecContext(
 		context.TODO(),
@@ -159,7 +208,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if len(strings.TrimSpace(port)) == 0 {
-		port = "3000"
+		port = "3001"
 	}
 
 	if err := app.Listen(fmt.Sprintf(":%s", port)); err != nil {

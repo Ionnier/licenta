@@ -88,7 +88,6 @@ func syncUser(originalDb *sql.DB, user string) error {
 				} else {
 					return nil
 				}
-				return err
 			}
 			return nil
 		}

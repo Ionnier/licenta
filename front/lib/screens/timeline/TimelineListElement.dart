@@ -3,8 +3,18 @@ import 'package:flutter/material.dart';
 
 class TimelineElement extends StatefulWidget {
   final Function? onProfileClick;
+  final String name;
+  final String startsAt;
+  final String duration;
+  final String comment;
 
-  const TimelineElement({super.key, required this.onProfileClick});
+  const TimelineElement(
+      {super.key,
+      required this.onProfileClick,
+      required this.name,
+      required this.comment,
+      required this.startsAt,
+      required this.duration});
 
   @override
   State<TimelineElement> createState() => _TimelineElementState();
@@ -36,20 +46,21 @@ class _TimelineElementState extends State<TimelineElement> {
                 const SizedBox(
                   width: 8.0,
                 ),
-                const Text("Name"),
+                Text(widget.name),
                 const Spacer(),
               ],
             ),
           ),
           const SizedBox(height: 4.0),
-          Row(children: const [
-            Text("Activity"),
-            Spacer(),
+          Row(children: [
+            Text(widget.comment),
+            const Spacer(),
           ]),
           const SizedBox(height: 4.0),
-          Row(children: const [
-            Text("Duration"),
-            Spacer(),
+          Row(children: [
+            Text(widget.startsAt),
+            const Spacer(),
+            Text(widget.duration),
           ]),
         ],
       ),

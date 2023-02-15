@@ -166,21 +166,33 @@ func comparePassword(hashedPassword string, clearPassword string) error {
 }
 
 func updateUser(newUserData user) error {
-	filter := bson.D{{Key: "user_email", Value: newUserData.UserEmail}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "user_name", Value: newUserData.UserName},
-		{Key: "updated_date", Value: time.Now().UTC().Unix()}}}}
+	log.Println(newUserData.ID)
+	log.Println("Start update")
+	update := bson.D{
+		{Key: "$set",
+			Value: bson.D{
+				{Key: "user_name", Value: newUserData.UserName},
+				{Key: "updated_date", Value: time.Now().UTC().Unix()},
+				{Key: "user_email", Value: newUserData.UserEmail},
+			},
+		},
+	}
 
-	result, err := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION).UpdateOne(
+	id, err := primitive.ObjectIDFromHex(newUserData.ID)
+	if err != nil {
+		return err
+	}
+	result, err := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION).UpdateByID(
 		context.TODO(),
-		filter,
+		id,
 		update,
 	)
 
 	if err != nil || result.MatchedCount == 0 {
-		if err == mongo.ErrNoDocuments {
-			return nil
+		if err == nil {
+			return fiber.NewError(fiber.StatusBadRequest, "Didn't change")
 		}
-		log.Fatal(err)
+		return err
 	}
 
 	return nil

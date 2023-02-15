@@ -38,7 +38,7 @@ export function whatever(app: Express) {
 
     })
 
-    app.get('/storage/db', protect, (req: Request, res: Response, next) => {
+    app.get('/storage/db/', protect, (req: Request, res: Response, next) => {
         /* 
             #swagger.security = [{
                 "bearerAuth": []
@@ -61,9 +61,9 @@ async function produce(id: String) {
     var ch = await conn.createChannel()
     var exch = 'test_exchange';
     var q = 'test_queue';
-    var rkey = 'test_route';
+    var rkey = '';
     var msg = `${id} DATABASE_UPDATE`;
-    await ch.assertExchange(exch, 'direct', { durable: true }).catch(console.error);
+    await ch.assertExchange(exch, 'fanout', { durable: true }).catch(console.error);
     await ch.assertQueue(q, { durable: true, autoDelete: true, exclusive: false });
     await ch.bindQueue(q, exch, rkey);
     await ch.publish(exch, rkey, Buffer.from(msg));
@@ -72,4 +72,3 @@ async function produce(id: String) {
         conn.close();
     }, 500);
 }
-produce("asd");

@@ -90,15 +90,10 @@ func protect(c *fiber.Ctx) error {
 
 	userData.UserEmail = claims.UserEmail
 	userData.UserName = claims.UserName
+	userData.ID = claims.ID
 
 	if time.Now().Add(time.Second*30).UTC().Sub(claims.IssuedAt.Time) > 0 {
-		customData, _ := findUser(user{
-			UserEmail: claims.UserEmail,
-		})
-
-		if customData.UpdatedDate > claims.IssuedAt.Unix() {
-			return fiber.NewError(fiber.StatusUnauthorized, "User modified after JWT issued.")
-		}
+		customData, _ := findUserById(claims.ID)
 
 		userData.UserEmail = customData.UserEmail
 		userData.UserName = customData.UserName

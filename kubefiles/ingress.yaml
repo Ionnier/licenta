@@ -40,6 +40,13 @@ spec:
                 name: authexpose
                 port:
                   number: 3000
+          - path: /api/users
+            pathType: Prefix
+            backend:
+              service:
+                name: authexpose
+                port:
+                  number: 3000
           - path: /api/updatePassword
             pathType: Prefix
             backend:
@@ -68,6 +75,13 @@ spec:
                 name: storageexpose
                 port:
                   number: 3001
+          - path: /timeline/
+            pathType: Prefix
+            backend:
+              service:
+                name: timelineexpose
+                port:
+                  number: 3002
           - path: /
             pathType: Prefix
             backend:
