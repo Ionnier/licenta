@@ -15,7 +15,7 @@ spec:
         app: authfront
     spec:
       containers:
-        - image: registry.digitalocean.com/ionnier/auth@sha256:4961957cfb18995cc25fc0955d797b0e6173efd073926d4a71806fa93aa2ae36
+        - image: registry.digitalocean.com/ionnier/auth:userservicefront
           imagePullPolicy: Always
           name: authfront
           ports:

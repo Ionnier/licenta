@@ -208,7 +208,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if len(strings.TrimSpace(port)) == 0 {
-		port = "3001"
+		port = "3000"
 	}
 
 	if err := app.Listen(fmt.Sprintf(":%s", port)); err != nil {
