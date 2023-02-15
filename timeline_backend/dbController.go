@@ -37,6 +37,7 @@ func syncDb(originalDb *sql.DB, filePath string, userId string) error {
 		transcation.Rollback()
 		return err
 	} else {
+		defer rows.Close()
 		for rows.Next() {
 			var comment string
 			var startsAt int
@@ -60,6 +61,7 @@ func syncDb(originalDb *sql.DB, filePath string, userId string) error {
 func syncUser(originalDb *sql.DB, user string) error {
 	log.Printf("Start user sync %v", user)
 	rows, err := originalDb.QueryContext(context.TODO(), "select last_updated from persons where id_person = ?", user)
+	defer rows.Close()
 	if err != nil {
 		return err
 	}

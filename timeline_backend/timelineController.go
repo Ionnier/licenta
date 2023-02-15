@@ -22,6 +22,7 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 		log.Print(err)
 		return timelineData, err
 	} else {
+		defer rows.Close()
 		for rows.Next() {
 			var data timelinedata
 			if err := rows.Scan(&data.ID, &data.Comment, &data.StartsAt, &data.EndsAt); err != nil {
@@ -31,6 +32,7 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 			if rows, err := originalDb.QueryContext(context.TODO(), "select name, email from persons where id_person = ?", strings.Split(data.ID, "\"")[0]); err != nil {
 				log.Print(err)
 			} else {
+				defer rows.Close()
 				var name string
 				var email string
 				for rows.Next() {

@@ -19,6 +19,7 @@ func getFriends(originalDb *sql.DB, user_id string) ([]string, error) {
 	if err != nil {
 		return asd, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var firstId string
 		var seconId string
