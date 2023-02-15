@@ -35,7 +35,8 @@
 				isLoading = false;
 			} else {
 				const json = await result.json();
-				error = json.error;
+				error = json.message;
+				console.log(json);
 				isLoading = false;
 			}
 		} catch (e) {
