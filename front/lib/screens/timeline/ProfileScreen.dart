@@ -2,12 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:front/data/auth_repository.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../main.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String userId;
+  final String? userId;
   const ProfileScreen({super.key, required this.userId});
 
   @override
@@ -59,7 +60,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = true;
     });
-    var response = await Dio().get("$domainURL/api/users/${widget.userId}");
+    Response<dynamic> response;
+    if (widget.userId == null) {
+      response = await Dio(BaseOptions(headers: {
+        "Authorization": "Bearer ${AuthRepository().getKey()}"
+      })).get("$domainURL/api/self");
+    } else {
+      response = await Dio().get("$domainURL/api/users/${widget.userId}");
+    }
+
     if (response.statusCode == 200) {
       Map<String, dynamic> list = response.data["data"];
       setState(() {
@@ -102,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(children: [
           const Icon(Icons.code),
           Center(
-            child: Text(widget.userId),
+            child: SelectableText(data.id),
           )
         ]),
       ]),

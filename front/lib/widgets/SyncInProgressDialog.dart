@@ -109,6 +109,11 @@ class _SyncAlertDiaglogState extends State<SyncAlertDiaglog> {
               if (e is DioError) {
                 print(e.response);
               }
+              if (context.mounted) Navigator.pop(context, false);
+              const SnackBar(content: Text("An error occured"));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('There was an error with your request.'),
+              ));
             }
           },
           child: const Text("Download data"),

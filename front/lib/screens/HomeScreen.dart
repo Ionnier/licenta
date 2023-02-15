@@ -12,6 +12,7 @@ import 'package:front/screens/activity/ActivityListScreen.dart';
 import 'package:front/screens/agenda/AgendaScreen.dart';
 import 'package:front/screens/agenda/widgets/AddPlanWidget.dart';
 import 'package:front/screens/login/LoginScreen.dart';
+import 'package:front/screens/timeline/ProfileScreen.dart';
 import 'package:front/screens/timeline/TimelineScreen.dart';
 import 'package:front/widgets/SyncInProgressDialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,6 +70,7 @@ class _MyWidgetState extends State<MyWidget> {
       } else {
         choices.add(logout);
         choices.add("Manage account");
+        choices.add("Profile");
       }
     }
 
@@ -169,6 +171,17 @@ class _MyWidgetState extends State<MyWidget> {
                           mode: LaunchMode.externalApplication)) {
                         throw Exception('Could not launch $url');
                       }
+                      break;
+                    }
+                  case 4:
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfileScreen(
+                                  userId: null,
+                                )),
+                      );
                       break;
                     }
                 }
