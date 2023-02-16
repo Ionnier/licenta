@@ -178,6 +178,12 @@ class LocalTaskDbRepository implements LocalTaskRepository {
     return;
   }
 
+  Future<void> markTaskAsCompleted(Task task) async {
+    task.completed = true;
+    await updateTask(task);
+    return;
+  }
+
   Future<void> deleteCompletion(Task task) async {
     await AppDb().db!.delete(activityTableName,
         where: "parentId = ? and createdAt = ?",

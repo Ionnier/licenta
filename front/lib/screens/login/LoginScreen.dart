@@ -12,6 +12,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor:
                 MediaQuery.of(context).platformBrightness == Brightness.dark
                     ? const Color(0xFF000000)

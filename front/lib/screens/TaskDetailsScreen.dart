@@ -139,7 +139,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     )),
               ],
             ),
-            Row(
+            Wrap(
+              spacing: 8.0,
               children: [
                 Expanded(
                     child: FilledButton(
@@ -300,6 +301,17 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             );
                           },
                           child: const Text("Add subtask"))),
+                if (!task.isHabit())
+                  Expanded(
+                      child: FilledButton(
+                    onPressed: () async {
+                      await LocalTaskDbRepository().markTaskAsCompleted(task);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text("Mark as completed"),
+                  ))
               ],
             ),
             const SizedBox(height: 16.0),

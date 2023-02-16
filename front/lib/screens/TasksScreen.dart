@@ -32,18 +32,10 @@ class _TasksScreenState extends State<TasksScreen> {
     if (onlyState) {
       List<Task> aux = List.from(tasks);
       setState(() {
-        tasks = List.empty();
-        isLoading = true;
-      });
-      Future.delayed(const Duration(milliseconds: 1), () {
-        setState(() {
-          tasks = List.from(aux);
-          isLoading = false;
-          return;
-        });
+        tasks = List.from(aux);
+        isLoading = false;
         return;
       });
-      return;
     }
     if (firstTime && widget.tasks != null) {
       setState(() {
@@ -135,7 +127,8 @@ class _TasksScreenState extends State<TasksScreen> {
             return true;
           })
           .where((element) {
-            if (element.isDoneToday() && !showCompleted) {
+            if ((element.isDoneToday() || element.completed == true) &&
+                !showCompleted) {
               return false;
             }
             return true;
@@ -143,6 +136,7 @@ class _TasksScreenState extends State<TasksScreen> {
           .sorted((a, b) => b.priority - a.priority)
           .map(
             (e) => TaskWidget(
+              key: Key(e.localId.toString()),
               onTicked: () async {
                 if (!e.isDoneToday()) {
                   await LocalTaskDbRepository().markAsCompleted(e);
