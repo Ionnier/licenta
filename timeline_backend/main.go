@@ -140,7 +140,7 @@ func main() {
 
 	_, err = db.ExecContext(
 		context.TODO(),
-		"create table persons(id_person INT PRIMARY KEY, name text, email text, image_url text, last_updated INT)",
+		"create table persons(id_person text PRIMARY KEY, name text, email text, image_url text, last_updated INT)",
 	)
 	if err != nil {
 		log.Print(err)
@@ -148,7 +148,7 @@ func main() {
 
 	_, err = db.ExecContext(
 		context.TODO(),
-		"create table friend_list(id_person1 INT , id_person2 INT, PRIMARY KEY(id_person1, id_person2), constraint diff check(id_person1 <> id_person2))",
+		"create table friend_list(id_person1 text , id_person2 text, PRIMARY KEY(id_person1, id_person2), constraint diff check(id_person1 <> id_person2))",
 	)
 	if err != nil {
 		log.Print(err)
