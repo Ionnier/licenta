@@ -119,11 +119,11 @@ func main() {
 					log.Println(err)
 				} else {
 					log.Print(data)
-					if rows, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
+					if rows, err := db.ExecContext(context.TODO(), fmt.Sprintf("update persons set name = '%v', email = '%v', image_url = '%v'  where id_person = '%v'", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id)); err != nil {
 						log.Print(err)
 					} else {
-						log.Println("No rows updated")
 						if nr, _ := rows.RowsAffected(); nr == 0 {
+							log.Println("No rows updated")
 							if _, err := db.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', '%v', %v)", data.Data.ID, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
 								log.Print(err)
 							}
