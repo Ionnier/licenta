@@ -26,6 +26,7 @@ type user struct {
 	UserPassword string `bson:"user_password, omitempty" json:"userPassword"`
 	CreatedDate  int64  `bson:"created_date, omitempty" json:"createdDate"`
 	UpdatedDate  int64  `bson:"updated_date, omitempty" json:"updatedDate"`
+	ImageUrl     string `bson:"image_url, omitempty" json:"imageUrl"`
 }
 
 type user2 struct {
@@ -34,6 +35,7 @@ type user2 struct {
 	UserPassword string `bson:"user_password, omitempty" json:"userPassword"`
 	CreatedDate  int64  `bson:"created_date, omitempty" json:"createdDate"`
 	UpdatedDate  int64  `bson:"updated_date, omitempty" json:"updatedDate"`
+	ImageUrl     string `bson:"image_url, omitempty" json:"imageUrl"`
 }
 
 func handleSignup(userEmail string, userPassword string) (*user, error) {
@@ -174,6 +176,7 @@ func updateUser(newUserData user) error {
 				{Key: "user_name", Value: newUserData.UserName},
 				{Key: "updated_date", Value: time.Now().UTC().Unix()},
 				{Key: "user_email", Value: newUserData.UserEmail},
+				{Key: "image_url", Value: newUserData.ImageUrl},
 			},
 		},
 	}
