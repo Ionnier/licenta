@@ -202,6 +202,17 @@ func main() {
 		}
 	})
 
+	app.Get("/timeline/of/:id/", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		syncUser(db, id)
+		list := []string{id}
+		if data, err := getTimelineData(db, list); err != nil {
+			return c.SendStatus(418)
+		} else {
+			return c.JSON(newResponse("Timeline", data))
+		}
+	})
+
 	app.Post("/timeline/friends", protect, func(c *fiber.Ctx) error {
 		id := fmt.Sprint(c.Locals("id"))
 		log.Printf("Add friend for %v", id)
