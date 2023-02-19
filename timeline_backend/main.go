@@ -118,6 +118,7 @@ func main() {
 				if data, err := getUserInfo(id); err != nil {
 					log.Println(err)
 				} else {
+					log.Print(data)
 					if rows, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
 						log.Print(err)
 					} else {
