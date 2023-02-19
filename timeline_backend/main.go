@@ -176,6 +176,15 @@ func main() {
 		}
 	})
 
+	app.Get("/timeline/friends/:id/", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		if list, err := getFriends(db, id); err != nil {
+			return c.JSON(err)
+		} else {
+			return c.JSON(newResponse("Friends", list))
+		}
+	})
+
 	app.Get("/timeline/", protect, func(c *fiber.Ctx) error {
 		id := fmt.Sprint(c.Locals("id"))
 		if list, err := getFriends(db, id); err != nil {
