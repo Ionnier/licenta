@@ -61,10 +61,10 @@ func syncDb(originalDb *sql.DB, filePath string, userId string) error {
 func syncUser(originalDb *sql.DB, user string) error {
 	log.Printf("Start user sync %v", user)
 	rows, err := originalDb.QueryContext(context.TODO(), "select last_updated from persons where id_person = ?", user)
-	defer rows.Close()
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 	var last_updated int64
 	if rows.Next() {
 		rows.Scan(&last_updated)
@@ -83,7 +83,7 @@ func syncUser(originalDb *sql.DB, user string) error {
 			log.Println(err)
 			return err
 		} else {
-			if res, err := originalDb.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', %v, %v)", user, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
+			if res, err := originalDb.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', '%v', %v)", user, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
 				log.Print(err)
 				nr, _ := res.RowsAffected()
 				log.Println(nr)
