@@ -36,8 +36,18 @@ spec:
               value: http://authexpose:3000
             - name: AMQP_SERVER
               value: amqp://rabbit
+            - name: DB_DIRECTORY
+              value: /mnt/db
+          volumeMounts:
+            - mountPath: /mnt/db
+              name: mydbdir
       imagePullSecrets:
         - name: regcred
+      volumes:
+        - name: mydbdir
+          hostPath:
+            path: /usr/db
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service

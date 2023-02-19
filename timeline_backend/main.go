@@ -94,7 +94,7 @@ func main() {
 		log.Printf("Error channel %v", err)
 	}
 
-	db, err := sql.Open("sqlite3", "db")
+	db, err := sql.Open("sqlite3", path.Join(os.Getenv("DB_DIRECTORY"), "db"))
 	if err != nil {
 		log.Fatal(err)
 	}
