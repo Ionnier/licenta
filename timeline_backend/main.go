@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/streadway/amqp"
 )
 
 var dbsPath = path.Join(path.Dir("."), "dbs")
@@ -25,73 +26,73 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// amqpServer := os.Getenv("AMQP_SERVER")
-	// if len(strings.TrimSpace(amqpServer)) == 0 {
-	// 	amqpServer = "amqp://localhost:5672"
-	// }
+	amqpServer := os.Getenv("AMQP_SERVER")
+	if len(strings.TrimSpace(amqpServer)) == 0 {
+		amqpServer = "amqp://localhost:5672"
+	}
 
-	// conn, err := amqp.Dial(amqpServer)
-	// if err != nil {
-	// 	log.Println("Failed Initializing Broker Connection")
-	// }
-	// defer conn.Close()
+	conn, err := amqp.Dial(amqpServer)
+	if err != nil {
+		log.Println("Failed Initializing Broker Connection")
+	}
+	defer conn.Close()
 
-	// ch, err := conn.Channel()
-	// if err != nil {
-	// 	log.Printf("Failed Initializing Broker Connection %v", err)
-	// }
-	// defer ch.Close()
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Printf("Failed Initializing Broker Connection %v", err)
+	}
+	defer ch.Close()
 
-	// if err := ch.ExchangeDeclare(
-	// 	"test_exchange", // name
-	// 	"fanout",        // type
-	// 	true,            // durable
-	// 	false,           // auto-deleted
-	// 	false,           // internal
-	// 	false,           // no-wait
-	// 	nil,             // arguments
-	// ); err != nil {
-	// 	log.Println(err)
-	// }
+	if err := ch.ExchangeDeclare(
+		"test_exchange", // name
+		"fanout",        // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	); err != nil {
+		log.Println(err)
+	}
 
-	// q, err := ch.QueueDeclare(
-	// 	"",    // name
-	// 	false, // durable
-	// 	false, // delete when unused
-	// 	true,  // exclusive
-	// 	false, // no-wait
-	// 	nil,   // arguments
-	// )
+	q, err := ch.QueueDeclare(
+		"",    // name
+		false, // durable
+		false, // delete when unused
+		true,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
 
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// err = ch.QueueBind(
-	// 	q.Name,          // queue name
-	// 	"",              // routing key
-	// 	"test_exchange", // exchange
-	// 	false,
-	// 	nil,
-	// )
+	err = ch.QueueBind(
+		q.Name,          // queue name
+		"",              // routing key
+		"test_exchange", // exchange
+		false,
+		nil,
+	)
 
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// msgs, err := ch.Consume(
-	// 	q.Name,
-	// 	"",
-	// 	true,  // auto-ack
-	// 	false, // exclusive
-	// 	false, // no-local
-	// 	false, // no-wait
-	// 	nil,   // args
-	// )
+	msgs, err := ch.Consume(
+		q.Name,
+		"",
+		true,  // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
+	)
 
-	// if err != nil {
-	// 	log.Printf("Error channel %v", err)
-	// }
+	if err != nil {
+		log.Printf("Error channel %v", err)
+	}
 
 	db, err := sql.Open("sqlite3", path.Join(os.Getenv("DB_DIRECTORY"), "db"))
 	if err != nil {
@@ -99,30 +100,30 @@ func main() {
 	}
 	defer db.Close()
 
-	// go func() {
-	// 	for d := range msgs {
-	// 		fmt.Printf("Received Message: %s\n", d.Body)
-	// 		message := string(d.Body)
+	go func() {
+		for d := range msgs {
+			fmt.Printf("Received Message: %s\n", d.Body)
+			message := string(d.Body)
 
-	// 		splits := strings.Split(message, " ")
-	// 		if len(splits) != 2 {
-	// 			return
-	// 		}
+			splits := strings.Split(message, " ")
+			if len(splits) != 2 {
+				return
+			}
 
-	// 		id := splits[0]
-	// 		action := splits[1]
+			id := splits[0]
+			action := splits[1]
 
-	// 		if action == "ACCOUNT_UPDATE" {
-	// 			if data, err := getUserInfo(id); err != nil {
-	// 				log.Println(err)
-	// 			} else {
-	// 				if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
-	// 					log.Print(err)
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }()
+			if action == "ACCOUNT_UPDATE" {
+				if data, err := getUserInfo(id); err != nil {
+					log.Println(err)
+				} else {
+					if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
+						log.Print(err)
+					}
+				}
+			}
+		}
+	}()
 
 	app := fiber.New()
 
