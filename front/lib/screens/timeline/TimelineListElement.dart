@@ -7,6 +7,7 @@ class TimelineElement extends StatefulWidget {
   final String startsAt;
   final String duration;
   final String comment;
+  final String imageUrl;
 
   const TimelineElement(
       {super.key,
@@ -14,6 +15,7 @@ class TimelineElement extends StatefulWidget {
       required this.name,
       required this.comment,
       required this.startsAt,
+      required this.imageUrl,
       required this.duration});
 
   @override
@@ -41,7 +43,11 @@ class _TimelineElementState extends State<TimelineElement> {
                   height: 32,
                   placeholder: (context, url) =>
                       const CircularProgressIndicator(),
-                  imageUrl: 'https://picsum.photos/250?image=9',
+                  imageUrl: widget.imageUrl.isNotEmpty
+                      ? widget.imageUrl
+                      : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fclipground.com%2Fimages%2Fdefault-image-icon-png-4.png&f=1&nofb=1&ipt=6c40744f021c9dcc880eb432f338d9fff778d199dc615dacd3de4ab1ae19f345&ipo=images",
+                  errorWidget: (context, string, error) =>
+                      const Icon(Icons.error),
                 ),
                 const SizedBox(
                   width: 8.0,

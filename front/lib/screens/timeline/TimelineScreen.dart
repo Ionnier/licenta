@@ -23,6 +23,7 @@ class TimeLineElement {
   String name = "";
   String email = "";
   String comment = "";
+  String imageUrl = "";
   int startsAt = 0;
   int endsAt = 0;
 
@@ -34,6 +35,7 @@ class TimeLineElement {
     p.endsAt = json["endsAt"];
     p.name = json["name"];
     p.email = json["email"];
+    p.imageUrl = json["imageUrl"];
     return p;
   }
 }
@@ -144,6 +146,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         ProfileScreen(userId: element.userId)),
               );
             },
+            imageUrl: element.imageUrl,
             name: element.name,
             comment: element.comment,
             startsAt: Jiffy(element.startsAt.fromEpoch()).yMMMMEEEEdjm,
