@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -117,8 +118,15 @@ func main() {
 				if data, err := getUserInfo(id); err != nil {
 					log.Println(err)
 				} else {
-					if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
+					if rows, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
 						log.Print(err)
+					} else {
+						log.Println("No rows updated")
+						if nr, _ := rows.RowsAffected(); nr == 0 {
+							if _, err := db.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', '%v', %v)", data.Data.ID, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
+								log.Print(err)
+							}
+						}
 					}
 				}
 			}
