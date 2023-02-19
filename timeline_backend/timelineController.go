@@ -29,19 +29,21 @@ func getTimelineData(originalDb *sql.DB, friend_list []string) ([]timelinedata, 
 				log.Print(err)
 				continue
 			}
-			if rows, err := originalDb.QueryContext(context.TODO(), "select name, email from persons where id_person = ?", strings.Split(data.ID, "\"")[0]); err != nil {
+			if rows, err := originalDb.QueryContext(context.TODO(), "select name, email, image_url from persons where id_person = ?", strings.Split(data.ID, "\"")[0]); err != nil {
 				log.Print(err)
 			} else {
 				defer rows.Close()
 				var name string
 				var email string
+				var image_url string
 				for rows.Next() {
-					if err := rows.Scan(&name, &email); err != nil {
+					if err := rows.Scan(&name, &email, &image_url); err != nil {
 						log.Println(err)
 					}
 				}
 				data.Name = name
 				data.Email = email
+				data.ImageUrl = image_url
 			}
 			timelineData = append(timelineData, data)
 

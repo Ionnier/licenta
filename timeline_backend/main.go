@@ -117,7 +117,7 @@ func main() {
 				if data, err := getUserInfo(id); err != nil {
 					log.Println(err)
 				} else {
-					if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, id); err != nil {
+					if _, err := db.ExecContext(context.TODO(), "update persons set name = ?, email = ?, image_url = ?  where id_person = ?", data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, id); err != nil {
 						log.Print(err)
 					}
 				}
@@ -131,7 +131,7 @@ func main() {
 
 	_, err = db.ExecContext(
 		context.TODO(),
-		"create table persons(id_person INT PRIMARY KEY, name text, email text, last_updated INT)",
+		"create table persons(id_person INT PRIMARY KEY, name text, email text, image_url text, last_updated INT)",
 	)
 	if err != nil {
 		log.Print(err)
@@ -221,6 +221,7 @@ type timelinedata struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
+	ImageUrl string `json:"imageUrl"`
 	Comment  string `json:"comment"`
 	StartsAt int    `json:"startsAt"`
 	EndsAt   int    `json:"endsAt"`

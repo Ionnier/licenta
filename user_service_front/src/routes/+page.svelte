@@ -5,6 +5,7 @@
 	let error;
 	let username = '';
 	let password = '';
+	let imageUrl = '';
 	let useremail = '';
 	let completed = false;
 	let isLoading = false;
@@ -16,6 +17,9 @@
 		}
 		if (useremail.length != 0) {
 			data['userEmail'] = useremail;
+		}
+		if (imageUrl.length != 0) {
+			data['imageUrl'] = imageUrl;
 		}
 		try {
 			isLoading = true;
@@ -80,6 +84,19 @@
 						required
 					/>
 				</label>
+
+				<label>
+					Image Url
+					<input
+						class="form-control {error == null ? '' : 'is-invalid'}"
+						placeholder={user.data.imageUrl}
+						bind:value={imageUrl}
+						required
+					/>
+				</label>
+				{#if user.data.imageUrl != null && user.data.imageUrl.length != 0}
+					<img src={user.data.imageUrl} alt="Current" width="128px" />
+				{/if}
 				<p />
 
 				{#if error != null}

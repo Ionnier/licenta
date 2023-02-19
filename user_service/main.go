@@ -125,16 +125,9 @@ func main() {
 		userData, _ := c.Locals("userData").(user)
 
 		newUserData := new(user)
-		newUserData.UserName = userData.UserName
-		newUserData.UserEmail = userData.UserEmail
-		newUserData.ImageUrl = userData.ImageUrl
 
 		if err := c.BodyParser(newUserData); err != nil {
 			return err
-		}
-
-		if userData.UserName == newUserData.UserName {
-			return fiber.NewError(fiber.ErrBadRequest.Code, "No data will be changed")
 		}
 
 		if len(newUserData.UserName) != 0 {
