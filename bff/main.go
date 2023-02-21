@@ -23,6 +23,21 @@ func main() {
 
 	app.Get("/profile/:id/", func(c *fiber.Ctx) error {
 		id := c.Params("id")
+		if id == "self" {
+			val, exists := c.GetReqHeaders()["Authorization"]
+			if !exists {
+				return fiber.NewError(fiber.StatusUnauthorized, "No authorization header.")
+			}
+			if !strings.HasPrefix(val, "Bearer") {
+				return fiber.NewError(fiber.StatusUnauthorized, "No bearer token.")
+			}
+			token := strings.Split(val, " ")[1]
+			claims, err := validateToken(token)
+			if err != nil {
+				return err
+			}
+			id = claims.ID
+		}
 		userInfo := make([]UserInfo, 0)
 		var err error
 		var profile UserInfo
