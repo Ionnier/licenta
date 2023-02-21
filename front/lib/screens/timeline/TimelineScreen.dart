@@ -29,13 +29,13 @@ class TimeLineElement {
 
   static TimeLineElement fromJson(json) {
     TimeLineElement p = TimeLineElement();
-    p.userId = json["id"];
+    p.userId = json["id"] ?? "";
     p.comment = json["comment"];
     p.startsAt = json["startsAt"];
     p.endsAt = json["endsAt"];
-    p.name = json["name"];
-    p.email = json["email"];
-    p.imageUrl = json["imageUrl"];
+    p.name = json["name"] ?? "";
+    p.email = json["email"] ?? "";
+    p.imageUrl = json["imageUrl"] ?? "";
     return p;
   }
 }
