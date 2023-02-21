@@ -12,6 +12,13 @@ spec:
     - host: ionnier.com
       http:
         paths:
+          - path: /profile
+            pathType: Prefix
+            backend:
+              service:
+                name: bffexpose
+                port:
+                  number: 3003
           - path: /api/signup
             pathType: Prefix
             backend:
