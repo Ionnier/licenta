@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff
+  labels:
+    app: bff
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff
+  template:
+    metadata:
+      labels:
+        app: bff
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth:bff
+          imagePullPolicy: Always
+          name: bff
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "1028Mi"
+              cpu: "1000m"
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt
+            - name: TIMELINE_DOMAIN
+              value: http://timelineexpose:3002
+            - name: AUTH_DOMAIN
+              value: http://authexpose:3000
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bffexpose
+spec:
+  selector:
+    app: bff
+  ports:
+    - protocol: TCP
+      port: 3003
+      targetPort: 3000

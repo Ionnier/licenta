@@ -1,41 +1,23 @@
-# =============================================================================
-#  Multi-stage Dockerfile Example
-# =============================================================================
-#  This is a simple Dockerfile that will build an image of scratch-base image.
-#  Usage:
-#    docker build -t simple:local . && docker run --rm simple:local
-# =============================================================================
+FROM golang:1.16.5 as builder
+# Define build env
+ENV GOOS linux
+ENV CGO_ENABLED 0
+# Add a work directory
+WORKDIR /app
+# Cache and install dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+# Copy app files
+COPY . .
+# Build app
+RUN go build -o app
 
-# -----------------------------------------------------------------------------
-#  Build Stage
-# -----------------------------------------------------------------------------
-FROM golang:alpine AS build
-
-# Important:
-#   Because this is a CGO enabled package, you are required to set it as 1.
-ENV CGO_ENABLED=1
-
-RUN apk add --no-cache \
-    # Important: required for go-sqlite3
-    gcc \
-    # Required for Alpine
-    musl-dev
-
-WORKDIR /workspace
-
-COPY . /workspace/
-
-RUN \
-    go install -ldflags='-s -w -extldflags "-static"' .
-# -----------------------------------------------------------------------------
-#  Main Stage
-# -----------------------------------------------------------------------------
 FROM alpine:3.14 as production
 # Add certificates
 RUN apk add --no-cache ca-certificates
 # Copy built binary from builder
-COPY --from=build /go/bin/bff /usr/local/bin/bff
+COPY --from=builder app .
 # Expose port
 EXPOSE 3000
 # Exec built binary
-ENTRYPOINT [ "/usr/local/bin/bff" ]
+CMD ./app
