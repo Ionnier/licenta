@@ -1,4 +1,4 @@
-import { Express, Request, Response, json } from 'express'
+import { Express, Request, Response, json, NextFunction } from 'express'
 import { models } from '../db/db'
 import { protect } from '../utils/authExtraction'
 import { formidable } from 'formidable'
@@ -7,6 +7,8 @@ import path from 'path'
 import mv from 'mv'
 import amqplib from 'amqplib'
 import { logger } from '../utils/logger'
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
 
 export function whatever(app: Express) {
 
@@ -36,6 +38,44 @@ export function whatever(app: Express) {
             })
         })
 
+    })
+
+    app.get('/storage/ical/:id/', async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const db = await open({
+                filename: path.join(process.env.DB_SAVE_LOCATION as string, req.params.id),
+                driver: sqlite3.Database
+            })
+
+            const ical = require('ical-generator');
+            const calendar = ical({ name: `Ical` });
+            const rows = await db.all("SELECT * FROM plans")
+            interface RootObject {
+                localId: number;
+                remoteId?: any;
+                parentId?: any;
+                name: string;
+                startsAt: number;
+                endsAt: number;
+                createdAt: number;
+                modifiedAt: number;
+                completed: number;
+            }
+            for (let row of rows) {
+                let ns: RootObject = row
+                calendar.createEvent({
+                    start: new Date(ns.startsAt),
+                    end: new Date(ns.endsAt),
+                    summary: ns.name,
+                    description: ns.name,
+                });
+            }
+            db.close();
+            return res.status(200).end(calendar.toString());
+        } catch (e) {
+            console.log(e)
+            return next(e)
+        }
     })
 
     app.get('/storage/db/', protect, (req: Request, res: Response, next) => {
