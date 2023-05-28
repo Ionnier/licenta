@@ -84,17 +84,142 @@ să fie cât mai simplă.
 Astfel, aplicația trebuie să poată să îndeplinească următoarele cerințe:
 
 \begin{itemize}
+\item Aplicația va fi disponibilă pe mai multe dispozitive și va permite sincronizarea
+între dispozitive
+\item Aplicația va funcționa integral fără conexiune la Internet și implicit fără niciun server
+\item Aplicația va avea o componentă creată cu o arhitectură bazată pe microservicii
     \item Ca și utilizator pot să am posibilititatea de a crea un task pe care vreau să îl completez
-    \item Ca și utilizator pot să adaug un subtask la un task creat
-    \item Ca și utilizator am posibilitatea de a-mi organiza task-urile sub alte obiective
-          generale (asemănător Epic-urilor din Jira)
+\item Ca și utilizator pot să adaug un subtask la un task creat
     \item Ca și utilizator pot să adaug timp petrecut asupra unui task în orice moment
     \item Aplicația va fi minimalistă și adaptabilă, astfel utilizatorul poate să
-          își creeze un mod propriu în care aceasta să fie
-    \item Aplicația va fi disponibilă pe mai multe dispozitive și va permite sincronizarea
-          între dispozitive
-    \item Aplicația permite să încardrăm task-urile într-un anumit interval și să vedem asta pe calendar
-    \item Aplicația va funcționa integral fără conexiune la Internet și implicit fără niciun server
+își creeze un mod propriu în care aceasta să fie
+\item Aplicația permite să creăm o planificare a zilei curente realizat din task-urile pe care le-am introdus
     \item Aplicația va avea o funcționalitate de planificare automată a zilei inteligentă, în funcție de tipul task-ului însă
-          care nu e necesar să respecte condiția legată de conexiunea de Internet
+care nu e necesar să respecte condiția legată de conexiunea de Internet
 \end{itemize}
+
+\section{Arhitectura}
+
+Centrul aplicației va fi cluster-ul de Kubernetes. Pentru a ușura dezvoltarea vom folosii
+un cluster administrat de un provider de cloud, în cazul meu Digital Ocean Managed Kubernetes.
+Astfel pot să administrez un cluster cu ușurință și să modific numărul de noduri în orice moment
+fără a fi nevoit să fac vreo modificare manuală în afara centrului de control.
+
+Pentru a lansa microserviciile în Kubernetes va trebui ca acestea să fie stocate
+în interiorul unui registru de containere, astfel o să creez unul tot pe Digital Ocean, având
+beneficiul că nu va trebui să adminstrez modul în care administrez cheile de acces către acestea,
+cluster-ul primind implicit acces către el prin diferite funcții oferite de provider.
+
+Întrucât Kubernetes nu excelează în hostarea de baze de date voi încerca să deleg cât mai multe
+funcționalități ce pot fi hostate în exterior cu putință. Astfel, voi folosii o bază de date MongoDB hostată
+pe Mongo Atlas și pentru metrici și observabilitate voi folosii serviciile oferite de Grafana Cloud.
+
+În interiorul clusetului de Kubernetes voi rula toate microserviciile prin facilitățile pe care
+acesta ni le oferă alături de alte obiecte de care am avea nevoie, precum un message broker sau colector de log-uri.
+
+Aplicația va fi dezvoltată în Flutter pentru a avea un singur code base ce duce la
+crearea aplicației pe mai multe dispozitive.
+
+\section{Implementare}
+
+\subsection{Interfață}
+
+În momentul în care am pornit implementarea, am crezut că cea mai mare dificultate
+pe care o să o am în proiect va fi administrarea clusterului de Kubernetes, provenit din experiențele
+precedente, astfel am decis că va fi o idee bună în a începe cu interfața.
+
+Interfața principală va fi aplicația creată în Flutter. O dificultate pe care am avut-o
+a fost faptul că deși eu știam în mare măsură ce vreau ca aplicația să facă, eu nu am definit
+modul cum aș vrea ca aceasta să arate. Întrucât pe parcursul programului de licență nu am avut
+proiecte care să se axeze pe aspectul și design-ul unei aplicații, am ajuns la un obstacol
+în momentul în care am început implementarea. În mod inițial, scopul aplicației a fost să
+creez ceva ce aș putea să folosesc în continuare (de aici vine cerința de a nu avea
+dependințe pe niște servere, întrucât nu aș putea să le hostez mereu), însă nefiind satisfăcut
+de modul cum afișez interfața a trebuit să renunț la obiectivul de a face ceva util, însă totuși
+va putea fi utilizată într-o anumită măsură, deși nu ar exista neapărat un motiv pentru asta.
+
+Va exista și o interfață ce are cu rol în autentificare și administrare a contului. O abordare generală
+pe care o putem observa în aplicațiile pe care le folosim este că ele apelează același serviciu
+prin care se autentifică, de exemplu când vrem să ne conectăm la un produs Google, mereu
+vom fi redirecționați către accounts.google.com unde vom face autentificarea. În același mod,
+atunci când vrem să facem o modificare asupra unui cont (de exemplu schimat de parolă sau a unui mail)
+nu o vom facem din aplicația propriu-zisă ci tot de pe acel site de management.
+
+Am vrut să replic acest comportament, deci va exista o interfață web minimalistă, implementată în Svelte
+ce va rula în interiorul clusterului prin care vom interactiona cu microserviciul de autentificare.
+
+\subsection{Autentificare}
+
+Autentificarea în aplicație se va face prin intermediul microserviciului de autentificare. Acesta este
+conectat la o bază de date MongoDB hostată pe Mongo Atlas unde va reține datele de care are nevoie.
+
+Vom putea face autentificarea prin intermediul interfeței web, care atunci când se conectează cu succes
+va înapoia un JSON Web Token ce conține datele necesare pentru celelalte microservicii, iar atunci când utilizatorul
+încearcă să intre pe o cale protejată va trebui să prezinte acest token.
+
+\subsection{Sincronizarea}
+
+Pentru a îndeplinii cerința de sincronizare pe mai multe dispozitive, va trebui creat un microserviciu
+ce are ca scop memorarea datelor utilizatorului. În crearea acestei funcționalități
+am întâmpinat dificultăți în crearea unei sincronizări adevărate întrucât logica
+era deja implementată în interfață atunci când am ajuns la acest pas.
+
+Astfel, pe dispozitivele mobile, datele sunt menținute într-un fișier prin intermediul SQLite3, astfel,
+serviciul de sincronizare reprezintă doar o modalitate de a urca acest fișier cu date. Acest lucru
+nu va duce la performanțe bune, dar va ușura dezvoltarea.
+
+\subsection{Timeline}
+
+Nu reprezenta o cerință, însă pentru a ilustra comunicarea prin evenimente am creat un Timeline, asemănător cu cel
+de pe Jira, în care atunci când cineva își actualizează un task, va fi vizibil pentru toți într-un Activity Log.
+
+Am creat un microserviciu care va memora persoanele care sunt prietene cu celelalte persoane (sau un sistem de urmărie).
+În cadrul acestuia, se vor memora ID-urile persoanelor comune. La un anumit interval acest microserviciu își va actualiza datelele,
+astfel va face o cerere către microserviciul de sincronizare pentru a salva intern anumite date despre task-urile la care s-a lucrat.
+
+\subsection{Profile}
+
+Pentru a complementa microserviciul de Timeline, am creat un microserviciu ce generază profilul unor persoane.
+Pentru a genera profilul cuiva, am avea nevoie de informații ce provin din microserviciul de autentificare pentru
+datele acestuia precum nume sau adresa de email dar și din cel de Timeline pentru a vedea toate persoanele
+cu care e prieten. Astfel, se fac mai multe cereri decât am avea nevoie.
+
+Pentru a rezolva această problemă, putem folosii o arhitectură precum RestQL unde
+putem agrega cererile si să specificăm ce informații să primim.
+
+Implementarea mea ilustrează arhitectura Backend For Frontend în care am construit un microserviciu
+care face cererile necesare și împachetează rezultatele pentru a efectua cererile.
+
+\subsection{Comunicare}
+
+Microserviciile vor fi lansate în cadrul Kubernetes, astfel acestea vor comunica 1 la 1 prin intermediul
+DNS-ului ce funcționează în interiorul cluster-ului pe care Kubernetes îl administrează.
+
+Va exista un message broker Rabbit MQ ce are ca scop distribuirea evenimentelor precum atunci când
+un utilizator schimbă informații despre contul acestuia sau atunci când își sincronizează baza de date.
+
+În acest mod, celelalte microservicii își pot actualiza datele pe care le memorează,
+de exemplu cel de timeline va face o cerere din nou pentru a actualiza datele utilizatorului ce își actualizează baza de date.
+
+\subsection{Sugestii}
+
+TODO: //
+
+\section{Automatizări}
+
+Codul va fi versionat prin intermediul GitHub, astfel folosind GitHub Actions vom putea crea
+automatizări în funcție de lucrurile ce se întâmplă asupra codului nostru.
+
+Astfel, putem să:
+
+\begin{itemize}
+    \item Atunci când publicăm un tag nou, se va crea un build al aplicației de Flutter pentru Android
+          (reprezintă cea mai simplu de implementat) ce va fi stocat în GitHub Releases
+    \item Atunci când publicăm modificări asupra codului unui microserviciu, iar acesta intră în branch-ul principal,
+          se va declanșa un build al imaginii care va fi urcat automat in repository-ul de pe Digital Ocean
+\end{itemize}
+
+Ca o completare ale acestor automatizări putem să creăm ca atunci când modificăm
+fișierele de Kubernetes, acestea să fie aplicate automat pe cluster, dar și
+să implementăm teste care să ruleze în perioada de build.
+
