@@ -190,7 +190,7 @@ putem agrega cererile si să specificăm ce informații să primim.
 Implementarea mea ilustrează arhitectura Backend For Frontend în care am construit un microserviciu
 care face cererile necesare și împachetează rezultatele pentru a efectua cererile.
 
-\subsection{Comunicare}
+\subsection{Comunicarea intre microservicii}
 
 Microserviciile vor fi lansate în cadrul Kubernetes, astfel acestea vor comunica 1 la 1 prin intermediul
 DNS-ului ce funcționează în interiorul cluster-ului pe care Kubernetes îl administrează.
@@ -201,7 +201,7 @@ un utilizator schimbă informații despre contul acestuia sau atunci când își
 În acest mod, celelalte microservicii își pot actualiza datele pe care le memorează,
 de exemplu cel de timeline va face o cerere din nou pentru a actualiza datele utilizatorului ce își actualizează baza de date.
 
-\subsection{Sugestii}
+\subsection{Microserviciul de sugestii}
 
 TODO: //
 

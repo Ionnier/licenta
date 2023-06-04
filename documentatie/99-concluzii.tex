@@ -1,1 +1,41 @@
 \chapter{Concluzii}
+
+O arhitectură bazată pe microservicii reprezintă o modernizare a modului de a dezvolta aplicații.
+Cuplat cu platformele de infrastructură în cloud ce ne permit crearea de servere
+în orice moment într-un timp foarte scurt și diferitele tipuri de orchestrare
+putem crea aplicații scalabile și reziliente.
+
+Microserviciile sunt o arhitectură de dezvoltare a aplicațiilor în care aplicația este
+împărțită în componente independente ce reprezintă o parte indepententă și este responsabilă pentru o
+funcționalitate specifică al procesului de afaceri. Aceste servicii comunică între
+ele prin intermediul unor interfețe bine definite și pot fi dezvoltate, implementate și scalate independent.
+
+Prin utilizarea arhitecturii bazate pe microservicii,
+aplicațiile devin mai ușor de întreținut și scalat,
+deoarece fiecare serviciu poate fi actualizat și scalat independent,
+fără a afecta restul sistemului.
+De asemenea, permite dezvoltarea agilă și
+implementarea continuă, deoarece fiecare serviciu poate
+fi testat și implementat separat.
+
+Cu toate acestea, arhitectura bazată pe microservicii
+introduce și provocări suplimentare în gestionarea
+comunicării între servicii și în monitorizarea și
+administrarea infrastructurii distribuite. Amazon Prime Video a observat
+o creștere semnificativă de performană atunci când au făcut trecerea de la o arhitectură
+distribuită către una monolitică \cite{Kolny_2023}. În cazul acestora, comunicațiile
+dintre părțile componente au dus la consum suplimentar de resurse.
+
+Deși nu unica metodă de orchestrare pentru microservicii, Kubernetes reprezintă o metodă complexă de orchestrare a containerelor ce oferă
+un mediu scalabil și flexibil pentru implementarea aplicațiilor. Oferă diferite
+funcționalități esențiale precum descoperirea în interiorul cluster-ului,
+posibilitatea de a gestiona actualizări ale configurației sub formă de fișiere ce permite folosirea
+acestuia împreună cu sisteme de gestiune a infrastructurii prin cod dar și
+distribuirea sarcinilor în mod inteligent și rutarea traficului în interiorul clusterului.
+
+Serviciile diversificate oferite de distribuitorii de infrastructură în cloud
+accelerează dezvoltarea, astfel putem evita implementarea
+unor funcționalități comune, crearea infrastructurii sau configurarea bazelor de
+date la cerere. Astfel putem să ne concentrăm pe construirea de soluții și nu pe modul
+cum acestea vor fi implementate.
+
