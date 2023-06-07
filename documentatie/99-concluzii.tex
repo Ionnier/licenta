@@ -39,3 +39,18 @@ unor funcționalități comune, crearea infrastructurii sau configurarea bazelor
 date la cerere. Astfel putem să ne concentrăm pe construirea de soluții și nu pe modul
 cum acestea vor fi implementate.
 
+Această lucrare abordează elemente generale legate de această arhitectură și modul ei de
+orchestrare. O posibilă dezvoltare ulterioară reprezintă aprofundarea unei singure
+componente prezentată și analizarea mai adâncă a diferitelor moduri în care ea impactează sistemul.
+În același scop, Kubernetes reprezintă doar unul din modurile
+de orchestrare ale acestei arhitecturi descris succint, având diferite dezavantaje precum complexitatea
+ridicată, astfel putem să abordăm alte soluții precum Container as a Service
+sau alternative mai ușoare ale acestuia precum HashiCorp Nomad.
+
+Dezvoltarea unei aplicații pe bază de microservicii a reprezintat o dificultate ridicată,
+mai ales considerând că nu a adus niciun beneficiu pentru mine. Crearea unui mediu de dezvoltare,
+rularea tuturor microserviciilor pe același computer dar și stabilirea arhitecturii
+au fost mai mult impedimente ale dezvoltării decât să o faciliteze. Având posibilitatea
+de a folosii servicii în Cloud reprezintă unul din cel mai mare avantaj în dezvoltarea modernă,
+întrucât elimină necesitatea a unei invesiții inițiale în procurarea de infrastructură
+sau crearea diferitelor servicii precum monitorizare și putem să folosim obiecte deja create.
