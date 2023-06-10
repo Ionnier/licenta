@@ -71,7 +71,7 @@ export function whatever(app: Express) {
                 });
             }
             db.close();
-            return res.status(200).end(calendar.toString());
+            return res.status(200).contentType("text/calendar").end(calendar.toString());
         } catch (e) {
             console.log(e)
             return next(e)
