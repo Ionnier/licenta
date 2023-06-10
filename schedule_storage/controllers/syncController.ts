@@ -40,6 +40,10 @@ export function whatever(app: Express) {
 
     })
 
+    app.get('/storage/icalself', protect, (req: Request, res: Response, next) => {
+        res.status(200).json({ data: `/storage/ical/${res.locals.id}/` })
+    })
+
     app.get('/storage/ical/:id/', async (req: Request, res: Response, next: NextFunction) => {
         try {
             const db = await open({
