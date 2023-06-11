@@ -344,3 +344,11 @@ informații, crearea de compilatoare astfel atunci când creăm anumite resurse 
 pentru a obține o resursă finală ce va fi executată în locul celeia pe care o trimisesem iar 
 extinderile prin intermediul operatoriilor ne permite să adăugăm moduri în care Kubernetes 
 administrează automatizarea lansărilor și execuțiilor.
+
+Un mod de a face asta este Helm, o unealtă ce poate fi asemănată ca un administrator
+de pachete pentru Kubernetes. Prin intermediul lui putem să folosim resurse preconfigurate
+distribuite prin repoztiory-uri. Acestea vin sub formă de hărti (charts) ce conțin
+anumite câmpuri ce pot fi configurate de către utilizatorul care va folosi acel chart.
+Helm poate fi folosit și cu un alt scop, acela de a avea un singur fișier al resursei
+pentriu mediul de dezvoltare și cel de producție, dar în care schimbăm doar anumite
+câmpuri pentru fiecare mediu.

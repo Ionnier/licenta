@@ -201,10 +201,6 @@ un utilizator schimbă informații despre contul acestuia sau atunci când își
 În acest mod, celelalte microservicii își pot actualiza datele pe care le memorează,
 de exemplu cel de timeline va face o cerere din nou pentru a actualiza datele utilizatorului ce își actualizează baza de date.
 
-\subsection{Microserviciul de sugestii}
-
-TODO: //
-
 \section{Automatizări}
 
 Codul va fi versionat prin intermediul GitHub, astfel folosind GitHub Actions vom putea crea
@@ -222,4 +218,35 @@ Astfel, putem să:
 Ca o completare ale acestor automatizări putem să creăm ca atunci când modificăm
 fișierele de Kubernetes, acestea să fie aplicate automat pe cluster, dar și
 să implementăm teste care să ruleze în perioada de build.
+
+
+\section{Analiza post implementare}
+
+Începând dezvoltarea cu frontend-ul propriu zis (aplicația în Flutter), prima dificultate a fost
+incapacitatea de a traduce cerințele aplicației în perspectivă de utilizare. Desigur, puteam să
+ader la o interfață simpla (fără decorații, spațieri, etc.) însă principalul obiectiv personal
+a fost să creez o aplicație pe care aș putea să o folosesc iar problema UI-ului a
+reprezentat problema care a dus la necompletarea acestui obiectiv întrucât nu am putut
+să îmi imaginez o interfață funcțională și atractivă.
+
+O a doua dificultate a fost faptul că înainte de a implementa interfața nu am creat o arhitectură și
+o structură pentru backend, astfel pentru a manipula informații în UI, eu am creat clase
+ce nu au putut fi traduse în backend, ce a dus la limitarea modului de implementare a backend-ului.
+
+Implementarea backend-ului a presupus crearea unui cluster local de Kubernetes,
+întrucât nu am distribuit acest mediu eficient, orice modificare a însemnat un delay de 5-10 minute
+(modificări în cod, push pe GitHub, build de imagine, urcat în repository, actualizare la fișiere
+de Kubernetes sau kill la Pod pentru recreere).
+
+Platforma pe care am dezvoltat în principal a fost un telefon cu Android, pentru a accesa clusterul local
+care rula pe laptop a trebuit să le conectez la același WiFi, să utilizez o aplicație asemănătoare cu un VPN (
+avea rolul de a monitoriza traficul) în care am făcut setări pentru a direcționa adresa IP locală a laptopului
+către domeniul setat în Ingress Controller. Această dificultate a făcut dificilă testarea pe alte platforme (precum un dispozitiv iOS).
+
+O variantă mai bună pentru încărcarea fișierului întreg de SQL pe discul microserviciului de stocare
+(fapt ce limitează scalarea acestuia, putând fii doar unul) ar fi utilizarea de Blob Storage, astfel
+încărcam baza de date acolo, dar microserviciul ar fi fucnționat ca un intermediar ce putea să cacheze aceste baze de date.
+
+Regenerarea certificatului necesar pentru TLS în Kubernetes putea fi făcută automat folosind un CronJob, astfel
+aceasta a fost necesară să fie făcută manual.
 
