@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/main.dart';
 import 'package:front/screens/agenda/widgets/AgendaWidget.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../data/auth_repository.dart';
 import '../../models/plan_class.dart';
 
 class AgendaScreen extends StatefulWidget {
@@ -30,6 +33,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   @override
   Widget build(BuildContext context) {
     Container? secondaryBackground;
+    String? data;
     if (Platform.isAndroid || Platform.isIOS) {
       secondaryBackground = Container(
           color: Colors.blue,
@@ -51,9 +55,31 @@ class _AgendaScreenState extends State<AgendaScreen> {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        Text(
-          Jiffy().MMMd,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 24.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              Jiffy().MMMd,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w600, fontSize: 24.0),
+            ),
+            if (AuthRepository().isLoggedIn())
+              IconButton(
+                  onPressed: () async {
+                    if (data == null) {
+                      var response = await Dio(BaseOptions(headers: {
+                        "Authorization": "Bearer ${AuthRepository().getKey()}"
+                      })).get("$domainURL/storage/icalself");
+                      if (response.statusCode == 200) {
+                        data = "$domainURL${response.data["data"]}";
+                      }
+                    }
+                    if (data != null) {
+                      Share.share(data!);
+                    }
+                  },
+                  icon: const Icon(Icons.share)),
+          ],
         ),
         const SizedBox(height: 4.0),
         for (var plan in widget.plans)

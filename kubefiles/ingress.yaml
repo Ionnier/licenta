@@ -8,8 +8,12 @@ metadata:
       proxy_set_header Authorization $http_authorization;
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - ionnier.live
+    secretName: sslcertificate
   rules:
-    - host: ionnier.com
+    - host: ionnier.live
       http:
         paths:
           - path: /profile
@@ -89,6 +93,13 @@ spec:
                 name: timelineexpose
                 port:
                   number: 3002
+          - path: /.well-known/acme-challenge
+            pathType: Prefix
+            backend:
+              service:
+               name: acme-challenge
+               port:
+                number: 80
           - path: /
             pathType: Prefix
             backend:

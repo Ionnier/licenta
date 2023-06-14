@@ -5,7 +5,7 @@ import 'package:front/screens/HomeScreen.dart';
 
 import 'db/db.dart';
 
-const domainURL = "http://ionnier.com";
+const domainURL = "https://ionnier.live";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

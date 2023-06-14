@@ -157,6 +157,31 @@ Vom putea face autentificarea prin intermediul interfeței web, care atunci cân
 va înapoia un JSON Web Token ce conține datele necesare pentru celelalte microservicii, iar atunci când utilizatorul
 încearcă să intre pe o cale protejată va trebui să prezinte acest token.
 
+Acesta a fost creat în Go folosind framework-ul Fiber, ce încearcă să replice funcționalitatea
+framework-ului Express pentru Node.JS.
+
+Modul de acces cu acest microserviciu sunt:
+
+\begin{itemize}
+      \item POST /api/signup, pentru a crea un utilizator nou folosind mail-ul si parola
+      \item POST /api/login, pentru a ne autentifica, autentificarea este folosita cu JSON Web Token.
+            Fiecare cale ce necesita autentificare trebuie sa primeasca un token
+            ce poate fi decodat pentru a identifica utilizatorul. Secretul pentru
+            decodificare este transmis prin secrete Kubernetes catre toate microserviciile
+            ce au nevoie de el.
+      \item PATCH /api/updateSelf, ruta protejată folosită pentru a actualiza date non senzitive precum poza de profil.
+            în momentul în care această rută este apelată cu succes, se va trimite prin Rabbit MQ evenimentul că acel utilizator și-a schimbat datele.
+      \item GET /api/self, ruta protejată folosită pentru ca un utilizator să afle date despre el
+      \item GET /api/users/:userid/, rută folosită pentru a afla
+            datele despre un utilizator cu un anumit ID, aceasta este folosită de alte microservicii,
+            astfel aceasta rută ar trebui să fie accesibilă doar din interiorul clusterului.
+      \item PATCH /api/updatePassword, rută protejată folosită pentru schimbarea parolei,
+            atunci când parola este schimbată acest detaliu se reflectă în baza de date și JSON Web Token-urile create anterior
+            vor fi invalidate întrucât se verifică timpul emiterii token-ului și data la care a fost schimbată parola.
+            Acest lucru va avea efect doar asupra acestui microserviciu, alte microservicii nu vor cunoaște același detaliu,
+            astfel o metodă de invalidare ar fi prin trimiterea acestea informații pe Event Bus și fiecare microserviciu va reține un număr de tokeni invalizi.
+\end{itemize}
+
 \subsection{Sincronizarea}
 
 Pentru a îndeplinii cerința de sincronizare pe mai multe dispozitive, va trebui creat un microserviciu
@@ -168,6 +193,18 @@ Astfel, pe dispozitivele mobile, datele sunt menținute într-un fișier prin in
 serviciul de sincronizare reprezintă doar o modalitate de a urca acest fișier cu date. Acest lucru
 nu va duce la performanțe bune, dar va ușura dezvoltarea.
 
+Microserviciu scris în Node.JS prin TypeScript folosind Express.
+Modul cum interacționăm cu acest microserviciu:
+
+\begin{itemize}
+      \item PATCH /storage/sync/, rută protejată prin care putem să încărcăm o bază de date sub formă de fișier,
+            în momentul accesării se va trimite evenimentul pe Event Bus că utilizatorul și-a modificat baza de date
+      \item GET /storage/icalself, rută protejtă prin care un utilizator află link-ul către agenda lui încărcată sub formă de iCal
+      \item GET /storage/ical/:id/, rută publică prin care se obține fișierul iCal pentru un anumit utilizator. Acesta poate fi folosit pentru a sincorniza aplicația cu alte aplicații de calendar.
+      \item GET /storage/db/, rută protejată prin care un utilizator își poate descărca baza de date încărcate
+      \item GET /storage/getdb/:id/, rută publică prin care alte microservicii pot face rost de baza de date a unui utilizator, această rută nu ar trebui să fie publică și să fie accesibilă doar în interiorul clusterului.
+\end{itemize}
+
 \subsection{Timeline}
 
 Nu reprezenta o cerință, însă pentru a ilustra comunicarea prin evenimente am creat un Timeline, asemănător cu cel
@@ -177,6 +214,20 @@ Am creat un microserviciu care va memora persoanele care sunt prietene cu celela
 În cadrul acestuia, se vor memora ID-urile persoanelor comune. La un anumit interval acest microserviciu își va actualiza datelele,
 astfel va face o cerere către microserviciul de sincronizare pentru a salva intern anumite date despre task-urile la care s-a lucrat.
 
+Microserviciu creat în Go folosind Fiber. Acesta reacționează la evenimentele de actualizare
+de date ale utilizatorului și își va actualiza starea internă.
+
+Rute disponibile:
+\begin{itemize}
+      \item GET /timeline/friends, rută protejată în care putem să preluăm persoanele care ne vor apărea în timeline
+      \item GET /timeline/friends/:id/, rută publică în care putem să preluăm persoanele care vor apărea în timeline-ul unui anumit utilizator,
+            această rută ar trebui să fie accesibilă doar în interiorul clusterului
+      \item GET /timeline/, rută protejată în care putem să luăm timeline-ul propriu, timeline-ul
+            corespunde din activitățile tuturor persoanelor pe care le urmărim.
+      \item GET /timeline/of/:id/, rută publică în care putem să luăm timeline-ului unui anumit utilizator
+      \item POST /timeline/friends, rută protejată în care adăugăm o persoană în lista de persoane urmărite
+\end{itemize}
+
 \subsection{Profile}
 
 Pentru a complementa microserviciul de Timeline, am creat un microserviciu ce generază profilul unor persoane.
@@ -184,11 +235,14 @@ Pentru a genera profilul cuiva, am avea nevoie de informații ce provin din micr
 datele acestuia precum nume sau adresa de email dar și din cel de Timeline pentru a vedea toate persoanele
 cu care e prieten. Astfel, se fac mai multe cereri decât am avea nevoie.
 
-Pentru a rezolva această problemă, putem folosii o arhitectură precum RestQL unde
-putem agrega cererile si să specificăm ce informații să primim.
-
 Implementarea mea ilustrează arhitectura Backend For Frontend în care am construit un microserviciu
 care face cererile necesare și împachetează rezultatele pentru a efectua cererile.
+
+Modul în care interacționăm cu acest microserviciu:
+\begin{itemize}
+      \item GET /profile/:id/, preluăm profilul utilizatorului,
+            acesta include datele sale, elementele sale din timeline și persoanele urmărite. Aceste date sunt obținute interogând celelalte microservicii, astfel utilizatorul face un singur request ce declanșează mai multe cereri.
+\end{itemize}
 
 \subsection{Comunicarea intre microservicii}
 
@@ -197,9 +251,22 @@ DNS-ului ce funcționează în interiorul cluster-ului pe care Kubernetes îl ad
 
 Va exista un message broker Rabbit MQ ce are ca scop distribuirea evenimentelor precum atunci când
 un utilizator schimbă informații despre contul acestuia sau atunci când își sincronizează baza de date.
+Toate microserviciile se vor înregistra pe acest message broker atunci când sunt inițializate.
 
 În acest mod, celelalte microservicii își pot actualiza datele pe care le memorează,
 de exemplu cel de timeline va face o cerere din nou pentru a actualiza datele utilizatorului ce își actualizează baza de date.
+
+\subsection{Accesul în Cluster}
+
+Folosind un NGINX Ingress Controller vom controla accesul. Acesta are rolul de ruta traficul ce intra în el,
+în funcție de path-ul cu care este accesat. Pentru a face asta creăm un domeniu pe Name.com, creăm un certificat
+folosind Let's Encrpyt pe care îl încărcăm sub formă de secret în cluster. Întrucât rulăm cluster-ul pe Digital Ocean,
+creăm un Load Balancer prin care îl accesăm. Domeniul înregistrat va redirecționa către acest IP ce va face accesul în cluster.
+
+Ingress-ul poate fi configurat cu diferite rute, sub diferite forme incluzând prefix, astfel
+dacă acesta este accesat acesta se va uita după prefixul cererii și îl va redirecționa către serviciul corespunzător.
+Astfel, dacă sunt accesate anumite resurse nepermise le putem interzice, întrucât Ingress-ul este folosit strict pentru comunicarea cu
+exteriorul.
 
 \section{Automatizări}
 
@@ -215,9 +282,9 @@ Astfel, putem să:
           se va declanșa un build al imaginii care va fi urcat automat in repository-ul de pe Digital Ocean
 \end{itemize}
 
-Ca o completare ale acestor automatizări putem să creăm ca atunci când modificăm
+Ca o completare ale acestor automatizări putem să creăm alte diferite automatizări ce ne-ar ajuta precu atunci când modificăm
 fișierele de Kubernetes, acestea să fie aplicate automat pe cluster, dar și
-să implementăm teste care să ruleze în perioada de build.
+să implementăm teste și alte verificări prin care să ruleze în perioada înainte de publicare în Container Registry.
 
 
 \section{Analiza post implementare}
