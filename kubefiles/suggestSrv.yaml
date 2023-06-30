@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suggestsrv2
+  labels:
+    application: suggestsrv2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: suggestsrv2
+  template:
+    metadata:
+      labels:
+        application: suggestsrv2
+        app: suggestsrv
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth:suggestsrv
+          imagePullPolicy: Always
+          name: suggestsrv
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: "16m"
+            limits:
+              memory: "1028Mi"
+              cpu: "1000m"
+          env:
+            - name: STORAGE_DOMAIN
+              value: http://storageexpose:3001
+            - name: PORT
+              value: http://storageexpose:3000
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suggestsrvchatgpt
+  labels:
+    application: suggestsrvchatgpt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: suggestsrvchatgpt
+  template:
+    metadata:
+      labels:
+        application: suggestsrvchatgpt
+        app: suggestsrv
+    spec:
+      containers:
+        - image: registry.digitalocean.com/ionnier/auth:suggestsrv
+          imagePullPolicy: Always
+          name: suggestsrvchatgpt
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: "16m"
+            limits:
+              memory: "1028Mi"
+              cpu: "1000m"
+          env:
+            - name: STORAGE_DOMAIN
+              value: http://storageexpose:3001
+            - name: PORT
+              value: http://storageexpose:3000
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: suggestsrvexpose
+spec:
+  selector:
+    app: suggestsrv
+  ports:
+    - protocol: TCP
+      port: 3006
+      targetPort: 3000

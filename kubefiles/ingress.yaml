@@ -100,6 +100,13 @@ spec:
                name: acme-challenge
                port:
                 number: 80
+          - path: /suggest
+            pathType: Prefix
+            backend:
+              service:
+               name: suggestsrvexpose
+               port:
+                number: 3006
           - path: /
             pathType: Prefix
             backend:

@@ -8,6 +8,9 @@ import json
 import time
 from datetime import datetime
 import pytz  # pip install pytz
+import openai
+
+openai.api_key = "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"
 
 dotenv.load_dotenv()
 STORAGE_DOMAIN_URL = os.getenv("STORAGE_DOMAIN")
@@ -103,7 +106,6 @@ def suggest():
                 asd = datetime.now(pytz.timezone(
                     "Europe/Bucharest")).replace(hour=23, minute=59, second=59, microsecond=0)
                 midnightTimestamp = int(asd.timestamp()) * 1000
-                print(plans[0].endsAt, currentTimestamp, midnightTimestamp)
 
                 plans = list(
                     filter(lambda x: (x.endsAt >= currentTimestamp and x.startsAt <= midnightTimestamp), plans))
@@ -116,7 +118,6 @@ def suggest():
                     lastTimestamp = currentTimestamp
                 else:
                     lastTimestamp = plans[-1].endsAt
-                print(lastTimestamp)
 
                 timeLeft = midnightTimestamp - lastTimestamp
 
@@ -127,10 +128,21 @@ def suggest():
                     key=lambda x: (x.priority),
                     reverse=True
                 )
-                try:
-                    return [tasks[0].toDict()]
-                except:
+
+                if (len(tasks) == 0):
                     return []
+
+                content = "Avand task-urile cu: "
+                for i in range(min(len(tasks), 5)):
+                    content += f"{tasks[i].name} durata preferata {tasks[i].preffered_session_time / 1000 / 60} minute, prioritate {tasks[i].priority}, "
+                content += f"si {timeLeft / 1000 / 60} minute disponibiel. Prioritizeaza"
+
+                # create a chat completion
+                chat_completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo", messages=[{"role": "user", "content": content}])
+
+                # print the chat completion
+                return chat_completion.choices[0].message.content
         finally:
             tmp.close()
             os.unlink(tmp.name)
