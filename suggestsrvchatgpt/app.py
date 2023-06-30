@@ -98,7 +98,6 @@ def suggest():
                     "SELECT * FROM plans"
                 ).fetchall()
                 cursor.close()
-                print(rows, plans)
                 tasks = [Task(x) for x in rows]
                 plans = [Plan(x) for x in plans]
                 currentTimestamp = int(round(time.time() * 1000))
