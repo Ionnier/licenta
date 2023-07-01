@@ -35,7 +35,7 @@ dependencies:
   select_form_field: "^2.2.0"
   collection: ^1.14.13
   jiffy: ^5.0.0
-  flutter_datetime_picker: ^1.5.1
+  flutter_datetime_picker_plus: ^2.0.1
   share_plus: ^5.0.0
 
   # The following adds the Cupertino Icons font to your application.

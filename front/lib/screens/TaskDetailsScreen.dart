@@ -1,6 +1,6 @@
 import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:front/widgets/ActivityWidget.dart';
 import 'package:front/widgets/MainTaskWidget.dart';

@@ -104,7 +104,7 @@ class _SyncAlertDiaglogState extends State<SyncAlertDiaglog> {
                   .download("${domainURL}/storage/db",
                       await AppDb().getActualDbPath());
               print(response.statusCode);
-              exit(1);
+              stopLoading();
             } catch (e) {
               if (e is DioError) {
                 print(e.response);

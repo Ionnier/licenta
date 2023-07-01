@@ -133,6 +133,10 @@ func main() {
 					}
 				}
 			}
+
+			if action == "DATABASE_UPDATE" {
+				syncUser(db, id)
+			}
 		}
 	}()
 
