@@ -13,7 +13,9 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/streadway/amqp"
 )
@@ -137,6 +139,7 @@ func main() {
 	app := fiber.New()
 
 	fmt.Println("Successfully Connected to our RabbitMQ Instance")
+	app.Use(logger.New())
 
 	_, err = db.ExecContext(
 		context.TODO(),

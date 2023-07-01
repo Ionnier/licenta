@@ -18,6 +18,7 @@ export function whatever(app: Express) {
                 "bearerAuth": []
             }] 
         */
+        logger.info(`Start /storage/sync/`)
         const form = formidable({ multiples: false })
         form.parse(req, (err, fields, files) => {
             if (err) {
@@ -25,9 +26,11 @@ export function whatever(app: Express) {
             }
             const desiredFile = files.db
             if (desiredFile == undefined) {
+                logger.info(`No file sent`)
                 return next(Error("No db file sent"))
             }
             console.log(res.locals.id)
+            logger.info(`Start move`)
 
             mv(desiredFile.filepath, path.join(process.env.DB_SAVE_LOCATION!, res.locals.id), (err) => {
                 if (err) {
@@ -41,10 +44,12 @@ export function whatever(app: Express) {
     })
 
     app.get('/storage/icalself', protect, (req: Request, res: Response, next) => {
+        logger.info(`Start iCalSelf`)
         res.status(200).json({ data: `/storage/ical/${res.locals.id}/` })
     })
 
     app.get('/storage/ical/:id/', async (req: Request, res: Response, next: NextFunction) => {
+        logger.info(`Start iCal for id`)
         try {
             const db = await open({
                 filename: path.join(process.env.DB_SAVE_LOCATION as string, req.params.id),
@@ -88,10 +93,12 @@ export function whatever(app: Express) {
                 "bearerAuth": []
             }] 
         */
+        logger.info(`Start get Db`)    
         res.status(200).sendFile(path.join(process.env.DB_SAVE_LOCATION as string, res.locals.id))
     })
 
     app.get('/storage/getdb/:id/', (req: Request, res: Response, next) => {
+        logger.info(`Start get Db for id`)    
         res.status(200).sendFile(path.join(process.env.DB_SAVE_LOCATION as string, req.params.id))
     })
 

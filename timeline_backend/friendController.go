@@ -14,6 +14,7 @@ func addFriend(originalDb *sql.DB, firstId string, secondId string) error {
 }
 
 func getFriends(originalDb *sql.DB, user_id string) ([]string, error) {
+	log.Printf("Start getFriends for %v", user_id)
 	rows, err := originalDb.QueryContext(context.TODO(), "select * from friend_list where id_person1=? or id_person2=?", user_id, user_id)
 	asd := make([]string, 0)
 	if err != nil {

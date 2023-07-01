@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -20,6 +21,8 @@ func main() {
 	godotenv.Load(".env")
 
 	app := fiber.New()
+
+	app.Use(logger.New())
 
 	app.Get("/profile/:id/", func(c *fiber.Ctx) error {
 		id := c.Params("id")
