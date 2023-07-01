@@ -33,6 +33,7 @@ RUN \
 FROM alpine:3.14 as production
 # Add certificates
 RUN apk add --no-cache ca-certificates
+RUN mkdir /usr/db
 # Copy built binary from builder
 COPY --from=build /go/bin/timeline /usr/local/bin/timeline
 # Expose port
