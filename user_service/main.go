@@ -93,6 +93,7 @@ func main() {
 
 		userData, err := handleSignup(userInfo.UserEmail, userInfo.UserPassword)
 
+		log.Print("Finished handleSignup with err = %v", err)
 		if err != nil {
 			return err
 		}
@@ -109,12 +110,16 @@ func main() {
 
 		userData, err := handleLogin(*userInfo)
 
+		log.Printf("Finished handleLogin with %v", err)
+
 		if err != nil {
 			if err == mongo.ErrNoDocuments {
 				return fiber.NewError(fiber.ErrTeapot.Code, "User name or password is incorrect")
 			}
 			return err
 		}
+
+		log.Printf("Start generate token", err)
 
 		token := generateToken(*userData)
 

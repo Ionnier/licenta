@@ -18,7 +18,7 @@ spec:
       containers:
         - image: registry.digitalocean.com/ionnier/auth:suggestsrv
           imagePullPolicy: Always
-          name: suggestsrv
+          name: suggestsrv2
           ports:
             - containerPort: 3000
           resources:
@@ -32,7 +32,7 @@ spec:
             - name: STORAGE_DOMAIN
               value: http://storageexpose:3001
             - name: PORT
-              value: http://storageexpose:3000
+              value: "3000"
       imagePullSecrets:
         - name: regcred
 ---
@@ -54,7 +54,7 @@ spec:
         app: suggestsrv
     spec:
       containers:
-        - image: registry.digitalocean.com/ionnier/auth:suggestsrv
+        - image: registry.digitalocean.com/ionnier/auth:suggestsrvchatgpt
           imagePullPolicy: Always
           name: suggestsrvchatgpt
           ports:
@@ -70,7 +70,7 @@ spec:
             - name: STORAGE_DOMAIN
               value: http://storageexpose:3001
             - name: PORT
-              value: http://storageexpose:3000
+              value: "3000"
       imagePullSecrets:
         - name: regcred
 ---

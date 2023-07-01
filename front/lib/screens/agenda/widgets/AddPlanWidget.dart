@@ -1,9 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:front/data/task_local_repository.dart';
 import 'package:select_form_field/select_form_field.dart';
 
+import '../../../data/auth_repository.dart';
+import '../../../main.dart';
 import '../../../models/plan_class.dart';
 import '../../../models/task_class.dart';
 import '../../InputTask.dart';
@@ -100,6 +103,7 @@ class AddPlanAlertDialog extends StatelessWidget {
         ]),
       ),
       actions: <Widget>[
+        const SuggestButton(),
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: const Text('Cancel'),
@@ -133,5 +137,45 @@ class AddPlanAlertDialog extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class SuggestButton extends StatefulWidget {
+  const SuggestButton({super.key});
+
+  @override
+  State<SuggestButton> createState() => _SuggestButtonState();
+}
+
+class _SuggestButtonState extends State<SuggestButton> {
+  bool isLoading = false;
+  String? content;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget? asd;
+    if (isLoading) {
+      asd = const CircularProgressIndicator();
+    } else if (content == null) {
+      asd = TextButton(
+          onPressed: () async {
+            setState(() => {isLoading = true});
+            var response = await Dio(BaseOptions(headers: {
+              "Authorization": "Bearer ${AuthRepository().getKey()}"
+            })).get("$domainURL/suggest/");
+            if (response.statusCode == 200) {
+              setState(() {
+                content = response.data.toString();
+              });
+            }
+            setState(() {
+              isLoading = false;
+            });
+          },
+          child: const Text("Suggest"));
+    } else {
+      asd = Text(content!);
+    }
+    return asd;
   }
 }

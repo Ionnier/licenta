@@ -39,8 +39,9 @@ type user2 struct {
 }
 
 func handleSignup(userEmail string, userPassword string) (*user, error) {
-
+	log.Println("Start handleSignup")
 	if len(userEmail) == 0 || len(userPassword) == 0 {
+		log.Println("Email or password empty")
 		return nil, fiber.NewError(fiber.ErrBadRequest.Code, "User email or password is empty.")
 	}
 
@@ -50,6 +51,7 @@ func handleSignup(userEmail string, userPassword string) (*user, error) {
 		return nil, fiber.NewError(fiber.ErrBadRequest.Code, "User already exists")
 	}
 
+	log.Println("User not found. Generating password.")
 	hashedPassword, err := generatePassword(userPassword)
 
 	if err != nil {
@@ -78,6 +80,7 @@ func findUserById(id string) (*user, error) {
 }
 
 func findUser(userData user) (*user, error) {
+	log.Println("Start find user")
 	if len(userData.UserEmail) != 0 {
 		return findUserByEmail(userData.UserEmail)
 	}
@@ -126,6 +129,7 @@ func generatePassword(clearPassword string) (string, error) {
 }
 
 func createUser(userData user) (*user, error) {
+	log.Println("Start create user")
 	coll := getDatabase().Database(USERS_DATABASE).Collection(USERS_COLLECTION)
 
 	finalUserData := user2{
@@ -150,12 +154,14 @@ func createUser(userData user) (*user, error) {
 }
 
 func handleLogin(userData user) (*user, error) {
+	log.Println("Start handleLogin")
 	userInfo, err := findUser(userData)
 
 	if err != nil {
 		return nil, err
 	}
 
+	log.Println("Start compare password")
 	if err := comparePassword(userInfo.UserPassword, userData.UserPassword); err != nil {
 		return nil, mongo.ErrNoDocuments
 	}
@@ -169,7 +175,7 @@ func comparePassword(hashedPassword string, clearPassword string) error {
 
 func updateUser(newUserData user) error {
 	log.Println(newUserData.ID)
-	log.Println("Start update")
+	log.Println("Start updateUser")
 	update := bson.D{
 		{Key: "$set",
 			Value: bson.D{
@@ -190,6 +196,8 @@ func updateUser(newUserData user) error {
 		id,
 		update,
 	)
+
+	log.Printf("Update finished with err = %v", err)
 
 	if err != nil || result.MatchedCount == 0 {
 		if err == nil {
