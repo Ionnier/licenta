@@ -135,7 +135,7 @@ func main() {
 			}
 
 			if action == "DATABASE_UPDATE" {
-				syncUser(db, id)
+				syncUser(db, id, false)
 			}
 		}
 	}()
@@ -198,7 +198,7 @@ func main() {
 			return c.JSON(err)
 		} else {
 			for _, friend := range list {
-				syncUser(db, friend)
+				syncUser(db, friend, true)
 			}
 			if data, err := getTimelineData(db, list); err != nil {
 				return c.SendStatus(418)
@@ -211,7 +211,7 @@ func main() {
 
 	app.Get("/timeline/of/:id/", func(c *fiber.Ctx) error {
 		id := c.Params("id")
-		syncUser(db, id)
+		syncUser(db, id, true)
 		list := []string{id}
 		if data, err := getTimelineData(db, list); err != nil {
 			return c.SendStatus(418)

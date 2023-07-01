@@ -58,7 +58,7 @@ func syncDb(originalDb *sql.DB, filePath string, userId string) error {
 	return transcation.Commit()
 }
 
-func syncUser(originalDb *sql.DB, user string) error {
+func syncUser(originalDb *sql.DB, user string, canSkip bool) error {
 	log.Printf("Start user sync %v", user)
 	rows, err := originalDb.QueryContext(context.TODO(), "select last_updated from persons where id_person = ?", user)
 	if err != nil {
@@ -66,7 +66,7 @@ func syncUser(originalDb *sql.DB, user string) error {
 	}
 	defer rows.Close()
 	var last_updated int64
-	if rows.Next() {
+	if canSkip && rows.Next() {
 		rows.Scan(&last_updated)
 		log.Printf("User updated at %v", last_updated)
 		if (last_updated + 60*30) > time.Now().UTC().Unix() {

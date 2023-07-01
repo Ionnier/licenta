@@ -40,17 +40,9 @@ spec:
             - name: AMQP_SERVER
               value: amqp://rabbit
             - name: DB_DIRECTORY
-              value: /mnt/db
-          volumeMounts:
-            - mountPath: /mnt/db
-              name: mydbdir
+              value: /usr/db
       imagePullSecrets:
         - name: regcred
-      volumes:
-        - name: mydbdir
-          hostPath:
-            path: /usr/db
-            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service

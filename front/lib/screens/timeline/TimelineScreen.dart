@@ -58,7 +58,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
       headers: {"Authorization": "Bearer ${AuthRepository().getKey()}"},
       receiveDataWhenStatusError: true,
     )).get("$domainURL/timeline/");
-    if (response.statusCode == 200) {
+    setState(() {
+      isLoading = false;
+    });
+    try {
+if (response.statusCode == 200) {
       List<dynamic> list = response.data["data"];
       List<TimeLineElement> itemsList =
           List<TimeLineElement>.from(list.map<TimeLineElement>((dynamic i) {
@@ -73,6 +77,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
         isLoading = false;
       });
     }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+    
   }
 
   @override
