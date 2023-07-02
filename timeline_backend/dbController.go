@@ -66,16 +66,13 @@ func syncUser(originalDb *sql.DB, user string, canSkip bool) error {
 	}
 	defer rows.Close()
 	var last_updated int64
-	if rows.Next() {
+	if canSkip && rows.Next() {
 		rows.Scan(&last_updated)
 		log.Printf("User updated at %v", last_updated)
-		if canSkip && (last_updated + 60*30) > time.Now().UTC().Unix() {
+		if (last_updated + 60*30) > time.Now().UTC().Unix() {
 			log.Printf("Skip update")
 			return nil
 		}
-	} else {
-		log.Println("User does not used this service")
-		return nil
 	}
 	file, err := getUserDb(user)
 	if err != nil {
@@ -86,10 +83,7 @@ func syncUser(originalDb *sql.DB, user string, canSkip bool) error {
 			log.Println(err)
 			return err
 		} else {
-			if res, err := originalDb.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', '%v', %v)", user, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
-				log.Print(err)
-				nr, _ := res.RowsAffected()
-				log.Println(nr)
+			if _, err := originalDb.ExecContext(context.TODO(), fmt.Sprintf("insert into persons values('%v', '%v', '%v', '%v', %v)", user, data.Data.UserName, data.Data.UserEmail, data.Data.ImageURL, time.Now().UTC().Unix())); err != nil {
 				if _, err := originalDb.ExecContext(context.TODO(), "update persons set last_updated = ? where id_person = ?", time.Now().UTC().Unix(), user); err != nil {
 					log.Print(err)
 					return err
