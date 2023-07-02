@@ -29,6 +29,7 @@ class TimeLineElement {
 
   static TimeLineElement fromJson(json) {
     TimeLineElement p = TimeLineElement();
+    print(json);
     p.userId = json["id"] ?? "";
     p.comment = json["comment"];
     p.startsAt = json["startsAt"];
@@ -62,27 +63,26 @@ class _TimelineScreenState extends State<TimelineScreen> {
       isLoading = false;
     });
     try {
-if (response.statusCode == 200) {
-      List<dynamic> list = response.data["data"];
-      List<TimeLineElement> itemsList =
-          List<TimeLineElement>.from(list.map<TimeLineElement>((dynamic i) {
-        return TimeLineElement.fromJson(i);
-      }));
-      setState(() {
-        elements = itemsList;
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
+      if (response.statusCode == 200) {
+        List<dynamic> list = response.data["data"];
+        List<TimeLineElement> itemsList =
+            List<TimeLineElement>.from(list.map<TimeLineElement>((dynamic i) {
+          return TimeLineElement.fromJson(i);
+        }));
+        setState(() {
+          elements = itemsList;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
     }
-    
   }
 
   @override

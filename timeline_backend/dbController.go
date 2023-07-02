@@ -66,13 +66,16 @@ func syncUser(originalDb *sql.DB, user string, canSkip bool) error {
 	}
 	defer rows.Close()
 	var last_updated int64
-	if canSkip && rows.Next() {
+	if rows.Next() {
 		rows.Scan(&last_updated)
 		log.Printf("User updated at %v", last_updated)
-		if (last_updated + 60*30) > time.Now().UTC().Unix() {
+		if canSkip && (last_updated + 60*30) > time.Now().UTC().Unix() {
 			log.Printf("Skip update")
 			return nil
 		}
+	} else {
+		log.Println("User does not used this service")
+		return nil
 	}
 	file, err := getUserDb(user)
 	if err != nil {
